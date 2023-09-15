@@ -1,5 +1,5 @@
 import { http } from "@/utils/http";
-// import { apiUrl } from "./utils";
+import { apiUrl } from "./utils";
 
 type Result = {
   success: boolean;
@@ -53,19 +53,19 @@ export const getRoleIds = (data?: object) => {
 /** 获取角色管理列表 */
 export const getRoleList = (data?: object) => {
   // return http.request<ResultTable>("post", "/role", { data });
-  return http.request<ResultTable>("get", "/proxy/api/rbac/roles/", { data });
+  return http.request<ResultTable>("get", apiUrl("rbac/roles/"), { data });
 };
 
 /** 新增角色 */
 export const createRole = (data?: object) => {
   // return http.request<Result>("get", apiUrl("rbac/menus/"));
-  return http.request<postResult>("post", "/proxy/api/rbac/roles/", { data });
+  return http.request<postResult>("post", apiUrl("rbac/roles/"), { data });
 };
 
 /** 修改角色 */
 export const updateRole = (id: number, data?: object) => {
   // return http.request<Result>("get", apiUrl("rbac/menus/"));
-  return http.request<postResult>("patch", `/proxy/api/rbac/roles/${id}/`, {
+  return http.request<postResult>("patch", apiUrl(`rbac/roles/${id}/`), {
     data
   });
 };
@@ -74,7 +74,7 @@ export const setRolePermission = (id: number, data?: Array<number>) => {
   // return http.request<Result>("get", apiUrl("rbac/menus/"));
   return http.request<postResult>(
     "post",
-    `/proxy/api/rbac/roles/${id}/set-permissions/`,
+    apiUrl(`rbac/roles/${id}/set-permissions/`),
     {
       data
     }
@@ -84,7 +84,7 @@ export const setRolePermission = (id: number, data?: Array<number>) => {
 export const getRolePermission = (id: number) => {
   return http.request<postArrayResult>(
     "get",
-    `/proxy/api/rbac/roles/${id}/get-permissions/`,
+    apiUrl(`rbac/roles/${id}/get-permissions/`),
     {}
   );
 };
@@ -97,19 +97,19 @@ export const getDeptList = (data?: object) => {
 /** 获取菜单管理列表 */
 export const getMenuList = () => {
   // return http.request<Result>("get", apiUrl("rbac/menus/"));
-  return http.request<Result>("get", "/proxy/api/rbac/menus/", {});
+  return http.request<Result>("get", apiUrl("rbac/menus/"), {});
 };
 
 /** 新增菜单 */
 export const createMenu = (data?: object) => {
   // return http.request<Result>("get", apiUrl("rbac/menus/"));
-  return http.request<postResult>("post", "/proxy/api/rbac/menus/", { data });
+  return http.request<postResult>("post", apiUrl("rbac/menus/"), { data });
 };
 
 /** 修改菜单 */
 export const updateMenu = (id: number, data?: object) => {
   // return http.request<Result>("get", apiUrl("rbac/menus/"));
-  return http.request<postResult>("patch", `/proxy/api/rbac/menus/${id}/`, {
+  return http.request<postResult>("patch", apiUrl(`rbac/menus/${id}/`), {
     data
   });
 };
@@ -117,18 +117,14 @@ export const updateMenu = (id: number, data?: object) => {
 /** 菜单树状数据 */
 export const treeMenu = () => {
   // return http.request<Result>("get", apiUrl("rbac/menus/"));
-  return http.request<postArrayResult>(
-    "get",
-    "/proxy/api/rbac/menus/tree/",
-    {}
-  );
+  return http.request<postArrayResult>("get", apiUrl("rbac/menus/tree/"), {});
 };
 
 /** 菜单按钮 */
 export const getMenuButtons = (id: number) => {
   return http.request<postResult>(
     "get",
-    `/proxy/api/rbac/menus/${id}/buttons/`,
+    apiUrl(`rbac/menus/${id}/buttons/`),
     {}
   );
 };
@@ -137,7 +133,7 @@ export const getMenuButtons = (id: number) => {
 export const setMenuButtons = (id: number, data?: Array<object>) => {
   return http.request<postResult>(
     "put",
-    `/proxy/api/rbac/menus/${id}/set-buttons/`,
+    apiUrl(`rbac/menus/${id}/set-buttons/`),
     {
       data
     }
