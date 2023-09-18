@@ -1,11 +1,13 @@
 import { defineStore } from "pinia";
 import { store } from "@/store";
 import { userType } from "./types";
+import { message } from "@/utils/message";
 import { routerArrays } from "@/layout/types";
 import { router, resetRouter } from "@/router";
 import { storageSession } from "@pureadmin/utils";
-import { getLogin, refreshTokenApi } from "@/api/user";
-import { UserResult, RefreshTokenResult } from "@/api/user";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// import { getLogin, refreshTokenApi, UserResult, RefreshTokenResult } from "@/api/user";
+import { oauth2TokenApi, OauthTokenResult } from "@/api/user";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import { type DataInfo, setToken, removeToken, sessionKey } from "@/utils/auth";
 
@@ -41,15 +43,26 @@ export const useUserStore = defineStore({
     },
     /** 登入 */
     async loginByUsername(data) {
-      return new Promise<UserResult>((resolve, reject) => {
-        getLogin(data)
-          .then(data => {
-            if (data) {
-              setToken(data.data);
-              resolve(data);
+      return new Promise<OauthTokenResult>((resolve, reject) => {
+        // getLogin(data)
+        oauth2TokenApi(data, "password")
+          .then(res => {
+            if (res) {
+              setToken(res.data);
+              resolve(res);
             }
           })
           .catch(error => {
+            console.log(error);
+            let errorMsg = "";
+            if (error.response.data.msg === "invalid_grant") {
+              errorMsg = "账号或者密码错误！";
+            } else {
+              errorMsg = error.response.data.msg;
+            }
+            message(`${error.response.data.ret}: ${errorMsg}`, {
+              type: "error"
+            });
             reject(error);
           });
       });
@@ -65,12 +78,13 @@ export const useUserStore = defineStore({
     },
     /** 刷新`token` */
     async handRefreshToken(data) {
-      return new Promise<RefreshTokenResult>((resolve, reject) => {
-        refreshTokenApi(data)
-          .then(data => {
-            if (data) {
-              setToken(data.data);
-              resolve(data);
+      return new Promise<OauthTokenResult>((resolve, reject) => {
+        // refreshTokenApi(data)
+        oauth2TokenApi(data, "refresh_token")
+          .then(res => {
+            if (res) {
+              setToken(res.data);
+              resolve(res);
             }
           })
           .catch(error => {
