@@ -55,12 +55,12 @@ export const useUserStore = defineStore({
           .catch(error => {
             console.log(error);
             let errorMsg = "";
-            if (error.response.data.msg === "invalid_grant") {
+            if (error.data.msg === "invalid_grant") {
               errorMsg = "账号或者密码错误！";
             } else {
-              errorMsg = error.response.data.msg;
+              errorMsg = error.data.msg;
             }
-            message(`${error.response.data.ret}: ${errorMsg}`, {
+            message(`${error.data.ret}: ${errorMsg}`, {
               type: "error"
             });
             reject(error);

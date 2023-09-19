@@ -136,8 +136,12 @@ class PureHttp {
         const respData: AxiosResponseData = response.data;
         // fixMe 处理后端同意http status_code == 200 的情况
         if (respData.ret >= 400) {
-          message(`${respData.ret}: ${respData.msg}`, { type: "error" });
-          useUserStoreHook().logOut();
+          if (respData.ret == 401) {
+            message("身份信息已失效", { type: "error" });
+            useUserStoreHook().logOut();
+          }
+
+          return Promise.reject(response);
         }
         // 关闭进度条动画
         NProgress.done();
