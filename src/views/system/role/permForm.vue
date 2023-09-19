@@ -24,14 +24,23 @@ const dataProps = {
   children: "children"
 };
 
+function removePermission(permId) {
+  const delIndex = newFormInline.value.permissions.indexOf(permId);
+  if (delIndex >= 0) {
+    newFormInline.value.permissions.splice(delIndex, 1);
+  }
+}
+
 function menuCheckChange(obj, isChecked) {
+  const permId = obj.id;
   if (isChecked) {
-    newFormInline.value.permissions.push(obj.id);
+    newFormInline.value.permissions.push(permId);
   } else {
-    const delIndex = newFormInline.value.permissions.indexOf(obj.id);
-    if (delIndex >= 0) {
-      newFormInline.value.permissions.splice(delIndex, 1);
-    }
+    removePermission(permId);
+    // 按钮
+    obj.buttons.forEach(button => {
+      removePermission(button.id);
+    });
   }
 }
 </script>
