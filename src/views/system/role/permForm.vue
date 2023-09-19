@@ -43,18 +43,70 @@ function menuCheckChange(obj, isChecked) {
     });
   }
 }
+
+const treeRef = ref();
+const swCheckAll = ref(false);
+const swExpandTree = ref(false);
+const swLinkage = ref(false);
+
+/*菜单权限树展开/折叠*/
+function expandTree(isExpand) {
+  console.log(isExpand);
+  const nodes = treeRef.value.store.nodesMap;
+  for (const node in nodes) {
+    nodes[node].expanded = isExpand;
+  }
+}
+
+/*菜单权限树全选/不选*/
+function checkAllTree(isCheckedAll) {
+  // fixme 全选时提交的permission数据不全
+  // if (isCheckedAll) {
+  // 	expandTree(true);
+  // }
+  const nodes = treeRef.value.store.nodesMap;
+  console.log(nodes);
+  for (const node in nodes) {
+    if (nodes[node].checked != isCheckedAll) {
+      nodes[node].checked = isCheckedAll;
+    }
+  }
+  // if (!isCheckedAll) {
+  //   newFormInline.value.permissions.length = 0;
+  // }
+}
 </script>
 
 <template>
   <el-form ref="ruleFormRef" :model="newFormInline" label-width="82px">
     <el-col class="mb-[20px]">
+      <el-row>
+        <el-col :span="6">
+          <el-switch
+            v-model="swCheckAll"
+            active-text="全选/不选"
+            @change="checkAllTree"
+          />
+        </el-col>
+        <el-col :span="6">
+          <el-switch
+            v-model="swExpandTree"
+            active-text="展开/折叠"
+            @change="expandTree"
+          />
+        </el-col>
+        <el-col :span="6">
+          <el-switch v-model="swLinkage" active-text="父子联动" />
+        </el-col>
+      </el-row>
       <el-card shadow="never">
         <div class="max-h-[550px] overflow-y-auto">
           <el-tree
+            ref="treeRef"
             :data="newFormInline.menuTree"
             :props="dataProps"
             show-checkbox
-            default-expand-all
+            :check-strictly="!swLinkage"
             node-key="id"
             :indent="30"
             :default-checked-keys="newFormInline.permissions"
