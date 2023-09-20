@@ -24,6 +24,11 @@ const dataProps = {
   children: "children"
 };
 
+const treeRef = ref();
+const swCheckAll = ref(false);
+const swExpandTree = ref(false);
+const swLinkage = ref(false);
+
 function removePermission(permId) {
   const delIndex = newFormInline.value.permissions.indexOf(permId);
   if (delIndex >= 0) {
@@ -31,10 +36,17 @@ function removePermission(permId) {
   }
 }
 
+function setPermission(permId) {
+  if (!newFormInline.value.permissions.includes(permId)) {
+    newFormInline.value.permissions.push(permId);
+  }
+}
+
+/*菜单权限树节点选中变化时*/
 function menuCheckChange(obj, isChecked) {
   const permId = obj.id;
   if (isChecked) {
-    newFormInline.value.permissions.push(permId);
+    setPermission(permId);
   } else {
     removePermission(permId);
     // 按钮
@@ -44,14 +56,8 @@ function menuCheckChange(obj, isChecked) {
   }
 }
 
-const treeRef = ref();
-const swCheckAll = ref(false);
-const swExpandTree = ref(false);
-const swLinkage = ref(false);
-
 /*菜单权限树展开/折叠*/
 function expandTree(isExpand) {
-  console.log(isExpand);
   const nodes = treeRef.value.store.nodesMap;
   for (const node in nodes) {
     nodes[node].expanded = isExpand;
@@ -60,20 +66,25 @@ function expandTree(isExpand) {
 
 /*菜单权限树全选/不选*/
 function checkAllTree(isCheckedAll) {
-  // fixme 全选时提交的permission数据不全
-  // if (isCheckedAll) {
-  // 	expandTree(true);
-  // }
   const nodes = treeRef.value.store.nodesMap;
-  console.log(nodes);
   for (const node in nodes) {
     if (nodes[node].checked != isCheckedAll) {
       nodes[node].checked = isCheckedAll;
     }
+    const nodeButtons = nodes[node].data.buttons;
+    for (const index in nodeButtons) {
+      if (isCheckedAll) {
+        setPermission(nodeButtons[index].id);
+      } else {
+        removePermission(nodeButtons[index].id);
+      }
+    }
   }
-  // if (!isCheckedAll) {
-  //   newFormInline.value.permissions.length = 0;
-  // }
+}
+
+function buttonCheckChange(value) {
+  // todo 按钮勾选自动勾选按钮所属菜单
+  console.log(value);
 }
 </script>
 
@@ -108,6 +119,7 @@ function checkAllTree(isCheckedAll) {
             show-checkbox
             :check-strictly="!swLinkage"
             node-key="id"
+            :render-after-expand="false"
             :indent="30"
             :default-checked-keys="newFormInline.permissions"
             @check-change="menuCheckChange"
@@ -127,6 +139,7 @@ function checkAllTree(isCheckedAll) {
                         v-for="button in data.buttons"
                         :label="button.id"
                         :key="button.id"
+                        @change="buttonCheckChange"
                         >{{ transformI18n(button.meta.title) }}
                       </el-checkbox-button>
                     </el-checkbox-group>
