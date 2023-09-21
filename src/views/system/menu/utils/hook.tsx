@@ -45,9 +45,19 @@ export function useMenu() {
       align: "left"
     },
     {
-      label: "类别",
+      label: "类型",
       prop: "type",
-      slot: "typeTag"
+      cellRenderer: ({ row, props }) => (
+        <el-tag
+          size={props.size}
+          type={row.type === menuTypes.menu.value ? "" : "success"}
+          disable-transitions
+        >
+          {row.type === menuTypes.menu.value
+            ? menuTypes.menu.name
+            : menuTypes.page.name}
+        </el-tag>
+      )
     },
     {
       label: "编码",
