@@ -45,6 +45,12 @@ function setPermission(permId) {
 /*菜单权限树节点选中变化时*/
 function menuCheckChange(obj, isChecked) {
   const permId = obj.id;
+
+  // 菜单上下级之间联动时半选中的父节点视为选择
+  const halfCheckedMenuIds = treeRef.value.getHalfCheckedKeys();
+  if (!isChecked && halfCheckedMenuIds.includes(permId)) {
+    isChecked = true;
+  }
   if (isChecked) {
     setPermission(permId);
   } else {
