@@ -27,17 +27,27 @@ export function useMenu() {
   const dataList = ref([]);
   const loading = ref(true);
   const { tagStyle } = usePublicHooks();
+  const menuTypes = {
+    menu: { value: 1, name: "菜单" },
+    page: { value: 2, name: "页面" }
+  };
 
   const columns: TableColumnList = [
     {
       label: "ID",
       prop: "id",
-      minWidth: 100
+      minWidth: 100,
+      fixed: true
     },
     {
       label: "排序",
       prop: "order",
       align: "left"
+    },
+    {
+      label: "类别",
+      prop: "type",
+      slot: "typeTag"
     },
     {
       label: "编码",
@@ -83,7 +93,7 @@ export function useMenu() {
       label: "Meta",
       prop: "meta",
       width: 180,
-      align: "left",
+      hide: true,
       formatter: ({ meta }) => JSON.stringify(meta)
     },
     {
@@ -307,6 +317,7 @@ export function useMenu() {
     loading,
     columns,
     dataList,
+    menuTypes,
     /** 搜索 */
     onSearch,
     /** 重置 */
@@ -316,7 +327,6 @@ export function useMenu() {
     buttonsDialog,
     /** 删除部门 */
     handleDelete,
-    handleSelectionChange,
-    getButtons
+    handleSelectionChange
   };
 }

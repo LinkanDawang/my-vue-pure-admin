@@ -104,7 +104,7 @@ function setMetaRank(
   newFormInline.value.meta.rank = currentValue;
 }
 
-function switchMenuType(value: string | number | boolean) {
+function switchMenuType(value: number) {
   menuType.value = value;
   getMenuList();
 }
@@ -144,8 +144,8 @@ function switchMenuType(value: string | number | boolean) {
       <re-col>
         <el-form-item label="菜单类型" prop="type">
           <el-radio-group v-model="newFormInline.type" @change="switchMenuType">
-            <el-radio-button label="1">目录</el-radio-button>
-            <el-radio-button label="2">菜单</el-radio-button>
+            <el-radio-button label="1">菜单</el-radio-button>
+            <el-radio-button label="2">页面</el-radio-button>
             <!--<el-radio-button label="3">按钮</el-radio-button>-->
           </el-radio-group>
         </el-form-item>

@@ -24,6 +24,7 @@ const {
   loading,
   columns,
   dataList,
+  menuTypes,
   onSearch,
   resetForm,
   openDialog,
@@ -76,6 +77,7 @@ const {
     </el-form>
     <!--title="部门列表（仅演示，操作后不生效）"-->
     <PureTableBar
+      title=""
       :columns="columns"
       :tableRef="tableRef?.getTableRef()"
       @refresh="onSearch"
@@ -112,6 +114,18 @@ const {
           }"
           @selection-change="handleSelectionChange"
         >
+          <template #typeTag="{ row }">
+            <el-tag
+              :type="row.type === menuTypes.menu.value ? '' : 'success'"
+              disable-transitions
+            >
+              {{
+                row.type === menuTypes.menu.value
+                  ? menuTypes.menu.name
+                  : menuTypes.page.name
+              }}
+            </el-tag>
+          </template>
           <template #operation="{ row }">
             <el-button
               class="reset-margin"
@@ -124,6 +138,7 @@ const {
               {{ transformI18n("buttons.hsedit") }}
             </el-button>
             <el-button
+              v-if="row.type === 2"
               class="reset-margin"
               link
               type="primary"
