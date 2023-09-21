@@ -75,7 +75,6 @@ const {
         </el-button>
       </el-form-item>
     </el-form>
-    <!--title="部门列表（仅演示，操作后不生效）"-->
     <PureTableBar
       title=""
       :columns="columns"
@@ -93,80 +92,81 @@ const {
           }}
         </el-button>
       </template>
-      <template v-slot="{ size, dynamicColumns }">
-        <pure-table
-          ref="tableRef"
-          adaptive
-          :adaptiveConfig="{ offsetBottom: 32 }"
-          align-whole="center"
-          row-key="id"
-          showOverflowTooltip
-          tooltip-effect="dark"
-          table-layout="auto"
-          default-expand-all
-          :loading="loading"
-          :size="size"
-          :data="dataList"
-          :columns="dynamicColumns"
-          :header-cell-style="{
-            background: 'var(--el-fill-color-light)',
-            color: 'var(--el-text-color-primary)'
-          }"
-          @selection-change="handleSelectionChange"
-        >
-          <template #typeTag="{ row }">
-            <el-tag
-              :type="row.type === menuTypes.menu.value ? '' : 'success'"
-              disable-transitions
-            >
-              {{
-                row.type === menuTypes.menu.value
-                  ? menuTypes.menu.name
-                  : menuTypes.page.name
-              }}
-            </el-tag>
-          </template>
-          <template #operation="{ row }">
-            <el-button
-              class="reset-margin"
-              link
-              type="primary"
-              :size="size"
-              :icon="useRenderIcon(EditPen)"
-              @click="openDialog('编辑', JSON.parse(JSON.stringify(row)))"
-            >
-              {{ transformI18n("buttons.hsedit") }}
-            </el-button>
-            <el-button
-              v-if="row.type === 2"
-              class="reset-margin"
-              link
-              type="primary"
-              :size="size"
-              :icon="useRenderIcon('fa:hand-pointer-o')"
-              @click="buttonsDialog(JSON.parse(JSON.stringify(row)))"
-            >
-              {{ transformI18n("buttons.hsbutton") }}
-            </el-button>
-            <el-popconfirm
-              :title="`是否确认删除部门名称为${row.name}的这条数据`"
-              @confirm="handleDelete(row)"
-            >
-              <template #reference>
-                <el-button
-                  class="reset-margin"
-                  link
-                  type="primary"
-                  :size="size"
-                  :icon="useRenderIcon(Delete)"
-                >
-                  {{ transformI18n("buttons.hsdelete") }}
-                </el-button>
-              </template>
-            </el-popconfirm>
-          </template>
-        </pure-table>
-      </template>
+      <pure-table
+        ref="tableRef"
+        adaptive
+        :adaptiveConfig="{ offsetBottom: 32 }"
+        align-whole="center"
+        row-key="id"
+        showOverflowTooltip
+        tooltip-effect="dark"
+        table-layout="auto"
+        default-expand-all
+        :loading="loading"
+        :data="dataList"
+        :columns="columns"
+        :header-cell-style="{
+          background: 'var(--el-fill-color-light)',
+          color: 'var(--el-text-color-primary)'
+        }"
+        @selection-change="handleSelectionChange"
+      >
+        <template #typeTag="{ row }">
+          <el-tag
+            :type="row.type === menuTypes.menu.value ? '' : 'success'"
+            disable-transitions
+          >
+            {{
+              row.type === menuTypes.menu.value
+                ? menuTypes.menu.name
+                : menuTypes.page.name
+            }}
+          </el-tag>
+        </template>
+        <template #operation="{ row }">
+          <el-row>
+            <el-col :span="8">
+              <el-button
+                class="reset-margin"
+                link
+                type="primary"
+                :icon="useRenderIcon(EditPen)"
+                @click="openDialog('编辑', JSON.parse(JSON.stringify(row)))"
+              >
+                {{ transformI18n("buttons.hsedit") }}
+              </el-button>
+            </el-col>
+            <el-col :span="8" v-show="row.type === menuTypes.page.value">
+              <el-button
+                class="reset-margin"
+                link
+                type="primary"
+                :icon="useRenderIcon('fa:hand-pointer-o')"
+                @click="buttonsDialog(JSON.parse(JSON.stringify(row)))"
+              >
+                {{ transformI18n("buttons.hsbutton") }}
+              </el-button>
+            </el-col>
+            <el-col :span="8">
+              <el-popconfirm
+                :title="`是否确认删除部门名称为${row.name}的这条数据`"
+                @confirm="handleDelete(row)"
+              >
+                <template #reference>
+                  <el-button
+                    class="reset-margin"
+                    link
+                    type="danger"
+                    :icon="useRenderIcon(Delete)"
+                  >
+                    {{ transformI18n("buttons.hsdelete") }}
+                  </el-button>
+                </template>
+              </el-popconfirm>
+            </el-col>
+          </el-row>
+        </template>
+      </pure-table>
     </PureTableBar>
   </div>
 </template>

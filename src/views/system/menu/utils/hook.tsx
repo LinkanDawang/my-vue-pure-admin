@@ -62,6 +62,16 @@ export function useMenu() {
       formatter: ({ meta }) => transformI18n(meta.title)
     },
     {
+      label: "状态",
+      prop: "status",
+      minWidth: 100,
+      cellRenderer: ({ row, props }) => (
+        <el-tag size={props.size} style={tagStyle.value(row.status)}>
+          {row.status === 50 ? "启用" : "停用"}
+        </el-tag>
+      )
+    },
+    {
       label: "组件名称",
       prop: "name",
       width: 180
@@ -84,27 +94,17 @@ export function useMenu() {
       width: 180,
       align: "left"
     },
-    {
-      label: "按钮",
-      prop: "buttons",
-      width: 180
-    },
+    // {
+    //   label: "按钮",
+    //   prop: "buttons",
+    //   width: 180
+    // },
     {
       label: "Meta",
       prop: "meta",
       width: 180,
       hide: true,
       formatter: ({ meta }) => JSON.stringify(meta)
-    },
-    {
-      label: "状态",
-      prop: "status",
-      minWidth: 100,
-      cellRenderer: ({ row, props }) => (
-        <el-tag size={props.size} style={tagStyle.value(row.status)}>
-          {row.status === 50 ? "启用" : "停用"}
-        </el-tag>
-      )
     },
     {
       label: "创建时间",
