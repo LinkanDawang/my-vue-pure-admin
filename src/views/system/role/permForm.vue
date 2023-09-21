@@ -82,9 +82,14 @@ function checkAllTree(isCheckedAll) {
   }
 }
 
-function buttonCheckChange(value) {
-  // todo 按钮勾选自动勾选按钮所属菜单
-  console.log(value);
+function buttonCheckChange(isChecked, nodeData: any) {
+  // 按钮勾选时自动勾选按钮所属菜单
+  const menuId = nodeData.id;
+  const node = treeRef.value.store.nodesMap[menuId];
+  if (isChecked && !node.checked) {
+    node.checked = true;
+    setPermission(menuId);
+  }
 }
 </script>
 
@@ -139,7 +144,7 @@ function buttonCheckChange(value) {
                         v-for="button in data.buttons"
                         :label="button.id"
                         :key="button.id"
-                        @change="buttonCheckChange"
+                        @change="checked => buttonCheckChange(checked, data)"
                         >{{ transformI18n(button.meta.title) }}
                       </el-checkbox-button>
                     </el-checkbox-group>
