@@ -23,7 +23,8 @@ const props = withDefaults(defineProps<FormProps>(), {
     order: 0,
     status: 1,
     meta: { title: "", icon: "", rank: null },
-    type: 1
+    type: 1,
+    menuTransName: ""
   })
 });
 
@@ -126,7 +127,7 @@ function switchMenuType(value: number) {
             :options="newFormInline.higherMenuOptions"
             :props="{
               value: 'id',
-              label: 'name',
+              label: 'menuTransName',
               emitPath: false,
               checkStrictly: true
             }"
@@ -135,7 +136,7 @@ function switchMenuType(value: number) {
             placeholder="请选择上级菜单"
           >
             <template #default="{ node, data }">
-              <span>{{ transformI18n(data.meta.title) }}</span>
+              <span>{{ transformI18n(data.menuTransName) }}</span>
               <span v-if="!node.isLeaf"> ({{ data.children.length }}) </span>
             </template>
           </el-cascader>
@@ -178,7 +179,10 @@ function switchMenuType(value: number) {
         :sm="24"
         v-if="newFormInline.type == 1 || newFormInline.type == 2"
       >
-        <el-form-item label="组件名称" prop="name">
+        <el-form-item
+          label="组件名称"
+          :prop="newFormInline.type == 2 ? 'name' : ''"
+        >
           <el-input
             v-model="newFormInline.name"
             clearable
@@ -192,7 +196,7 @@ function switchMenuType(value: number) {
         :sm="24"
         v-if="newFormInline.type == 1 || newFormInline.type == 2"
       >
-        <el-form-item label="编码">
+        <el-form-item label="编码" prop="code">
           <el-input
             v-model="newFormInline.code"
             clearable

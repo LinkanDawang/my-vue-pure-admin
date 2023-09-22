@@ -189,6 +189,8 @@ export function useMenu() {
       } else {
         formatHigherMenuOptions(treeList[i].children, choicedId);
       }
+      // 翻译菜单名称
+      treeList[i].menuTransName = transformI18n(treeList[i].meta.title);
       newTreeList.push(treeList[i]);
     }
     return newTreeList;
@@ -217,7 +219,8 @@ export function useMenu() {
             icon: "ep:expand",
             rank: row?.order ?? null
           },
-          type: row?.type ?? 1
+          type: row?.type ?? 1,
+          menuTransName: transformI18n(row?.meta?.title) ?? ""
         }
       },
       width: "40%",

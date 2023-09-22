@@ -11,6 +11,7 @@ interface FormItemProps {
   status: number;
   meta: any;
   type: number;
+  menuTransName?: string;
 }
 
 interface FormProps {
