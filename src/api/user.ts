@@ -47,6 +47,23 @@ export type OauthTokenResult = {
   };
 };
 
+export type UserInfoResult = {
+  success: boolean;
+  ret: number;
+  msg: string;
+  data?: {
+    id: number;
+    name: string;
+    username: string;
+    email: string;
+    is_superuser: boolean;
+    is_active: boolean;
+    date_joined: Date;
+    roles: Array<object>;
+    permissions: Array<any>;
+  };
+};
+
 /** 登录 */
 export const getLogin = (data?: object) => {
   return http.request<UserResult>("post", "/login", { data });
@@ -103,4 +120,8 @@ export const oauth2RevokeTokenApi = (data: object) => {
     { data },
     { ...axiosConfig }
   );
+};
+
+export const userInfoApi = () => {
+  return http.request<UserInfoResult>("get", apiUrl("users/me"));
 };

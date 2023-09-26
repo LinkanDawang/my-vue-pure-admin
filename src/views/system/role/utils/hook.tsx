@@ -69,6 +69,11 @@ export function useRole() {
       )
     },
     {
+      label: "成员",
+      slot: "member",
+      minWidth: 130
+    },
+    {
       label: "备注",
       prop: "remark",
       minWidth: 150

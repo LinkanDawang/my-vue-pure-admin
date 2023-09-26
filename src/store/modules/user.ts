@@ -7,9 +7,21 @@ import { router, resetRouter } from "@/router";
 import { storageSession } from "@pureadmin/utils";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // import { getLogin, refreshTokenApi, UserResult, RefreshTokenResult } from "@/api/user";
-import { oauth2TokenApi, OauthTokenResult } from "@/api/user";
+import {
+  oauth2TokenApi,
+  userInfoApi,
+  type OauthTokenResult,
+  UserInfoResult
+} from "@/api/user";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
-import { type DataInfo, setToken, removeToken, sessionKey } from "@/utils/auth";
+import {
+  type DataInfo,
+  setToken,
+  setPermissions,
+  removeToken,
+  sessionKey,
+  permissionKey
+} from "@/utils/auth";
 
 export const useUserStore = defineStore({
   id: "pure-user",
@@ -22,7 +34,8 @@ export const useUserStore = defineStore({
     // 前端生成的验证码（按实际需求替换）
     verifyCode: "",
     // 判断登录页面显示哪个组件（0：登录（默认）、1：手机登录、2：二维码登录、3：注册、4：忘记密码）
-    currentPage: 0
+    currentPage: 0,
+    permissions: storageSession().getItem<Array<string>>(permissionKey) ?? []
   }),
   actions: {
     /** 存储用户名 */
@@ -40,6 +53,9 @@ export const useUserStore = defineStore({
     /** 存储登录页面显示哪个组件 */
     SET_CURRENTPAGE(value: number) {
       this.currentPage = value;
+    },
+    SET_PERMISSIONS(permission: Array<string>) {
+      this.permissions = permission;
     },
     /** 登入 */
     async loginByUsername(data) {
@@ -86,6 +102,22 @@ export const useUserStore = defineStore({
               setToken(res.data);
               resolve(res);
             }
+          })
+          .catch(error => {
+            reject(error);
+          });
+      });
+    },
+    async getUserInfo() {
+      return new Promise<UserInfoResult>((resolve, reject) => {
+        userInfoApi()
+          .then(res => {
+            const permCodes = [];
+            res.data.permissions.forEach(perm => {
+              permCodes.push(perm.perm_code);
+            });
+            setPermissions(permCodes);
+            resolve(res);
           })
           .catch(error => {
             reject(error);

@@ -10,6 +10,7 @@ import { system, permission, frame, tabs } from "@/router/enums";
 
 const systemRouter = {
   path: "/system",
+  code: "systemManage",
   meta: {
     icon: "setting",
     title: "menus.hssysManagement",
@@ -18,6 +19,7 @@ const systemRouter = {
   children: [
     {
       path: "/system/user/index",
+      code: "userManage",
       name: "User",
       meta: {
         icon: "flUser",
@@ -27,6 +29,7 @@ const systemRouter = {
     },
     {
       path: "/system/role/index",
+      code: "roleManage",
       name: "Role",
       meta: {
         icon: "role",
@@ -36,6 +39,7 @@ const systemRouter = {
     },
     {
       path: "/system/dept/index",
+      code: "deptManage",
       name: "Dept",
       meta: {
         icon: "dept",
@@ -45,6 +49,7 @@ const systemRouter = {
     },
     {
       path: "/system/menu/index",
+      code: "menuManage",
       name: "Menu",
       meta: {
         icon: "menu",
@@ -57,6 +62,7 @@ const systemRouter = {
 
 const permissionRouter = {
   path: "/permission",
+  code: "permissionManage",
   meta: {
     title: "menus.permission",
     icon: "lollipop",
@@ -85,6 +91,7 @@ const permissionRouter = {
 
 const frameRouter = {
   path: "/iframe",
+  code: "thirdPages",
   meta: {
     icon: "monitor",
     title: "menus.hsExternalPage",
@@ -167,6 +174,7 @@ const frameRouter = {
 
 const tabsRouter = {
   path: "/tabs",
+  code: "tabsParent",
   meta: {
     icon: "IF-pure-iconfont-tabs",
     title: "menus.hstabs",

@@ -19,15 +19,17 @@ import {
 import { getConfig } from "@/config";
 import { menuType } from "@/layout/types";
 import { buildHierarchyTree } from "@/utils/tree";
-import { sessionKey, type DataInfo } from "@/utils/auth";
+import { sessionKey, permissionKey, type DataInfo } from "@/utils/auth";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import { usePermissionStoreHook } from "@/store/modules/permission";
+import { useUserStoreHook } from "@/store/modules/user";
 const IFrame = () => import("@/layout/frameView.vue");
 // https://cn.vitejs.dev/guide/features.html#glob-import
 const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
 
 // 动态路由
 import { getAsyncRoutes } from "@/api/routes";
+import { message } from "@/utils/message";
 
 function handRank(routeInfo: any) {
   const { name, path, parentId, meta } = routeInfo;
@@ -83,10 +85,13 @@ function isOneOfArray(a: Array<string>, b: Array<string>) {
 
 /** 从sessionStorage里取出当前登陆用户的角色roles，过滤无权限的菜单 */
 function filterNoPermissionTree(data: RouteComponent[]) {
+  const currentPermissions =
+    storageSession().getItem<Array<string>>(permissionKey) ?? [];
   const currentRoles =
     storageSession().getItem<DataInfo<number>>(sessionKey)?.roles ?? [];
-  const newTree = cloneDeep(data).filter((v: any) =>
-    isOneOfArray(v.meta?.roles, currentRoles)
+  const newTree = cloneDeep(data).filter(
+    (v: any) => isOneOfArray(v.meta?.roles, currentRoles)
+    // (v: any) => (v.code ? currentPermissions.includes(v.code) : true)
   );
   newTree.forEach(
     (v: any) => v.children && (v.children = filterNoPermissionTree(v.children))
@@ -182,7 +187,7 @@ function handleAsyncRoutes(routeList) {
 }
 
 /** 初始化路由（`new Promise` 写法防止在异步请求中造成无限循环）*/
-function initRouter() {
+function setRouter() {
   if (getConfig()?.CachingAsyncRoutes) {
     // 开启动态路由缓存本地sessionStorage
     const key = "async-routes";
@@ -209,6 +214,16 @@ function initRouter() {
       });
     });
   }
+}
+
+async function initRouter() {
+  await useUserStoreHook()
+    .getUserInfo()
+    .then(() => {})
+    .catch(error => {
+      message(error.data.msg, { type: "error" });
+    });
+  return setRouter();
 }
 
 /**
