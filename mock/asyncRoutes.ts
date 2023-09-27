@@ -227,6 +227,47 @@ const tabsRouter = {
   ]
 };
 
+// 示例，菜单下无页面是显示空白
+const demoRouter = {
+  path: "/backendAdmin",
+  name: "Demo",
+  meta: {
+    title: "系统设置",
+    rank: 1000
+  },
+  children: [
+    {
+      path: "/backendAdmin/admin",
+      name: "BackendAdmin",
+      meta: {
+        title: "系统设置"
+        // frameSrc: "http://127.0.0.1:8000/admin/"
+      }
+    }
+  ]
+};
+
+const editor2 = {
+  path: "/editor2",
+  redirect: "/editor2/index",
+  meta: {
+    icon: "edit",
+    title: "编辑器2",
+    rank: 1001
+  },
+  children: [
+    {
+      path: "/editor2/index",
+      name: "Editor",
+      component: "/views/editor/index.vue",
+      meta: {
+        title: "编辑器2",
+        keepAlive: true
+      }
+    }
+  ]
+};
+
 export default [
   {
     url: "/getAsyncRoutes",
@@ -234,7 +275,14 @@ export default [
     response: () => {
       return {
         success: true,
-        data: [systemRouter, permissionRouter, frameRouter, tabsRouter]
+        data: [
+          systemRouter,
+          permissionRouter,
+          frameRouter,
+          tabsRouter,
+          demoRouter,
+          editor2
+        ]
       };
     }
   }
