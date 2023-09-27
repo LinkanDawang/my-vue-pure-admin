@@ -12,6 +12,7 @@ const systemRouter = {
   path: "/system",
   code: "systemManage",
   meta: {
+    code: "systemManage",
     icon: "setting",
     title: "menus.hssysManagement",
     rank: system
@@ -22,6 +23,7 @@ const systemRouter = {
       code: "userManage",
       name: "User",
       meta: {
+        code: "userManage",
         icon: "flUser",
         title: "menus.hsUser",
         roles: ["admin"]
@@ -32,6 +34,7 @@ const systemRouter = {
       code: "roleManage",
       name: "Role",
       meta: {
+        code: "roleManage",
         icon: "role",
         title: "menus.hsRole",
         roles: ["admin"]
@@ -42,6 +45,7 @@ const systemRouter = {
       code: "deptManage",
       name: "Dept",
       meta: {
+        code: "deptManage",
         icon: "dept",
         title: "menus.hsDept",
         roles: ["admin"]
@@ -52,6 +56,7 @@ const systemRouter = {
       code: "menuManage",
       name: "Menu",
       meta: {
+        code: "menuManage",
         icon: "menu",
         title: "menus.hsMenu",
         roles: ["admin"]
@@ -64,6 +69,7 @@ const permissionRouter = {
   path: "/permission",
   code: "permissionManage",
   meta: {
+    code: "permissionManage",
     title: "menus.permission",
     icon: "lollipop",
     rank: permission
@@ -74,6 +80,7 @@ const permissionRouter = {
       code: "pagePermission",
       name: "PermissionPage",
       meta: {
+        code: "pagePermission",
         title: "menus.permissionPage",
         roles: ["admin", "common"]
       }
@@ -83,6 +90,7 @@ const permissionRouter = {
       code: "buttonPermission",
       name: "PermissionButton",
       meta: {
+        code: "buttonPermission",
         title: "menus.permissionButton",
         roles: ["admin", "common"],
         auths: ["btn_add", "btn_edit", "btn_delete"]
@@ -95,6 +103,7 @@ const frameRouter = {
   path: "/iframe",
   code: "thirdPages",
   meta: {
+    code: "thirdPages",
     icon: "monitor",
     title: "menus.hsExternalPage",
     rank: frame
@@ -178,6 +187,7 @@ const tabsRouter = {
   path: "/tabs",
   code: "tabsParent",
   meta: {
+    code: "tabsParent",
     icon: "IF-pure-iconfont-tabs",
     title: "menus.hstabs",
     rank: tabs

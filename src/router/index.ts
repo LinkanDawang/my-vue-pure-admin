@@ -117,10 +117,8 @@ router.beforeEach((to: ToRouteType, _from, next) => {
     }
   }
   const userInfo = storageSession().getItem<DataInfo<number>>(sessionKey);
-  // todo
-  // const userPermissions =
-  //   storageSession().getItem<Array<string>>(permissionKey);
-  // todo
+  const userPermissions =
+    storageSession().getItem<Array<string>>(permissionKey);
   NProgress.start();
   const externalLink = isUrl(to?.name as string);
   if (!externalLink) {
@@ -138,8 +136,11 @@ router.beforeEach((to: ToRouteType, _from, next) => {
   }
   if (userInfo) {
     // 无权限跳转403页面
-    // todo 使用 userPermissions 做权限校验
-    if (to.meta?.roles && !isOneOfArray(to.meta?.roles, userInfo?.roles)) {
+    // fixme 使用 userPermissions 做权限校验
+    // if (to.meta?.roles && !isOneOfArray(to.meta?.roles, userInfo?.roles)) {
+    //   next({ path: "/error/403" });
+    // }
+    if (to.meta?.code && !userPermissions.includes(to.meta?.code)) {
       next({ path: "/error/403" });
     }
     // 开启隐藏首页后在浏览器地址栏手动输入首页welcome路由则跳转到404页面
