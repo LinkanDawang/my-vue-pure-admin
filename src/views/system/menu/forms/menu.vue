@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<FormProps>(), {
     redirect: "",
     order: 0,
     status: 1,
-    meta: { title: "", icon: "", rank: null },
+    meta: { title: "", icon: "", rank: null, code: "" },
     type: 1,
     menuTransName: ""
   })
@@ -103,6 +103,10 @@ function setMetaRank(
   oldValue: number | undefined
 ) {
   newFormInline.value.meta.rank = currentValue;
+}
+
+function setMetaCode(value: string) {
+  newFormInline.value.meta.code = value;
 }
 
 function switchMenuType(value: number) {
@@ -201,6 +205,7 @@ function switchMenuType(value: number) {
             v-model="newFormInline.code"
             clearable
             placeholder="请输入编码"
+            @input="setMetaCode"
           />
         </el-form-item>
       </re-col>
