@@ -71,6 +71,7 @@ const permissionRouter = {
   children: [
     {
       path: "/permission/page/index",
+      code: "pagePermission",
       name: "PermissionPage",
       meta: {
         title: "menus.permissionPage",
@@ -79,6 +80,7 @@ const permissionRouter = {
     },
     {
       path: "/permission/button/index",
+      code: "buttonPermission",
       name: "PermissionButton",
       meta: {
         title: "menus.permissionButton",

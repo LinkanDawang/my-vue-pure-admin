@@ -1,35 +1,35 @@
 import {
-  RouterHistory,
-  RouteRecordRaw,
-  RouteComponent,
+  createWebHashHistory,
   createWebHistory,
-  createWebHashHistory
+  RouteComponent,
+  RouteRecordRaw,
+  RouterHistory
 } from "vue-router";
 import { router } from "./index";
 import { isProxy, toRaw } from "vue";
 import { useTimeoutFn } from "@vueuse/core";
 import {
-  isString,
   cloneDeep,
-  isAllEmpty,
   intersection,
-  storageSession,
-  isIncludeAllChildren
+  isAllEmpty,
+  isIncludeAllChildren,
+  isString,
+  storageSession
 } from "@pureadmin/utils";
 import { getConfig } from "@/config";
 import { menuType } from "@/layout/types";
 import { buildHierarchyTree } from "@/utils/tree";
-import { sessionKey, permissionKey, type DataInfo } from "@/utils/auth";
+import { type DataInfo, permissionKey, sessionKey } from "@/utils/auth";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 import { useUserStoreHook } from "@/store/modules/user";
-const IFrame = () => import("@/layout/frameView.vue");
-// https://cn.vitejs.dev/guide/features.html#glob-import
-const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
-
 // 动态路由
 import { getAsyncRoutes } from "@/api/routes";
 import { message } from "@/utils/message";
+
+const IFrame = () => import("@/layout/frameView.vue");
+// https://cn.vitejs.dev/guide/features.html#glob-import
+const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
 
 function handRank(routeInfo: any) {
   const { name, path, parentId, meta } = routeInfo;
