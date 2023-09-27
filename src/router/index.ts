@@ -2,7 +2,7 @@ import "@/utils/sso";
 import { getConfig } from "@/config";
 import NProgress from "@/utils/progress";
 import { transformI18n } from "@/plugins/i18n";
-import { sessionKey, type DataInfo } from "@/utils/auth";
+import { sessionKey, permissionKey, type DataInfo } from "@/utils/auth";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 import {
@@ -117,6 +117,10 @@ router.beforeEach((to: ToRouteType, _from, next) => {
     }
   }
   const userInfo = storageSession().getItem<DataInfo<number>>(sessionKey);
+  // todo
+  // const userPermissions =
+  //   storageSession().getItem<Array<string>>(permissionKey);
+  // todo
   NProgress.start();
   const externalLink = isUrl(to?.name as string);
   if (!externalLink) {
@@ -134,6 +138,7 @@ router.beforeEach((to: ToRouteType, _from, next) => {
   }
   if (userInfo) {
     // 无权限跳转403页面
+    // todo 使用 userPermissions 做权限校验
     if (to.meta?.roles && !isOneOfArray(to.meta?.roles, userInfo?.roles)) {
       next({ path: "/error/403" });
     }
