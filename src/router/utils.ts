@@ -19,7 +19,7 @@ import {
 import { getConfig } from "@/config";
 import { menuType } from "@/layout/types";
 import { buildHierarchyTree } from "@/utils/tree";
-import { type DataInfo, permissionKey, sessionKey } from "@/utils/auth";
+// import { type DataInfo, permissionKey, sessionKey } from "@/utils/auth";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 import { useUserStoreHook } from "@/store/modules/user";
@@ -85,13 +85,13 @@ function isOneOfArray(a: Array<string>, b: Array<string>) {
 
 /** 从sessionStorage里取出当前登陆用户的角色roles，过滤无权限的菜单 */
 function filterNoPermissionTree(data: RouteComponent[]) {
-  const currentPermissions =
-    storageSession().getItem<Array<string>>(permissionKey) ?? [];
-  const currentRoles =
-    storageSession().getItem<DataInfo<number>>(sessionKey)?.roles ?? [];
+  // const currentPermissions =
+  //   storageSession().getItem<Array<string>>(permissionKey) ?? [];
+  // const currentRoles =
+  //   storageSession().getItem<DataInfo<number>>(sessionKey)?.roles ?? [];
   const newTree = cloneDeep(data).filter(
     // (v: any) => isOneOfArray(v.meta?.roles, currentRoles)
-    (v: any) => (v.code ? currentPermissions.includes(v.code) : true)
+    (v: any) => useUserStoreHook().hasPermission(v.code)
   );
   newTree.forEach(
     (v: any) => v.children && (v.children = filterNoPermissionTree(v.children))

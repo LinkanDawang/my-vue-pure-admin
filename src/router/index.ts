@@ -2,9 +2,10 @@ import "@/utils/sso";
 import { getConfig } from "@/config";
 import NProgress from "@/utils/progress";
 import { transformI18n } from "@/plugins/i18n";
-import { sessionKey, permissionKey, type DataInfo } from "@/utils/auth";
+import { sessionKey, type DataInfo } from "@/utils/auth";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import { usePermissionStoreHook } from "@/store/modules/permission";
+import { useUserStoreHook } from "@/store/modules/user";
 import {
   Router,
   createRouter,
@@ -15,7 +16,7 @@ import {
   ascending,
   getTopMenu,
   initRouter,
-  isOneOfArray,
+  // isOneOfArray,
   getHistoryMode,
   findRouteByPath,
   handleAliveRoute,
@@ -117,8 +118,6 @@ router.beforeEach((to: ToRouteType, _from, next) => {
     }
   }
   const userInfo = storageSession().getItem<DataInfo<number>>(sessionKey);
-  const userPermissions =
-    storageSession().getItem<Array<string>>(permissionKey);
   NProgress.start();
   const externalLink = isUrl(to?.name as string);
   if (!externalLink) {
@@ -140,7 +139,7 @@ router.beforeEach((to: ToRouteType, _from, next) => {
     // if (to.meta?.roles && !isOneOfArray(to.meta?.roles, userInfo?.roles)) {
     //   next({ path: "/error/403" });
     // }
-    if (to.meta?.code && !userPermissions.includes(to.meta?.code)) {
+    if (!useUserStoreHook().hasPermission(to.meta?.code)) {
       next({ path: "/error/403" });
     }
     // 开启隐藏首页后在浏览器地址栏手动输入首页welcome路由则跳转到404页面

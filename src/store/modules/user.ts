@@ -108,6 +108,7 @@ export const useUserStore = defineStore({
           });
       });
     },
+    /** 获取登入账号信息 */
     async getUserInfo() {
       return new Promise<UserInfoResult>((resolve, reject) => {
         userInfoApi()
@@ -123,6 +124,10 @@ export const useUserStore = defineStore({
             reject(error);
           });
       });
+    },
+    /** 登入账号权限判断 */
+    hasPermission(code: string) {
+      return !code || this.permissions.includes(code);
     }
   }
 });
