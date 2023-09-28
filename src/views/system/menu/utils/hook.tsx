@@ -10,13 +10,14 @@ import {
   setMenuButtons,
   getMenuButtons
 } from "@/api/system";
-import { usePublicHooks } from "../../hooks";
+// import { usePublicHooks } from "../../hooks";
 import { addDialog } from "@/components/ReDialog";
 import { reactive, ref, onMounted, h } from "vue";
 import { type FormItemProps } from "../utils/types";
 import { cloneDeep, isAllEmpty } from "@pureadmin/utils";
 import { transformI18n } from "@/plugins/i18n";
 import { IconifyIconOnline } from "@/components/ReIcon";
+import { onStatusChange, usePublicHooks } from "@/utils/common";
 
 export function useMenu() {
   const form = reactive({
@@ -27,7 +28,8 @@ export function useMenu() {
   const formRef = ref();
   const dataList = ref([]);
   const loading = ref(true);
-  const { tagStyle } = usePublicHooks();
+  const switchLoadMap = ref({});
+  const { switchStyle } = usePublicHooks();
   const menuTypes = {
     menu: { value: 1, name: "菜单" },
     page: { value: 2, name: "页面" }
@@ -86,10 +88,21 @@ export function useMenu() {
       label: "状态",
       prop: "status",
       minWidth: 100,
-      cellRenderer: ({ row, props }) => (
-        <el-tag size={props.size} style={tagStyle.value(row.status)}>
-          {row.status === 50 ? "启用" : "停用"}
-        </el-tag>
+      cellRenderer: scope => (
+        <el-switch
+          size={scope.props.size === "small" ? "small" : "default"}
+          loading={switchLoadMap.value[scope.index]?.loading}
+          v-model={scope.row.status}
+          active-value={50}
+          inactive-value={100}
+          active-text="已启用"
+          inactive-text="已停用"
+          inline-prompt
+          style={switchStyle.value}
+          onChange={() =>
+            onStatusChange(scope as any, updateMenu, switchLoadMap)
+          }
+        />
       )
     },
     {

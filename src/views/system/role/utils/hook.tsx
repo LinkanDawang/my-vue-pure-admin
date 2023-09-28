@@ -10,12 +10,12 @@ import {
   treeMenu,
   getRolePermission
 } from "@/api/system";
-import { ElMessageBox } from "element-plus";
-import { usePublicHooks } from "../../hooks";
+// import { usePublicHooks } from "../../hooks";
 import { addDialog } from "@/components/ReDialog";
 import { type FormItemProps, PermDialogItemProps } from "../utils/types";
 import { type PaginationProps } from "@pureadmin/table";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
+import { usePublicHooks, onStatusChange } from "@/utils/common";
 
 export function useRole() {
   const form = reactive({
@@ -64,7 +64,9 @@ export function useRole() {
           inactive-text="已停用"
           inline-prompt
           style={switchStyle.value}
-          onChange={() => onChange(scope as any)}
+          onChange={() =>
+            onStatusChange(scope as any, updateRole, switchLoadMap)
+          }
         />
       )
     },
@@ -106,58 +108,6 @@ export function useRole() {
   //     "dark:hover:!text-primary"
   //   ];
   // });
-
-  function onChange({ row, index }) {
-    ElMessageBox.confirm(
-      `确认要<strong>${
-        row.status === 100 ? "停用" : "启用"
-      }</strong><strong style='color:var(--el-color-primary)'>${
-        row.name
-      }</strong>吗?`,
-      "系统提示",
-      {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-        dangerouslyUseHTMLString: true,
-        draggable: true
-      }
-    )
-      .then(() => {
-        updateRole(row.id, { status: row.status }).then(res => {
-          if (res.ret == 200 || res.ret == 201) {
-            message(`已${row.status === 0 ? "停用" : "启用"}${row.name}`, {
-              type: "success"
-            });
-          } else {
-            message(JSON.stringify(res.data), { type: "error" });
-          }
-        });
-        return;
-        // switchLoadMap.value[index] = Object.assign(
-        //   {},
-        //   switchLoadMap.value[index],
-        //   {
-        //     loading: true
-        //   }
-        // );
-        // setTimeout(() => {
-        //   switchLoadMap.value[index] = Object.assign(
-        //     {},
-        //     switchLoadMap.value[index],
-        //     {
-        //       loading: false
-        //     }
-        //   );
-        //   message(`已${row.status === 0 ? "停用" : "启用"}${row.name}`, {
-        //     type: "success"
-        //   });
-        // }, 300);
-      })
-      .catch(() => {
-        row.status === 100 ? (row.status = 50) : (row.status = 100);
-      });
-  }
 
   function handleDelete(row) {
     message(`您删除了角色名称为${row.name}的这条数据`, { type: "success" });
