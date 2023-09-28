@@ -1,4 +1,5 @@
 import { http } from "@/utils/http";
+import { apiUrl } from "@/api/utils";
 
 type Result = {
   success: boolean;
@@ -6,5 +7,6 @@ type Result = {
 };
 
 export const getAsyncRoutes = () => {
-  return http.request<Result>("get", "/getAsyncRoutes");
+  // return http.request<Result>("get", "/getAsyncRoutes");
+  return http.request<Result>("get", apiUrl("rbac/menus/getAsyncRoutes"));
 };

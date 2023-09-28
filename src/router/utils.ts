@@ -90,8 +90,8 @@ function filterNoPermissionTree(data: RouteComponent[]) {
   const currentRoles =
     storageSession().getItem<DataInfo<number>>(sessionKey)?.roles ?? [];
   const newTree = cloneDeep(data).filter(
-    (v: any) => isOneOfArray(v.meta?.roles, currentRoles)
-    // (v: any) => (v.code ? currentPermissions.includes(v.code) : true)
+    // (v: any) => isOneOfArray(v.meta?.roles, currentRoles)
+    (v: any) => (v.code ? currentPermissions.includes(v.code) : true)
   );
   newTree.forEach(
     (v: any) => v.children && (v.children = filterNoPermissionTree(v.children))

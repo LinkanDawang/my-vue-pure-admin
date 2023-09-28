@@ -109,6 +109,10 @@ function setMetaCode(value: string) {
   newFormInline.value.meta.code = value;
 }
 
+function setMetaFrameSrc(value: string) {
+  newFormInline.value.meta.frameSrc = value;
+}
+
 function switchMenuType(value: number) {
   menuType.value = value;
   getMenuList();
@@ -270,6 +274,16 @@ function switchMenuType(value: number) {
               :value="item"
             />
           </el-select>
+        </el-form-item>
+      </re-col>
+      <re-col v-if="newFormInline.type == 2">
+        <el-form-item label="外部链接">
+          <el-input
+            v-model="newFormInline.meta.frameSrc"
+            clearable
+            placeholder=""
+            @input="setMetaFrameSrc"
+          />
         </el-form-item>
       </re-col>
       <re-col :value="12" :xs="24" :sm="24">
