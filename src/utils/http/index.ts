@@ -157,6 +157,14 @@ class PureHttp {
         return response.data;
       },
       (error: PureHttpError) => {
+        console.log(error);
+        if (error.response.status >= 500) {
+          message("API: 服务器错误！", { type: "error" });
+        } else {
+          message(`API: ${error.response.status}${error.response.statusText}`, {
+            type: "error"
+          });
+        }
         const $error = error;
         $error.isCancelRequest = Axios.isCancel($error);
         // 关闭进度条动画
