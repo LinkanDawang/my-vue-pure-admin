@@ -126,17 +126,6 @@ const {
                   {{ transformI18n("buttons.hsedit") }}
                 </el-button>
               </el-col>
-              <el-col :span="8" v-show="row.type === menuTypes.page.value">
-                <el-button
-                  class="reset-margin"
-                  link
-                  type="primary"
-                  :icon="useRenderIcon('fa:hand-pointer-o')"
-                  @click="buttonsDialog(JSON.parse(JSON.stringify(row)))"
-                >
-                  {{ transformI18n("buttons.hsbutton") }}
-                </el-button>
-              </el-col>
               <el-col :span="8">
                 <el-popconfirm
                   :title="`是否确认删除部门名称为${row.name}的这条数据`"
@@ -153,6 +142,17 @@ const {
                     </el-button>
                   </template>
                 </el-popconfirm>
+              </el-col>
+              <el-col :span="8" v-show="row.type === menuTypes.page.value">
+                <el-button
+                  class="reset-margin"
+                  link
+                  type="primary"
+                  :icon="useRenderIcon('fa:hand-pointer-o')"
+                  @click="buttonsDialog(JSON.parse(JSON.stringify(row)))"
+                >
+                  {{ transformI18n("buttons.hsbutton") }}
+                </el-button>
               </el-col>
             </el-row>
           </template>

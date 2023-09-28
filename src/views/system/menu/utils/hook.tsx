@@ -16,6 +16,7 @@ import { reactive, ref, onMounted, h } from "vue";
 import { type FormItemProps } from "../utils/types";
 import { cloneDeep, isAllEmpty } from "@pureadmin/utils";
 import { transformI18n } from "@/plugins/i18n";
+import { IconifyIconOnline } from "@/components/ReIcon";
 
 export function useMenu() {
   const form = reactive({
@@ -36,13 +37,14 @@ export function useMenu() {
     {
       label: "ID",
       prop: "id",
-      minWidth: 100,
+      // minWidth: 100,
       fixed: true
     },
     {
       label: "排序",
       prop: "order",
-      align: "left"
+      align: "left",
+      minWidth: 40
     },
     {
       label: "类型",
@@ -63,13 +65,22 @@ export function useMenu() {
       label: "编码",
       prop: "code",
       align: "left",
-      minWidth: 120
+      minWidth: 150
     },
     {
       label: "菜单名称",
       prop: "meta.title",
       width: 180,
       formatter: ({ meta }) => transformI18n(meta.title)
+    },
+    {
+      label: "图标",
+      prop: "meta.icon",
+      cellRenderer: ({ row }) => (
+        <el-icon>
+          <IconifyIconOnline icon={row.meta.icon} />
+        </el-icon>
+      )
     },
     {
       label: "状态",
