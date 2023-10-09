@@ -22,7 +22,8 @@ defineExpose({ getRef });
 
 const dataProps = {
   value: "id",
-  children: "children"
+  children: "children",
+  disabled: "disabled"
 };
 
 const treeRef = ref();
@@ -75,15 +76,17 @@ function expandTree(isExpand) {
 function checkAllTree(isCheckedAll) {
   const nodes = treeRef.value.store.nodesMap;
   for (const node in nodes) {
-    if (nodes[node].checked != isCheckedAll) {
-      nodes[node].checked = isCheckedAll;
-    }
-    const nodeButtons = nodes[node].data.buttons;
-    for (const index in nodeButtons) {
-      if (isCheckedAll) {
-        setPermission(nodeButtons[index].id);
-      } else {
-        removePermission(nodeButtons[index].id);
+    if (!nodes[node].data.disabled) {
+      if (nodes[node].checked != isCheckedAll) {
+        nodes[node].checked = isCheckedAll;
+      }
+      const nodeButtons = nodes[node].data.buttons;
+      for (const index in nodeButtons) {
+        if (isCheckedAll && !nodeButtons[index].disabled) {
+          setPermission(nodeButtons[index].id);
+        } else {
+          removePermission(nodeButtons[index].id);
+        }
       }
     }
   }
@@ -152,6 +155,7 @@ function buttonCheckChange(isChecked, nodeData: any) {
                         v-for="button in data.buttons"
                         :label="button.id"
                         :key="button.id"
+                        :disabled="button.disabled"
                         @change="checked => buttonCheckChange(checked, data)"
                         >{{ transformI18n(button.meta.title) }}
                       </el-checkbox-button>
