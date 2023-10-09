@@ -8,7 +8,8 @@ const props = withDefaults(defineProps<PermDialogProps>(), {
   formInline: () => ({
     id: null,
     menuTree: [],
-    permissions: []
+    permissions: [],
+    isSuperRole: false
   })
 });
 const newFormInline = ref(props.formInline);
@@ -26,7 +27,7 @@ const dataProps = {
 
 const treeRef = ref();
 const swCheckAll = ref(false);
-const swExpandTree = ref(false);
+const swExpandTree = ref(true);
 const swLinkage = ref(false);
 
 function removePermission(permId) {
@@ -133,6 +134,7 @@ function buttonCheckChange(isChecked, nodeData: any) {
             :render-after-expand="false"
             :indent="30"
             :default-checked-keys="newFormInline.permissions"
+            default-expand-all
             @check-change="menuCheckChange"
           >
             <template v-slot:default="{ node, data }">

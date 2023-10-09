@@ -58,6 +58,7 @@ export function useRole() {
           size={scope.props.size === "small" ? "small" : "default"}
           loading={switchLoadMap.value[scope.index]?.loading}
           v-model={scope.row.status}
+          disabled={scope.row.is_super_role}
           active-value={50}
           inactive-value={100}
           active-text="已启用"
@@ -212,16 +213,18 @@ export function useRole() {
 
   async function setPermissionDialog(row: FormItemProps) {
     const menuTree = await getMenuTree();
-    const rolePermis = await getRolePerms(row.id);
+    const rolePermis: any = await getRolePerms(row.id);
     addDialog({
       title: "权限设置",
       props: {
         formInline: {
           id: row?.id ?? null,
           menuTree: menuTree,
-          permissions: rolePermis
+          permissions: rolePermis.permissions,
+          isSuperRole: rolePermis.isSuperRole
         }
       },
+      hideFooter: rolePermis.isSuperRole,
       width: "40%",
       draggable: true,
       fullscreenIcon: true,
