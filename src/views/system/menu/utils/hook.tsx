@@ -7,8 +7,7 @@ import {
   getMenuList,
   createMenu,
   updateMenu,
-  setMenuButtons,
-  getMenuButtons
+  setMenuButtons
 } from "@/api/system";
 // import { usePublicHooks } from "../../hooks";
 import { addDialog } from "@/components/ReDialog";
@@ -294,13 +293,12 @@ export function useMenu() {
     });
   }
   async function buttonsDialog(row: FormItemProps) {
-    const newButtons = await getButtons(row);
     addDialog({
       title: "按钮设置",
       props: {
         formInline: {
           parentId: row.id,
-          buttons: cloneDeep(newButtons)
+          buttons: []
         }
       },
       width: "60%",
@@ -342,12 +340,6 @@ export function useMenu() {
   onMounted(() => {
     onSearch();
   });
-
-  async function getButtons(row) {
-    const { data } = await getMenuButtons(row.id);
-    const newData = data;
-    return newData;
-  }
 
   return {
     form,
