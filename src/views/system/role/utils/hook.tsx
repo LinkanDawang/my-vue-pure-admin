@@ -8,8 +8,6 @@ import {
   createRole,
   updateRole,
   setRolePermission,
-  treeMenu,
-  getRolePermission,
   setRoleMember
 } from "@/api/system";
 // import { usePublicHooks } from "../../hooks";
@@ -207,31 +205,18 @@ export function useRole() {
     });
   }
 
-  /** 获取全部菜单树 */
-  async function getMenuTree() {
-    const { data } = await treeMenu();
-    return data;
-  }
-
-  async function getRolePerms(roleId) {
-    const { data } = await getRolePermission(roleId);
-    return data;
-  }
-
   async function setPermissionDialog(row: FormItemProps) {
-    const menuTree = await getMenuTree();
-    const rolePermis: any = await getRolePerms(row.id);
+    // const menuTree = await getMenuTree();
+    // const rolePermis: any = await getRolePerms(row.id);
     addDialog({
       title: "权限设置",
       props: {
         formInline: {
           id: row?.id ?? null,
-          menuTree: menuTree,
-          permissions: rolePermis.permissions,
-          isSuperRole: rolePermis.isSuperRole
+          permissions: []
         }
       },
-      hideFooter: rolePermis.isSuperRole,
+      hideFooter: row.is_super_role,
       width: "40%",
       draggable: true,
       fullscreenIcon: true,

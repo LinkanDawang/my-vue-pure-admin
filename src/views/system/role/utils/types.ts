@@ -16,10 +16,8 @@ interface FormProps {
 
 interface PermDialogItemProps {
   id: number;
-  menuTree: Array<object>;
   /** 菜单权限 */
   permissions: Array<number>;
-  isSuperRole: boolean;
 }
 
 interface PermDialogProps {

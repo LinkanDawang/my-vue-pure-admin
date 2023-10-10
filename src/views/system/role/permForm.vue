@@ -3,16 +3,26 @@ import { ref } from "vue";
 import { PermDialogProps } from "./utils/types";
 import { transformI18n } from "@/plugins/i18n";
 import ElTreeLine from "@/components/ReTreeLine";
+import { getRolePermission, treeMenu } from "@/api/system";
 
 const props = withDefaults(defineProps<PermDialogProps>(), {
   formInline: () => ({
     id: null,
-    menuTree: [],
-    permissions: [],
-    isSuperRole: false
+    permissions: []
   })
 });
 const newFormInline = ref(props.formInline);
+
+// 获取菜单树状数据
+const menuTree = ref([]);
+treeMenu().then(res => {
+  menuTree.value = res.data;
+});
+
+// 获取角色拥有的菜单权限
+getRolePermission(newFormInline.value.id).then(res => {
+  newFormInline.value.permissions = res.data.permissions;
+});
 
 const ruleFormRef = ref();
 function getRef() {
@@ -141,7 +151,7 @@ function buttonCheckChange(isChecked, nodeData: any) {
         <div class="max-h-[550px] overflow-y-auto">
           <el-tree
             ref="treeRef"
-            :data="newFormInline.menuTree"
+            :data="menuTree"
             :props="dataProps"
             show-checkbox
             check-strictly
