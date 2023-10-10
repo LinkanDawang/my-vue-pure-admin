@@ -24,6 +24,8 @@ buttons:
   hscontentFullScreen: Content FullScreen
   hscontentExitFullScreen: Content ExitFullScreen
   hsbutton: Buttons
+  hsSetMember: Member
+  hsPermission: Permission
 menus:
   hshome: Home
   hslogin: Login

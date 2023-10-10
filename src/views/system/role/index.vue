@@ -13,6 +13,7 @@ import Refresh from "@iconify-icons/ep/refresh";
 import Menu from "@iconify-icons/ep/menu";
 import Group from "@iconify-icons/ri/group-fill";
 import AddFill from "@iconify-icons/ri/add-circle-line";
+import { transformI18n } from "@/plugins/i18n";
 
 defineOptions({
   name: "Role"
@@ -137,7 +138,7 @@ const {
               :icon="useRenderIcon(EditPen)"
               @click="openDialog('编辑', row)"
             >
-              修改
+              {{ transformI18n("buttons.hsedit") }}
             </el-button>
             <el-button
               class="reset-margin"
@@ -147,7 +148,7 @@ const {
               :icon="useRenderIcon(Menu)"
               @click="setPermissionDialog(row)"
             >
-              菜单权限
+              {{ transformI18n("buttons.hsPermission") }}
             </el-button>
             <el-button
               class="reset-margin"
@@ -157,7 +158,7 @@ const {
               :icon="useRenderIcon(Group)"
               @click="setMemberDialog(row)"
             >
-              成员
+              {{ transformI18n("buttons.hsSetMember") }}
             </el-button>
             <el-popconfirm
               :title="`是否确认删除角色名称为${row.name}的这条数据`"
@@ -172,7 +173,7 @@ const {
                   :size="size"
                   :icon="useRenderIcon(Delete)"
                 >
-                  删除
+                  {{ transformI18n("buttons.hsdelete") }}
                 </el-button>
               </template>
             </el-popconfirm>

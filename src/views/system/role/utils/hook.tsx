@@ -100,7 +100,7 @@ export function useRole() {
     {
       label: "操作",
       fixed: "right",
-      minWidth: 300,
+      minWidth: 320,
       slot: "operation"
     }
   ];
