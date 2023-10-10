@@ -155,7 +155,8 @@ const {
                 <el-button
                   class="reset-margin"
                   link
-                  type="primary"
+                  type="danger"
+                  :disabled="row.is_super_role"
                   :size="size"
                   :icon="useRenderIcon(Delete)"
                 >
