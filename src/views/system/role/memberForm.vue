@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { MemberDialogProps } from "./utils/types";
+import { getUserList, getRoleMember } from "@/api/system";
 
 const props = withDefaults(defineProps<MemberDialogProps>(), {
   formInline: () => ({
-    member: [],
-    all: []
+    id: null,
+    member: []
   })
 });
 
@@ -16,6 +17,18 @@ function getRef() {
   return ruleFormRef.value;
 }
 defineExpose({ getRef });
+
+// 获取角色已关联用户
+getRoleMember(newFormInline.value.id).then(res => {
+  newFormInline.value.member = res.data.member;
+});
+
+// 获取全部用户
+const allUsers = ref([]);
+const q = { deptId: "", phone: "", status: "", username: "" };
+getUserList(q).then(res => {
+  allUsers.value = res.data.list;
+});
 
 const dataProps = {
   key: "id",
@@ -36,7 +49,7 @@ const dataProps = {
           noChecked: '${total}',
           hasChecked: '${checked}/${total}'
         }"
-        :data="newFormInline.all"
+        :data="allUsers"
       >
         <template #default="{ option }">
           <el-image

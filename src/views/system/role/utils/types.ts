@@ -27,8 +27,8 @@ interface PermDialogProps {
 }
 
 interface MemberDialogItemProps {
+  id: number;
   member: Array<number>;
-  all: Array<object>;
 }
 
 interface MemberDialogProps {

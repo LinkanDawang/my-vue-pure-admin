@@ -10,9 +10,7 @@ import {
   setRolePermission,
   treeMenu,
   getRolePermission,
-  getRoleMember,
-  setRoleMember,
-  getUserList
+  setRoleMember
 } from "@/api/system";
 // import { usePublicHooks } from "../../hooks";
 import { addDialog } from "@/components/ReDialog";
@@ -264,26 +262,13 @@ export function useRole() {
     });
   }
 
-  async function getAllUsers() {
-    const q = { deptId: "", phone: "", status: "", username: "" };
-    const { data } = await getUserList(q);
-    return data.list;
-  }
-
-  async function _getRoleMember(roleId: number) {
-    const { data } = await getRoleMember(roleId);
-    return data.member;
-  }
-
   async function setMemberDialog(row: FormItemProps) {
-    const member = await _getRoleMember(row.id);
-    const allUsers = await getAllUsers();
     addDialog({
       title: "成员设置",
       props: {
         formInline: {
-          member: member ?? [],
-          all: allUsers ?? []
+          id: row?.id ?? null,
+          member: []
         }
       },
       width: "40%",
