@@ -14,6 +14,7 @@ import Menu from "@iconify-icons/ep/menu";
 import Group from "@iconify-icons/ri/group-fill";
 import AddFill from "@iconify-icons/ri/add-circle-line";
 import { transformI18n } from "@/plugins/i18n";
+import { useUserStoreHook } from "@/store/modules/user";
 
 defineOptions({
   name: "Role"
@@ -97,6 +98,7 @@ const {
     >
       <template #buttons>
         <el-button
+          v-if="useUserStoreHook().hasPermission('sys:role:add')"
           type="primary"
           :icon="useRenderIcon(AddFill)"
           @click="openDialog()"
@@ -131,6 +133,7 @@ const {
           </template>
           <template #operation="{ row }">
             <el-button
+              v-if="useUserStoreHook().hasPermission('sys:role:edit')"
               class="reset-margin"
               link
               type="primary"
@@ -141,6 +144,7 @@ const {
               {{ transformI18n("buttons.hsedit") }}
             </el-button>
             <el-button
+              v-if="useUserStoreHook().hasPermission('sys:role:permDispatch')"
               class="reset-margin"
               link
               type="primary"
@@ -151,6 +155,7 @@ const {
               {{ transformI18n("buttons.hsPermission") }}
             </el-button>
             <el-button
+              v-if="useUserStoreHook().hasPermission('sys:role:setMember')"
               class="reset-margin"
               link
               type="primary"
@@ -161,6 +166,7 @@ const {
               {{ transformI18n("buttons.hsSetMember") }}
             </el-button>
             <el-popconfirm
+              v-if="useUserStoreHook().hasPermission('sys:role:delete')"
               :title="`是否确认删除角色名称为${row.name}的这条数据`"
               @confirm="handleDelete(row)"
             >
