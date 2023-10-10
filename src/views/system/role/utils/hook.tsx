@@ -154,7 +154,8 @@ export function useRole() {
         formInline: {
           name: row?.name ?? "",
           code: row?.code ?? "",
-          remark: row?.remark ?? ""
+          remark: row?.remark ?? "",
+          is_super_role: row?.is_super_role ?? false
         }
       },
       width: "40%",

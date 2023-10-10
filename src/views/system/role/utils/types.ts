@@ -8,6 +8,7 @@ interface FormItemProps {
   code: string;
   /** 备注 */
   remark: string;
+  is_super_role: boolean;
 }
 interface FormProps {
   formInline: FormItemProps;
