@@ -26,4 +26,20 @@ interface PermDialogProps {
   formInline: PermDialogItemProps;
 }
 
-export type { FormItemProps, FormProps, PermDialogItemProps, PermDialogProps };
+interface MemberDialogItemProps {
+  member: Array<number>;
+  all: Array<object>;
+}
+
+interface MemberDialogProps {
+  formInline: MemberDialogItemProps;
+}
+
+export type {
+  FormItemProps,
+  FormProps,
+  PermDialogItemProps,
+  PermDialogProps,
+  MemberDialogProps,
+  MemberDialogItemProps
+};

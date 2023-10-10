@@ -11,6 +11,7 @@ import EditPen from "@iconify-icons/ep/edit-pen";
 import Search from "@iconify-icons/ep/search";
 import Refresh from "@iconify-icons/ep/refresh";
 import Menu from "@iconify-icons/ep/menu";
+import Group from "@iconify-icons/ri/group-fill";
 import AddFill from "@iconify-icons/ri/add-circle-line";
 
 defineOptions({
@@ -29,6 +30,7 @@ const {
   resetForm,
   openDialog,
   setPermissionDialog,
+  setMemberDialog,
   handleDelete,
   // handleDatabase,
   handleSizeChange,
@@ -146,6 +148,16 @@ const {
               @click="setPermissionDialog(row)"
             >
               菜单权限
+            </el-button>
+            <el-button
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              :icon="useRenderIcon(Group)"
+              @click="setMemberDialog(row)"
+            >
+              成员
             </el-button>
             <el-popconfirm
               :title="`是否确认删除角色名称为${row.name}的这条数据`"
