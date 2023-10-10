@@ -78,6 +78,7 @@ const validateButton = (rule: any, value: any, callback: any) => {
   }
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(valid => {
@@ -90,6 +91,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
   });
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.resetFields();
