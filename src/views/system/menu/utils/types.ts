@@ -9,8 +9,9 @@ interface FormItemProps {
   redirect: string;
   order: number;
   status: number;
-  meta: object;
+  meta: any;
   type: number;
+  menuTransName?: string;
 }
 
 interface FormProps {

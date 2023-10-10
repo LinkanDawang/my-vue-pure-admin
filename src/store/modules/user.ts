@@ -1,13 +1,27 @@
 import { defineStore } from "pinia";
 import { store } from "@/store";
 import { userType } from "./types";
+import { message } from "@/utils/message";
 import { routerArrays } from "@/layout/types";
 import { router, resetRouter } from "@/router";
 import { storageSession } from "@pureadmin/utils";
-import { getLogin, refreshTokenApi } from "@/api/user";
-import { UserResult, RefreshTokenResult } from "@/api/user";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// import { getLogin, refreshTokenApi, UserResult, RefreshTokenResult } from "@/api/user";
+import {
+  oauth2TokenApi,
+  userInfoApi,
+  type OauthTokenResult,
+  UserInfoResult
+} from "@/api/user";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
-import { type DataInfo, setToken, removeToken, sessionKey } from "@/utils/auth";
+import {
+  type DataInfo,
+  setToken,
+  setPermissions,
+  removeToken,
+  sessionKey,
+  permissionKey
+} from "@/utils/auth";
 
 export const useUserStore = defineStore({
   id: "pure-user",
@@ -20,7 +34,8 @@ export const useUserStore = defineStore({
     // 前端生成的验证码（按实际需求替换）
     verifyCode: "",
     // 判断登录页面显示哪个组件（0：登录（默认）、1：手机登录、2：二维码登录、3：注册、4：忘记密码）
-    currentPage: 0
+    currentPage: 0,
+    permissions: storageSession().getItem<Array<string>>(permissionKey) ?? []
   }),
   actions: {
     /** 存储用户名 */
@@ -39,17 +54,31 @@ export const useUserStore = defineStore({
     SET_CURRENTPAGE(value: number) {
       this.currentPage = value;
     },
+    SET_PERMISSIONS(permission: Array<string>) {
+      this.permissions = permission;
+    },
     /** 登入 */
     async loginByUsername(data) {
-      return new Promise<UserResult>((resolve, reject) => {
-        getLogin(data)
-          .then(data => {
-            if (data) {
-              setToken(data.data);
-              resolve(data);
+      return new Promise<OauthTokenResult>((resolve, reject) => {
+        // getLogin(data)
+        oauth2TokenApi(data, "password")
+          .then(res => {
+            if (res) {
+              setToken(res.data);
+              resolve(res);
             }
           })
           .catch(error => {
+            console.log(error);
+            let errorMsg = "";
+            if (error.data.msg === "invalid_grant") {
+              errorMsg = "账号或者密码错误！";
+            } else {
+              errorMsg = error.data.msg;
+            }
+            message(`${error.data.ret}: ${errorMsg}`, {
+              type: "error"
+            });
             reject(error);
           });
       });
@@ -65,18 +94,40 @@ export const useUserStore = defineStore({
     },
     /** 刷新`token` */
     async handRefreshToken(data) {
-      return new Promise<RefreshTokenResult>((resolve, reject) => {
-        refreshTokenApi(data)
-          .then(data => {
-            if (data) {
-              setToken(data.data);
-              resolve(data);
+      return new Promise<OauthTokenResult>((resolve, reject) => {
+        // refreshTokenApi(data)
+        oauth2TokenApi(data, "refresh_token")
+          .then(res => {
+            if (res) {
+              setToken(res.data);
+              resolve(res);
             }
           })
           .catch(error => {
             reject(error);
           });
       });
+    },
+    /** 获取登入账号信息 */
+    async getUserInfo() {
+      return new Promise<UserInfoResult>((resolve, reject) => {
+        userInfoApi()
+          .then(res => {
+            const permCodes = [];
+            res.data.permissions.forEach(perm => {
+              permCodes.push(perm.perm_code);
+            });
+            setPermissions(permCodes);
+            resolve(res);
+          })
+          .catch(error => {
+            reject(error);
+          });
+      });
+    },
+    /** 登入账号权限判断 */
+    hasPermission(code: string) {
+      return !code || this.permissions.includes(code);
     }
   }
 });

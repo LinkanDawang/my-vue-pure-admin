@@ -10,12 +10,14 @@ import {
   setMenuButtons,
   getMenuButtons
 } from "@/api/system";
-import { usePublicHooks } from "../../hooks";
+// import { usePublicHooks } from "../../hooks";
 import { addDialog } from "@/components/ReDialog";
 import { reactive, ref, onMounted, h } from "vue";
 import { type FormItemProps } from "../utils/types";
 import { cloneDeep, isAllEmpty } from "@pureadmin/utils";
 import { transformI18n } from "@/plugins/i18n";
+import { IconifyIconOnline } from "@/components/ReIcon";
+import { onStatusChange, usePublicHooks } from "@/utils/common";
 
 export function useMenu() {
   const form = reactive({
@@ -26,30 +28,82 @@ export function useMenu() {
   const formRef = ref();
   const dataList = ref([]);
   const loading = ref(true);
-  const { tagStyle } = usePublicHooks();
+  const switchLoadMap = ref({});
+  const { switchStyle } = usePublicHooks();
+  const menuTypes = {
+    menu: { value: 1, name: "菜单" },
+    page: { value: 2, name: "页面" }
+  };
 
   const columns: TableColumnList = [
     {
       label: "ID",
       prop: "id",
-      minWidth: 100
+      // minWidth: 100,
+      fixed: true
     },
     {
       label: "排序",
       prop: "order",
-      align: "left"
+      align: "left",
+      minWidth: 40
+    },
+    {
+      label: "类型",
+      prop: "type",
+      cellRenderer: ({ row, props }) => (
+        <el-tag
+          size={props.size}
+          type={row.type === menuTypes.menu.value ? "" : "success"}
+          disable-transitions
+        >
+          {row.type === menuTypes.menu.value
+            ? menuTypes.menu.name
+            : menuTypes.page.name}
+        </el-tag>
+      )
     },
     {
       label: "编码",
       prop: "code",
       align: "left",
-      minWidth: 120
+      minWidth: 150
     },
     {
       label: "菜单名称",
       prop: "meta.title",
       width: 180,
       formatter: ({ meta }) => transformI18n(meta.title)
+    },
+    {
+      label: "图标",
+      prop: "meta.icon",
+      cellRenderer: ({ row }) => (
+        <el-icon>
+          <IconifyIconOnline icon={row.meta.icon} />
+        </el-icon>
+      )
+    },
+    {
+      label: "状态",
+      prop: "status",
+      minWidth: 100,
+      cellRenderer: scope => (
+        <el-switch
+          size={scope.props.size === "small" ? "small" : "default"}
+          loading={switchLoadMap.value[scope.index]?.loading}
+          v-model={scope.row.status}
+          active-value={50}
+          inactive-value={100}
+          active-text="已启用"
+          inactive-text="已停用"
+          inline-prompt
+          style={switchStyle.value}
+          onChange={() =>
+            onStatusChange(scope as any, updateMenu, switchLoadMap)
+          }
+        />
+      )
     },
     {
       label: "组件名称",
@@ -74,27 +128,17 @@ export function useMenu() {
       width: 180,
       align: "left"
     },
-    {
-      label: "按钮",
-      prop: "buttons",
-      width: 180
-    },
+    // {
+    //   label: "按钮",
+    //   prop: "buttons",
+    //   width: 180
+    // },
     {
       label: "Meta",
       prop: "meta",
       width: 180,
-      align: "left",
+      hide: true,
       formatter: ({ meta }) => JSON.stringify(meta)
-    },
-    {
-      label: "状态",
-      prop: "status",
-      minWidth: 100,
-      cellRenderer: ({ row, props }) => (
-        <el-tag size={props.size} style={tagStyle.value(row.status)}>
-          {row.status === 50 ? "启用" : "停用"}
-        </el-tag>
-      )
     },
     {
       label: "创建时间",
@@ -169,6 +213,8 @@ export function useMenu() {
       } else {
         formatHigherMenuOptions(treeList[i].children, choicedId);
       }
+      // 翻译菜单名称
+      treeList[i].menuTransName = transformI18n(treeList[i].meta.title);
       newTreeList.push(treeList[i]);
     }
     return newTreeList;
@@ -197,7 +243,8 @@ export function useMenu() {
             icon: "ep:expand",
             rank: row?.order ?? null
           },
-          type: row?.type ?? 1
+          type: row?.type ?? 1,
+          menuTransName: transformI18n(row?.meta?.title) ?? ""
         }
       },
       width: "40%",
@@ -307,6 +354,7 @@ export function useMenu() {
     loading,
     columns,
     dataList,
+    menuTypes,
     /** 搜索 */
     onSearch,
     /** 重置 */
@@ -316,7 +364,6 @@ export function useMenu() {
     buttonsDialog,
     /** 删除部门 */
     handleDelete,
-    handleSelectionChange,
-    getButtons
+    handleSelectionChange
   };
 }

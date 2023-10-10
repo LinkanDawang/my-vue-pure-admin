@@ -49,6 +49,10 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
           target: "http://127.0.0.1:8000",
           changeOrigin: true,
           rewrite: path => path.replace(/^\/proxy/, "")
+        },
+        "/static-backend": {
+          target: "http://127.0.0.1:8000",
+          changeOrigin: true
         }
       }
     },

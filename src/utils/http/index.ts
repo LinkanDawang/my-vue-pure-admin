@@ -13,6 +13,14 @@ import { stringify } from "qs";
 import NProgress from "../progress";
 import { getToken, formatToken } from "@/utils/auth";
 import { useUserStoreHook } from "@/store/modules/user";
+import { message } from "@/utils/message";
+
+export type AxiosResponseData = {
+  ret: number;
+  msg: string;
+  data?: Object | Array<any>;
+  success?: boolean;
+};
 
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
@@ -73,7 +81,11 @@ class PureHttp {
           return config;
         }
         /** 请求白名单，放置一些不需要token的接口（通过设置请求白名单，防止token过期后再请求造成的死循环问题） */
-        const whiteList = ["/refreshToken", "/login"];
+        const whiteList = [
+          "/refreshToken",
+          "/login",
+          "/proxy/api/users/oauth/"
+        ];
         return whiteList.find(url => url === config.url)
           ? config
           : new Promise(resolve => {
@@ -121,6 +133,16 @@ class PureHttp {
     instance.interceptors.response.use(
       (response: PureHttpResponse) => {
         const $config = response.config;
+        const respData: AxiosResponseData = response.data;
+        // fixMe 处理后端同意http status_code == 200 的情况
+        if (respData.ret >= 400) {
+          if (respData.ret == 401) {
+            message("身份信息已失效", { type: "error" });
+            useUserStoreHook().logOut();
+          }
+
+          return Promise.reject(response);
+        }
         // 关闭进度条动画
         NProgress.done();
         // 优先判断post/get等方法是否传入回调，否则执行初始化设置等回调
@@ -135,6 +157,14 @@ class PureHttp {
         return response.data;
       },
       (error: PureHttpError) => {
+        console.log(error);
+        if (error.response.status >= 500) {
+          message("API: 服务器错误！", { type: "error" });
+        } else {
+          message(`API: ${error.response.status}${error.response.statusText}`, {
+            type: "error"
+          });
+        }
         const $error = error;
         $error.isCancelRequest = Axios.isCancel($error);
         // 关闭进度条动画

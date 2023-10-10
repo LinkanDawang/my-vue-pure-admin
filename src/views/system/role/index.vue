@@ -121,6 +121,11 @@ const {
           @page-size-change="handleSizeChange"
           @page-current-change="handleCurrentChange"
         >
+          <template #member="{ row }">
+            <el-tag v-for="user in row.member" :key="user.id">{{
+              user.username
+            }}</el-tag>
+          </template>
           <template #operation="{ row }">
             <el-button
               class="reset-margin"

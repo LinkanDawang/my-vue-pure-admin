@@ -16,6 +16,7 @@ export interface DataInfo<T> {
 }
 
 export const sessionKey = "user-info";
+export const permissionKey = "user-permission";
 export const TokenKey = "authorized-token";
 
 /** 获取`token` */
@@ -65,6 +66,11 @@ export function setToken(data: DataInfo<Date>) {
       storageSession().getItem<DataInfo<number>>(sessionKey)?.roles ?? [];
     setSessionKey(username, roles);
   }
+}
+
+export function setPermissions(permission: string[]) {
+  useUserStoreHook().SET_PERMISSIONS(permission);
+  storageSession().setItem(permissionKey, permission);
 }
 
 /** 删除`token`以及key值为`user-info`的session信息 */

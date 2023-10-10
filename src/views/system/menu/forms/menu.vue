@@ -22,8 +22,9 @@ const props = withDefaults(defineProps<FormProps>(), {
     redirect: "",
     order: 0,
     status: 1,
-    meta: { title: "", icon: "", rank: null },
-    type: 1
+    meta: { title: "", icon: "", rank: null, code: "" },
+    type: 1,
+    menuTransName: ""
   })
 });
 
@@ -104,7 +105,15 @@ function setMetaRank(
   newFormInline.value.meta.rank = currentValue;
 }
 
-function switchMenuType(value: string | number | boolean) {
+function setMetaCode(value: string) {
+  newFormInline.value.meta.code = value;
+}
+
+function setMetaFrameSrc(value: string) {
+  newFormInline.value.meta.frameSrc = value;
+}
+
+function switchMenuType(value: number) {
   menuType.value = value;
   getMenuList();
 }
@@ -126,7 +135,7 @@ function switchMenuType(value: string | number | boolean) {
             :options="newFormInline.higherMenuOptions"
             :props="{
               value: 'id',
-              label: 'name',
+              label: 'menuTransName',
               emitPath: false,
               checkStrictly: true
             }"
@@ -135,7 +144,7 @@ function switchMenuType(value: string | number | boolean) {
             placeholder="请选择上级菜单"
           >
             <template #default="{ node, data }">
-              <span>{{ transformI18n(data.meta.title) }}</span>
+              <span>{{ transformI18n(data.menuTransName) }}</span>
               <span v-if="!node.isLeaf"> ({{ data.children.length }}) </span>
             </template>
           </el-cascader>
@@ -144,8 +153,8 @@ function switchMenuType(value: string | number | boolean) {
       <re-col>
         <el-form-item label="菜单类型" prop="type">
           <el-radio-group v-model="newFormInline.type" @change="switchMenuType">
-            <el-radio-button label="1">目录</el-radio-button>
-            <el-radio-button label="2">菜单</el-radio-button>
+            <el-radio-button label="1">菜单</el-radio-button>
+            <el-radio-button label="2">页面</el-radio-button>
             <!--<el-radio-button label="3">按钮</el-radio-button>-->
           </el-radio-group>
         </el-form-item>
@@ -178,7 +187,10 @@ function switchMenuType(value: string | number | boolean) {
         :sm="24"
         v-if="newFormInline.type == 1 || newFormInline.type == 2"
       >
-        <el-form-item label="组件名称" prop="name">
+        <el-form-item
+          label="组件名称"
+          :prop="newFormInline.type == 2 ? 'name' : ''"
+        >
           <el-input
             v-model="newFormInline.name"
             clearable
@@ -192,11 +204,12 @@ function switchMenuType(value: string | number | boolean) {
         :sm="24"
         v-if="newFormInline.type == 1 || newFormInline.type == 2"
       >
-        <el-form-item label="编码">
+        <el-form-item label="编码" prop="code">
           <el-input
             v-model="newFormInline.code"
             clearable
             placeholder="请输入编码"
+            @input="setMetaCode"
           />
         </el-form-item>
       </re-col>
@@ -261,6 +274,16 @@ function switchMenuType(value: string | number | boolean) {
               :value="item"
             />
           </el-select>
+        </el-form-item>
+      </re-col>
+      <re-col v-if="newFormInline.type == 2">
+        <el-form-item label="外部链接">
+          <el-input
+            v-model="newFormInline.meta.frameSrc"
+            clearable
+            placeholder=""
+            @input="setMetaFrameSrc"
+          />
         </el-form-item>
       </re-col>
       <re-col :value="12" :xs="24" :sm="24">

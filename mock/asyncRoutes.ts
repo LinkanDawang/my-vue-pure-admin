@@ -10,7 +10,9 @@ import { system, permission, frame, tabs } from "@/router/enums";
 
 const systemRouter = {
   path: "/system",
+  code: "systemManage",
   meta: {
+    code: "systemManage",
     icon: "setting",
     title: "menus.hssysManagement",
     rank: system
@@ -18,8 +20,10 @@ const systemRouter = {
   children: [
     {
       path: "/system/user/index",
+      code: "userManage",
       name: "User",
       meta: {
+        code: "userManage",
         icon: "flUser",
         title: "menus.hsUser",
         roles: ["admin"]
@@ -27,8 +31,10 @@ const systemRouter = {
     },
     {
       path: "/system/role/index",
+      code: "roleManage",
       name: "Role",
       meta: {
+        code: "roleManage",
         icon: "role",
         title: "menus.hsRole",
         roles: ["admin"]
@@ -36,8 +42,10 @@ const systemRouter = {
     },
     {
       path: "/system/dept/index",
+      code: "deptManage",
       name: "Dept",
       meta: {
+        code: "deptManage",
         icon: "dept",
         title: "menus.hsDept",
         roles: ["admin"]
@@ -45,8 +53,10 @@ const systemRouter = {
     },
     {
       path: "/system/menu/index",
+      code: "menuManage",
       name: "Menu",
       meta: {
+        code: "menuManage",
         icon: "menu",
         title: "menus.hsMenu",
         roles: ["admin"]
@@ -57,7 +67,9 @@ const systemRouter = {
 
 const permissionRouter = {
   path: "/permission",
+  code: "permissionManage",
   meta: {
+    code: "permissionManage",
     title: "menus.permission",
     icon: "lollipop",
     rank: permission
@@ -65,16 +77,20 @@ const permissionRouter = {
   children: [
     {
       path: "/permission/page/index",
+      code: "pagePermission",
       name: "PermissionPage",
       meta: {
+        code: "pagePermission",
         title: "menus.permissionPage",
         roles: ["admin", "common"]
       }
     },
     {
       path: "/permission/button/index",
+      code: "buttonPermission",
       name: "PermissionButton",
       meta: {
+        code: "buttonPermission",
         title: "menus.permissionButton",
         roles: ["admin", "common"],
         auths: ["btn_add", "btn_edit", "btn_delete"]
@@ -85,7 +101,9 @@ const permissionRouter = {
 
 const frameRouter = {
   path: "/iframe",
+  code: "thirdPages",
   meta: {
+    code: "thirdPages",
     icon: "monitor",
     title: "menus.hsExternalPage",
     rank: frame
@@ -167,7 +185,9 @@ const frameRouter = {
 
 const tabsRouter = {
   path: "/tabs",
+  code: "tabsParent",
   meta: {
+    code: "tabsParent",
     icon: "IF-pure-iconfont-tabs",
     title: "menus.hstabs",
     rank: tabs
@@ -207,6 +227,47 @@ const tabsRouter = {
   ]
 };
 
+// 示例，菜单下无页面是显示空白
+const demoRouter = {
+  path: "/backendAdmin",
+  name: "Demo",
+  meta: {
+    title: "系统设置",
+    rank: 1000
+  },
+  children: [
+    {
+      path: "/backendAdmin/admin",
+      name: "BackendAdmin",
+      meta: {
+        title: "系统设置"
+        // frameSrc: "http://127.0.0.1:8000/admin/"
+      }
+    }
+  ]
+};
+
+const editor2 = {
+  path: "/editor2",
+  redirect: "/editor2/index",
+  meta: {
+    icon: "edit",
+    title: "编辑器2",
+    rank: 1001
+  },
+  children: [
+    {
+      path: "/editor2/index",
+      name: "Editor",
+      component: "/views/editor/index.vue",
+      meta: {
+        title: "编辑器2",
+        keepAlive: true
+      }
+    }
+  ]
+};
+
 export default [
   {
     url: "/getAsyncRoutes",
@@ -214,7 +275,14 @@ export default [
     response: () => {
       return {
         success: true,
-        data: [systemRouter, permissionRouter, frameRouter, tabsRouter]
+        data: [
+          systemRouter,
+          permissionRouter,
+          frameRouter,
+          tabsRouter,
+          demoRouter,
+          editor2
+        ]
       };
     }
   }

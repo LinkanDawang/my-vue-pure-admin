@@ -5,6 +5,7 @@ import { transformI18n } from "@/plugins/i18n";
 import { sessionKey, type DataInfo } from "@/utils/auth";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import { usePermissionStoreHook } from "@/store/modules/permission";
+import { useUserStoreHook } from "@/store/modules/user";
 import {
   Router,
   createRouter,
@@ -15,7 +16,7 @@ import {
   ascending,
   getTopMenu,
   initRouter,
-  isOneOfArray,
+  // isOneOfArray,
   getHistoryMode,
   findRouteByPath,
   handleAliveRoute,
@@ -32,13 +33,14 @@ import remainingRouter from "./modules/remaining";
  * 如何排除文件请看：https://cn.vitejs.dev/guide/features.html#negative-patterns
  */
 const modules: Record<string, any> = import.meta.glob(
-  [
-    "./modules/able.ts",
-    "./modules/home.ts",
-    "./modules/editor.ts",
-    "./modules/table.ts",
-    "!./modules/**/remaining.ts"
-  ],
+  // [
+  //   "./modules/able.ts",
+  //   "./modules/home.ts",
+  //   "./modules/editor.ts",
+  //   "./modules/table.ts",
+  //   "!./modules/**/remaining.ts"
+  // ],
+  ["./modules/**/*.ts", "!./modules/**/remaining.ts"],
   {
     eager: true
   }
@@ -133,7 +135,11 @@ router.beforeEach((to: ToRouteType, _from, next) => {
   }
   if (userInfo) {
     // 无权限跳转403页面
-    if (to.meta?.roles && !isOneOfArray(to.meta?.roles, userInfo?.roles)) {
+    // fixme 使用 userPermissions 做权限校验
+    // if (to.meta?.roles && !isOneOfArray(to.meta?.roles, userInfo?.roles)) {
+    //   next({ path: "/error/403" });
+    // }
+    if (!useUserStoreHook().hasPermission(to.meta?.code)) {
       next({ path: "/error/403" });
     }
     // 开启隐藏首页后在浏览器地址栏手动输入首页welcome路由则跳转到404页面

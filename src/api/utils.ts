@@ -1,1 +1,9 @@
-export const apiUrl = (url: string) => `/proxy/api/${url}`;
+export const apiUrl = (url: string) => {
+  if (url.startsWith("/")) {
+    url = url.substring(1);
+  }
+  if (!url.endsWith("/")) {
+    url = `${url}/`;
+  }
+  return `/proxy/api/${url}`;
+};
