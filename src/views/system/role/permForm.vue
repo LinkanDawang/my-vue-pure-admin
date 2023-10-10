@@ -4,6 +4,7 @@ import { PermDialogProps } from "./utils/types";
 import { transformI18n } from "@/plugins/i18n";
 import ElTreeLine from "@/components/ReTreeLine";
 import { getRolePermission, treeMenu } from "@/api/system";
+import { message } from "@/utils/message";
 
 const props = withDefaults(defineProps<PermDialogProps>(), {
   formInline: () => ({
@@ -15,14 +16,26 @@ const newFormInline = ref(props.formInline);
 
 // 获取菜单树状数据
 const menuTree = ref([]);
-treeMenu().then(res => {
-  menuTree.value = res.data;
-});
+treeMenu()
+  .then(res => {
+    menuTree.value = res.data;
+  })
+  .catch(error => {
+    message(`${error.data.ret}: ${error.data.msg}\n菜单数据获取失败`, {
+      type: "error"
+    });
+  });
 
 // 获取角色拥有的菜单权限
-getRolePermission(newFormInline.value.id).then(res => {
-  newFormInline.value.permissions = res.data.permissions;
-});
+getRolePermission(newFormInline.value.id)
+  .then(res => {
+    newFormInline.value.permissions = res.data.permissions;
+  })
+  .catch(error => {
+    message(`${error.data.ret}: ${error.data.msg}\n角色权限获取失败`, {
+      type: "error"
+    });
+  });
 
 const ruleFormRef = ref();
 function getRef() {
