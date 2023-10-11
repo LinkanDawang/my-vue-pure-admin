@@ -14,6 +14,7 @@ import ExpandIcon from "./svg/expand.svg?component";
 import RefreshIcon from "./svg/refresh.svg?component";
 import SettingIcon from "./svg/settings.svg?component";
 import CollapseIcon from "./svg/collapse.svg?component";
+import SearchIcon from "./svg/search.svg?component";
 
 const props = {
   /** 头部最左边的标题 */
@@ -41,6 +42,7 @@ export default defineComponent({
     const size = ref("default");
     const isExpandAll = ref(true);
     const loading = ref(false);
+    const showHeaderFilter = ref(false);
     const checkAll = ref(true);
     const isIndeterminate = ref(false);
     const filterColumns = cloneDeep(props?.columns).filter(column =>
@@ -240,6 +242,20 @@ export default defineComponent({
                   <el-divider direction="vertical" />
                 </>
               ) : null}
+              <el-tooltip effect="dark" content="搜索" placement="top">
+                <SearchIcon
+                  class={[
+                    "w-[16px]",
+                    iconClass.value,
+                    loading.value ? "animate-spin" : ""
+                  ]}
+                  onClick={() => {
+                    showHeaderFilter.value = !showHeaderFilter.value;
+                    console.log(showHeaderFilter.value);
+                  }}
+                />
+              </el-tooltip>
+              <el-divider direction="vertical" />
               <el-tooltip effect="dark" content="刷新" placement="top">
                 <RefreshIcon
                   class={[
