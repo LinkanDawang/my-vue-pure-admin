@@ -20,6 +20,7 @@ import { onStatusChange, usePublicHooks } from "@/utils/common";
 
 export function useMenu() {
   const form = reactive({
+    code: "",
     name: "",
     status: null
   });
@@ -27,6 +28,7 @@ export function useMenu() {
   const formRef = ref();
   const dataList = ref([]);
   const loading = ref(true);
+  const showHeaderFilter = ref(false);
   const switchLoadMap = ref({});
   const { switchStyle } = usePublicHooks();
   const menuTypes = {
@@ -67,6 +69,26 @@ export function useMenu() {
       prop: "code",
       align: "left",
       minWidth: 150
+      // headerRenderer: scope => (
+      //   <>
+      //     <el-input
+      //       v-model={form.code}
+      //       v-show={showHeaderFilter.value}
+      //       size="small"
+      //       clearable
+      //       placeholder=""
+      //       onChange={onSearch}
+      //     />
+      //     <el-row
+      //       v-show={!showHeaderFilter.value}
+      //       onClick={() => {
+      //         showHeaderFilter.value = !showHeaderFilter.value;
+      //       }}
+      //     >
+      //       {scope.column.label}
+      //     </el-row>
+      //   </>
+      // )
     },
     {
       label: "菜单名称",
@@ -161,6 +183,10 @@ export function useMenu() {
 
   function handleSelectionChange(val) {
     console.log("handleSelectionChange", val);
+  }
+
+  function displayHeaderFilter() {
+    showHeaderFilter.value = !showHeaderFilter.value;
   }
 
   function resetForm(formEl) {
@@ -347,6 +373,7 @@ export function useMenu() {
     columns,
     dataList,
     menuTypes,
+    displayHeaderFilter,
     /** 搜索 */
     onSearch,
     /** 重置 */

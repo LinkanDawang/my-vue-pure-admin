@@ -41,13 +41,12 @@ const props = {
 export default defineComponent({
   name: "PureTableBar",
   props,
-  emits: ["refresh"],
+  emits: ["refresh", "displayHeaderFilter"],
   setup(props, { emit, slots, attrs }) {
     const buttonRef = ref();
     const size = ref("default");
     const isExpandAll = ref(true);
     const loading = ref(false);
-    const showHeaderFilter = ref(false);
     const checkAll = ref(true);
     const isIndeterminate = ref(false);
     const filterColumns = cloneDeep(props?.columns).filter(column =>
@@ -100,7 +99,7 @@ export default defineComponent({
     }
 
     function onDisplayFilter() {
-      showHeaderFilter.value = !showHeaderFilter.value;
+      emit("displayHeaderFilter");
     }
 
     function onExpand() {
@@ -256,10 +255,6 @@ export default defineComponent({
                   <el-tooltip effect="dark" content="搜索" placement="top">
                     <SearchIcon
                       class={["w-[16px]", iconClass.value]}
-                      // onClick={() => {
-                      //   showHeaderFilter.value = !showHeaderFilter.value;
-                      //   console.log(showHeaderFilter.value);
-                      // }}
                       onClick={() => onDisplayFilter()}
                     />
                   </el-tooltip>
