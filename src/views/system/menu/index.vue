@@ -80,6 +80,7 @@ const {
       :columns="columns"
       :tableRef="tableRef?.getTableRef()"
       @refresh="onSearch"
+      use-column-filter
     >
       <template #buttons>
         <el-button

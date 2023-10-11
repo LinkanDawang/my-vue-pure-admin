@@ -30,6 +30,11 @@ const props = {
   columns: {
     type: Array as PropType<TableColumnList>,
     default: () => []
+  },
+  /** 启用表头搜索 */
+  useColumnFilter: {
+    type: Boolean,
+    default: false
   }
 };
 
@@ -92,6 +97,10 @@ export default defineComponent({
       loading.value = true;
       emit("refresh");
       delay(500).then(() => (loading.value = false));
+    }
+
+    function onDisplayFilter() {
+      showHeaderFilter.value = !showHeaderFilter.value;
     }
 
     function onExpand() {
@@ -242,20 +251,21 @@ export default defineComponent({
                   <el-divider direction="vertical" />
                 </>
               ) : null}
-              <el-tooltip effect="dark" content="搜索" placement="top">
-                <SearchIcon
-                  class={[
-                    "w-[16px]",
-                    iconClass.value,
-                    loading.value ? "animate-spin" : ""
-                  ]}
-                  onClick={() => {
-                    showHeaderFilter.value = !showHeaderFilter.value;
-                    console.log(showHeaderFilter.value);
-                  }}
-                />
-              </el-tooltip>
-              <el-divider direction="vertical" />
+              {props.useColumnFilter ? (
+                <>
+                  <el-tooltip effect="dark" content="搜索" placement="top">
+                    <SearchIcon
+                      class={["w-[16px]", iconClass.value]}
+                      // onClick={() => {
+                      //   showHeaderFilter.value = !showHeaderFilter.value;
+                      //   console.log(showHeaderFilter.value);
+                      // }}
+                      onClick={() => onDisplayFilter()}
+                    />
+                  </el-tooltip>
+                  <el-divider direction="vertical" />
+                </>
+              ) : null}
               <el-tooltip effect="dark" content="刷新" placement="top">
                 <RefreshIcon
                   class={[
