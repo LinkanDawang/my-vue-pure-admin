@@ -14,6 +14,8 @@ function getRef() {
 
 defineExpose({ getRef });
 
+const loading = ref(true);
+
 const props = withDefaults(defineProps<ButtonProps>(), {
   formInline: () => ({
     parentId: null,
@@ -34,6 +36,7 @@ const dynamicValidateForm = ref(props.formInline);
 
 getMenuButtons(dynamicValidateForm.value.parentId).then(res => {
   dynamicValidateForm.value.buttons = res.data;
+  loading.value = false;
 });
 
 const buttonSort = () => {
@@ -115,6 +118,7 @@ for (const key in menuMap) {
 <template>
   <el-form
     ref="formRef"
+    v-loading="loading"
     :model="dynamicValidateForm"
     label-width="100px"
     class="demo-dynamic"

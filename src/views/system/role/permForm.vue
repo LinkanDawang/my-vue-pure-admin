@@ -6,6 +6,8 @@ import ElTreeLine from "@/components/ReTreeLine";
 import { getRolePermission, treeMenu } from "@/api/system";
 import { message } from "@/utils/message";
 
+const loading = ref(true);
+
 const props = withDefaults(defineProps<PermDialogProps>(), {
   formInline: () => ({
     id: null,
@@ -16,20 +18,24 @@ const newFormInline = ref(props.formInline);
 
 // 获取菜单树状数据
 const menuTree = ref([]);
-treeMenu()
-  .then(res => {
-    menuTree.value = res.data;
-  })
-  .catch(error => {
-    message(`${error.data.ret}: ${error.data.msg}\n菜单数据获取失败`, {
-      type: "error"
+function getMenuTree() {
+  treeMenu()
+    .then(res => {
+      menuTree.value = res.data;
+    })
+    .catch(error => {
+      message(`${error.data.ret}: ${error.data.msg}\n菜单数据获取失败`, {
+        type: "error"
+      });
     });
-  });
+  loading.value = false;
+}
 
 // 获取角色拥有的菜单权限
 getRolePermission(newFormInline.value.id)
   .then(res => {
     newFormInline.value.permissions = res.data.permissions;
+    getMenuTree();
   })
   .catch(error => {
     message(`${error.data.ret}: ${error.data.msg}\n角色权限获取失败`, {
@@ -139,7 +145,12 @@ function buttonCheckChange(isChecked, nodeData: any) {
 </script>
 
 <template>
-  <el-form ref="ruleFormRef" :model="newFormInline" label-width="82px">
+  <el-form
+    ref="ruleFormRef"
+    :model="newFormInline"
+    label-width="82px"
+    v-loading="loading"
+  >
     <el-col class="mb-[20px]">
       <el-row>
         <el-col :span="6">
