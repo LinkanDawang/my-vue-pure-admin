@@ -1,18 +1,22 @@
 // import dayjs from "dayjs";
 import editForm from "../form.vue";
 import permForm from "../permForm.vue";
+import memberFoem from "../memberForm.vue";
 import { message } from "@/utils/message";
 import {
   getRoleList,
   createRole,
   updateRole,
   setRolePermission,
-  treeMenu,
-  getRolePermission
+  setRoleMember
 } from "@/api/system";
 // import { usePublicHooks } from "../../hooks";
 import { addDialog } from "@/components/ReDialog";
-import { type FormItemProps, PermDialogItemProps } from "../utils/types";
+import {
+  type FormItemProps,
+  PermDialogItemProps,
+  MemberDialogItemProps
+} from "../utils/types";
 import { type PaginationProps } from "@pureadmin/table";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
 import { usePublicHooks, onStatusChange } from "@/utils/common";
@@ -96,7 +100,7 @@ export function useRole() {
     {
       label: "操作",
       fixed: "right",
-      width: 240,
+      minWidth: 320,
       slot: "operation"
     }
   ];
@@ -154,7 +158,8 @@ export function useRole() {
         formInline: {
           name: row?.name ?? "",
           code: row?.code ?? "",
-          remark: row?.remark ?? ""
+          remark: row?.remark ?? "",
+          is_super_role: row?.is_super_role ?? false
         }
       },
       width: "40%",
@@ -200,31 +205,18 @@ export function useRole() {
     });
   }
 
-  /** 获取全部菜单树 */
-  async function getMenuTree() {
-    const { data } = await treeMenu();
-    return data;
-  }
-
-  async function getRolePerms(roleId) {
-    const { data } = await getRolePermission(roleId);
-    return data;
-  }
-
   async function setPermissionDialog(row: FormItemProps) {
-    const menuTree = await getMenuTree();
-    const rolePermis: any = await getRolePerms(row.id);
+    // const menuTree = await getMenuTree();
+    // const rolePermis: any = await getRolePerms(row.id);
     addDialog({
       title: "权限设置",
       props: {
         formInline: {
           id: row?.id ?? null,
-          menuTree: menuTree,
-          permissions: rolePermis.permissions,
-          isSuperRole: rolePermis.isSuperRole
+          permissions: []
         }
       },
-      hideFooter: rolePermis.isSuperRole,
+      hideFooter: row.is_super_role,
       width: "40%",
       draggable: true,
       fullscreenIcon: true,
@@ -243,6 +235,45 @@ export function useRole() {
         FormRef.validate(valid => {
           if (valid) {
             setRolePermission(row.id, curData.permissions).then(res => {
+              if (res.ret == 200 || res.ret == 201) {
+                chores();
+              } else {
+                message(JSON.stringify(res.data), { type: "error" });
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+
+  async function setMemberDialog(row: FormItemProps) {
+    addDialog({
+      title: "成员设置",
+      props: {
+        formInline: {
+          id: row?.id ?? null,
+          member: []
+        }
+      },
+      width: "40%",
+      draggable: true,
+      fullscreenIcon: true,
+      closeOnClickModal: false,
+      contentRenderer: () => h(memberFoem, { ref: formRef }),
+      beforeSure: (done, { options }) => {
+        const FormRef = formRef.value.getRef();
+        const curData = options.props.formInline as MemberDialogItemProps;
+        function chores() {
+          message("成员设置成功", {
+            type: "success"
+          });
+          done(); // 关闭弹框
+          onSearch(); // 刷新表格数据
+        }
+        FormRef.validate(valid => {
+          if (valid) {
+            setRoleMember(row.id, curData.member).then(res => {
               if (res.ret == 200 || res.ret == 201) {
                 chores();
               } else {
@@ -278,6 +309,7 @@ export function useRole() {
     resetForm,
     openDialog,
     setPermissionDialog,
+    setMemberDialog,
     handleMenu,
     handleDelete,
     // handleDatabase,

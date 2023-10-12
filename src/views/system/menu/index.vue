@@ -25,6 +25,7 @@ const {
   columns,
   dataList,
   menuTypes,
+  displayHeaderFilter,
   onSearch,
   resetForm,
   openDialog,
@@ -80,6 +81,8 @@ const {
       :columns="columns"
       :tableRef="tableRef?.getTableRef()"
       @refresh="onSearch"
+      @displayHeaderFilter="displayHeaderFilter"
+      use-column-filter
     >
       <template #buttons>
         <el-button

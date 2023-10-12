@@ -8,6 +8,7 @@ interface FormItemProps {
   code: string;
   /** 备注 */
   remark: string;
+  is_super_role: boolean;
 }
 interface FormProps {
   formInline: FormItemProps;
@@ -15,14 +16,28 @@ interface FormProps {
 
 interface PermDialogItemProps {
   id: number;
-  menuTree: Array<object>;
   /** 菜单权限 */
   permissions: Array<number>;
-  isSuperRole: boolean;
 }
 
 interface PermDialogProps {
   formInline: PermDialogItemProps;
 }
 
-export type { FormItemProps, FormProps, PermDialogItemProps, PermDialogProps };
+interface MemberDialogItemProps {
+  id: number;
+  member: Array<number>;
+}
+
+interface MemberDialogProps {
+  formInline: MemberDialogItemProps;
+}
+
+export type {
+  FormItemProps,
+  FormProps,
+  PermDialogItemProps,
+  PermDialogProps,
+  MemberDialogProps,
+  MemberDialogItemProps
+};

@@ -7,8 +7,7 @@ import {
   getMenuList,
   createMenu,
   updateMenu,
-  setMenuButtons,
-  getMenuButtons
+  setMenuButtons
 } from "@/api/system";
 // import { usePublicHooks } from "../../hooks";
 import { addDialog } from "@/components/ReDialog";
@@ -21,6 +20,7 @@ import { onStatusChange, usePublicHooks } from "@/utils/common";
 
 export function useMenu() {
   const form = reactive({
+    code: "",
     name: "",
     status: null
   });
@@ -28,6 +28,7 @@ export function useMenu() {
   const formRef = ref();
   const dataList = ref([]);
   const loading = ref(true);
+  const showHeaderFilter = ref(false);
   const switchLoadMap = ref({});
   const { switchStyle } = usePublicHooks();
   const menuTypes = {
@@ -68,6 +69,26 @@ export function useMenu() {
       prop: "code",
       align: "left",
       minWidth: 150
+      // headerRenderer: scope => (
+      //   <>
+      //     <el-input
+      //       v-model={form.code}
+      //       v-show={showHeaderFilter.value}
+      //       size="small"
+      //       clearable
+      //       placeholder=""
+      //       onChange={onSearch}
+      //     />
+      //     <el-row
+      //       v-show={!showHeaderFilter.value}
+      //       onClick={() => {
+      //         showHeaderFilter.value = !showHeaderFilter.value;
+      //       }}
+      //     >
+      //       {scope.column.label}
+      //     </el-row>
+      //   </>
+      // )
     },
     {
       label: "菜单名称",
@@ -162,6 +183,10 @@ export function useMenu() {
 
   function handleSelectionChange(val) {
     console.log("handleSelectionChange", val);
+  }
+
+  function displayHeaderFilter() {
+    showHeaderFilter.value = !showHeaderFilter.value;
   }
 
   function resetForm(formEl) {
@@ -294,13 +319,12 @@ export function useMenu() {
     });
   }
   async function buttonsDialog(row: FormItemProps) {
-    const newButtons = await getButtons(row);
     addDialog({
       title: "按钮设置",
       props: {
         formInline: {
           parentId: row.id,
-          buttons: cloneDeep(newButtons)
+          buttons: []
         }
       },
       width: "60%",
@@ -343,18 +367,13 @@ export function useMenu() {
     onSearch();
   });
 
-  async function getButtons(row) {
-    const { data } = await getMenuButtons(row.id);
-    const newData = data;
-    return newData;
-  }
-
   return {
     form,
     loading,
     columns,
     dataList,
     menuTypes,
+    displayHeaderFilter,
     /** 搜索 */
     onSearch,
     /** 重置 */

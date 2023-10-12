@@ -8,7 +8,8 @@ const props = withDefaults(defineProps<FormProps>(), {
     id: null,
     name: "",
     code: "",
-    remark: ""
+    remark: "",
+    is_super_role: false
   })
 });
 
@@ -40,6 +41,7 @@ defineExpose({ getRef });
     <el-form-item label="角色标识" prop="code">
       <el-input
         v-model="newFormInline.code"
+        :disabled="newFormInline.is_super_role"
         clearable
         placeholder="请输入角色标识"
       />

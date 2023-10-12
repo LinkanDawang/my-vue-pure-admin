@@ -25,7 +25,7 @@ type postResult = {
   ret: number;
   msg: string;
   success?: boolean;
-  data?: object;
+  data?: any;
 };
 
 type postArrayResult = {
@@ -85,6 +85,24 @@ export const getRolePermission = (id: number) => {
   return http.request<postResult>(
     "get",
     apiUrl(`rbac/roles/${id}/get-permissions/`),
+    {}
+  );
+};
+
+export const setRoleMember = (id: number, data?: Array<number>) => {
+  return http.request<postResult>(
+    "post",
+    apiUrl(`rbac/roles/${id}/set-member/`),
+    {
+      data
+    }
+  );
+};
+
+export const getRoleMember = (id: number) => {
+  return http.request<postResult>(
+    "get",
+    apiUrl(`rbac/roles/${id}/get-member/`),
     {}
   );
 };

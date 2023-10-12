@@ -14,6 +14,7 @@ import ExpandIcon from "./svg/expand.svg?component";
 import RefreshIcon from "./svg/refresh.svg?component";
 import SettingIcon from "./svg/settings.svg?component";
 import CollapseIcon from "./svg/collapse.svg?component";
+import SearchIcon from "./svg/search.svg?component";
 
 const props = {
   /** 头部最左边的标题 */
@@ -29,13 +30,18 @@ const props = {
   columns: {
     type: Array as PropType<TableColumnList>,
     default: () => []
+  },
+  /** 启用表头搜索 */
+  useColumnFilter: {
+    type: Boolean,
+    default: false
   }
 };
 
 export default defineComponent({
   name: "PureTableBar",
   props,
-  emits: ["refresh"],
+  emits: ["refresh", "displayHeaderFilter"],
   setup(props, { emit, slots, attrs }) {
     const buttonRef = ref();
     const size = ref("default");
@@ -90,6 +96,10 @@ export default defineComponent({
       loading.value = true;
       emit("refresh");
       delay(500).then(() => (loading.value = false));
+    }
+
+    function onDisplayFilter() {
+      emit("displayHeaderFilter");
     }
 
     function onExpand() {
@@ -235,6 +245,17 @@ export default defineComponent({
                         transform: isExpandAll.value ? "none" : "rotate(-90deg)"
                       }}
                       onClick={() => onExpand()}
+                    />
+                  </el-tooltip>
+                  <el-divider direction="vertical" />
+                </>
+              ) : null}
+              {props.useColumnFilter ? (
+                <>
+                  <el-tooltip effect="dark" content="搜索" placement="top">
+                    <SearchIcon
+                      class={["w-[16px]", iconClass.value]}
+                      onClick={() => onDisplayFilter()}
                     />
                   </el-tooltip>
                   <el-divider direction="vertical" />

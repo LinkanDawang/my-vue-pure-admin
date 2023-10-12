@@ -11,7 +11,10 @@ import EditPen from "@iconify-icons/ep/edit-pen";
 import Search from "@iconify-icons/ep/search";
 import Refresh from "@iconify-icons/ep/refresh";
 import Menu from "@iconify-icons/ep/menu";
+import Group from "@iconify-icons/ri/group-fill";
 import AddFill from "@iconify-icons/ri/add-circle-line";
+import { transformI18n } from "@/plugins/i18n";
+import { useUserStoreHook } from "@/store/modules/user";
 
 defineOptions({
   name: "Role"
@@ -29,6 +32,7 @@ const {
   resetForm,
   openDialog,
   setPermissionDialog,
+  setMemberDialog,
   handleDelete,
   // handleDatabase,
   handleSizeChange,
@@ -94,6 +98,7 @@ const {
     >
       <template #buttons>
         <el-button
+          v-if="useUserStoreHook().hasPermission('sys:role:add')"
           type="primary"
           :icon="useRenderIcon(AddFill)"
           @click="openDialog()"
@@ -128,6 +133,7 @@ const {
           </template>
           <template #operation="{ row }">
             <el-button
+              v-if="useUserStoreHook().hasPermission('sys:role:edit')"
               class="reset-margin"
               link
               type="primary"
@@ -135,9 +141,10 @@ const {
               :icon="useRenderIcon(EditPen)"
               @click="openDialog('编辑', row)"
             >
-              修改
+              {{ transformI18n("buttons.hsedit") }}
             </el-button>
             <el-button
+              v-if="useUserStoreHook().hasPermission('sys:role:permDispatch')"
               class="reset-margin"
               link
               type="primary"
@@ -145,9 +152,21 @@ const {
               :icon="useRenderIcon(Menu)"
               @click="setPermissionDialog(row)"
             >
-              菜单权限
+              {{ transformI18n("buttons.hsPermission") }}
+            </el-button>
+            <el-button
+              v-if="useUserStoreHook().hasPermission('sys:role:setMember')"
+              class="reset-margin"
+              link
+              type="primary"
+              :size="size"
+              :icon="useRenderIcon(Group)"
+              @click="setMemberDialog(row)"
+            >
+              {{ transformI18n("buttons.hsSetMember") }}
             </el-button>
             <el-popconfirm
+              v-if="useUserStoreHook().hasPermission('sys:role:delete')"
               :title="`是否确认删除角色名称为${row.name}的这条数据`"
               @confirm="handleDelete(row)"
             >
@@ -155,11 +174,12 @@ const {
                 <el-button
                   class="reset-margin"
                   link
-                  type="primary"
+                  type="danger"
+                  :disabled="row.is_super_role"
                   :size="size"
                   :icon="useRenderIcon(Delete)"
                 >
-                  删除
+                  {{ transformI18n("buttons.hsdelete") }}
                 </el-button>
               </template>
             </el-popconfirm>

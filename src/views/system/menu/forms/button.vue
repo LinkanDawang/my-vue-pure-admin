@@ -5,6 +5,7 @@ import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { ButtonProps } from "@/views/system/menu/utils/types";
 import { localesConfigs, transformI18n } from "@/plugins/i18n";
 import IconSelect from "@/components/ReIcon/src/Select.vue";
+import { getMenuButtons } from "@/api/system";
 
 const formRef = ref<FormInstance>();
 function getRef() {
@@ -30,6 +31,10 @@ const props = withDefaults(defineProps<ButtonProps>(), {
 });
 
 const dynamicValidateForm = ref(props.formInline);
+
+getMenuButtons(dynamicValidateForm.value.parentId).then(res => {
+  dynamicValidateForm.value.buttons = res.data;
+});
 
 const buttonSort = () => {
   dynamicValidateForm.value.buttons.sort(function (a, b) {
@@ -78,24 +83,24 @@ const validateButton = (rule: any, value: any, callback: any) => {
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const submitForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.validate(valid => {
-    if (valid) {
-      console.log("submit!");
-    } else {
-      console.log("error submit!");
-      return false;
-    }
-  });
-};
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.resetFields();
-};
+// // eslint-disable-next-line @typescript-eslint/no-unused-vars
+// const submitForm = (formEl: FormInstance | undefined) => {
+//   if (!formEl) return;
+//   formEl.validate(valid => {
+//     if (valid) {
+//       console.log("submit!");
+//     } else {
+//       console.log("error submit!");
+//       return false;
+//     }
+//   });
+// };
+//
+// // eslint-disable-next-line @typescript-eslint/no-unused-vars
+// const resetForm = (formEl: FormInstance | undefined) => {
+//   if (!formEl) return;
+//   formEl.resetFields();
+// };
 
 const menuList = ref([]);
 const menuKey = "buttons";

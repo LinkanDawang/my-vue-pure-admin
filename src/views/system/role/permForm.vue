@@ -3,16 +3,39 @@ import { ref } from "vue";
 import { PermDialogProps } from "./utils/types";
 import { transformI18n } from "@/plugins/i18n";
 import ElTreeLine from "@/components/ReTreeLine";
+import { getRolePermission, treeMenu } from "@/api/system";
+import { message } from "@/utils/message";
 
 const props = withDefaults(defineProps<PermDialogProps>(), {
   formInline: () => ({
     id: null,
-    menuTree: [],
-    permissions: [],
-    isSuperRole: false
+    permissions: []
   })
 });
 const newFormInline = ref(props.formInline);
+
+// 获取菜单树状数据
+const menuTree = ref([]);
+treeMenu()
+  .then(res => {
+    menuTree.value = res.data;
+  })
+  .catch(error => {
+    message(`${error.data.ret}: ${error.data.msg}\n菜单数据获取失败`, {
+      type: "error"
+    });
+  });
+
+// 获取角色拥有的菜单权限
+getRolePermission(newFormInline.value.id)
+  .then(res => {
+    newFormInline.value.permissions = res.data.permissions;
+  })
+  .catch(error => {
+    message(`${error.data.ret}: ${error.data.msg}\n角色权限获取失败`, {
+      type: "error"
+    });
+  });
 
 const ruleFormRef = ref();
 function getRef() {
@@ -29,7 +52,7 @@ const dataProps = {
 const treeRef = ref();
 const swCheckAll = ref(false);
 const swExpandTree = ref(true);
-const swLinkage = ref(false);
+// const swLinkage = ref(false);
 
 function removePermission(permId) {
   const delIndex = newFormInline.value.permissions.indexOf(permId);
@@ -49,17 +72,29 @@ function menuCheckChange(obj, isChecked) {
   const permId = obj.id;
 
   // 菜单上下级之间联动时半选中的父节点视为选择
-  const halfCheckedMenuIds = treeRef.value.getHalfCheckedKeys();
-  if (!isChecked && halfCheckedMenuIds.includes(permId)) {
-    isChecked = true;
-  }
+  // const halfCheckedMenuIds = treeRef.value.getHalfCheckedKeys();
+  // if (!isChecked && halfCheckedMenuIds.includes(permId)) {
+  //   isChecked = true;
+  // }
   if (isChecked) {
     setPermission(permId);
+    if (obj.parentId) {
+      const parentNode = treeRef.value.store.nodesMap[obj.parentId];
+      if (!parentNode.checked) {
+        parentNode.checked = true;
+      }
+    }
   } else {
     removePermission(permId);
     // 按钮
     obj.buttons.forEach(button => {
       removePermission(button.id);
+    });
+    obj.children.forEach(child => {
+      const childNode = treeRef.value.store.nodesMap[child.id];
+      if (childNode.checked) {
+        childNode.checked = false;
+      }
     });
   }
 }
@@ -98,7 +133,7 @@ function buttonCheckChange(isChecked, nodeData: any) {
   const node = treeRef.value.store.nodesMap[menuId];
   if (isChecked && !node.checked) {
     node.checked = true;
-    setPermission(menuId);
+    // setPermission(menuId);
   }
 }
 </script>
@@ -121,18 +156,18 @@ function buttonCheckChange(isChecked, nodeData: any) {
             @change="expandTree"
           />
         </el-col>
-        <el-col :span="6">
-          <el-switch v-model="swLinkage" active-text="父子联动" />
-        </el-col>
+        <!--        <el-col :span="6">-->
+        <!--          <el-switch v-model="swLinkage" active-text="父子联动" />-->
+        <!--        </el-col>-->
       </el-row>
       <el-card shadow="never">
         <div class="max-h-[550px] overflow-y-auto">
           <el-tree
             ref="treeRef"
-            :data="newFormInline.menuTree"
+            :data="menuTree"
             :props="dataProps"
             show-checkbox
-            :check-strictly="!swLinkage"
+            check-strictly
             node-key="id"
             :render-after-expand="false"
             :indent="30"

@@ -40,6 +40,182 @@ export default [
           },
           remark: "普通用户",
           createTime: 1605456000000
+        },
+        {
+          username: "common2",
+          nickname: "common2",
+          avatar: "https://avatars.githubusercontent.com/u/52823142",
+          phone: "18288882345",
+          email: "@email",
+          sex: 1,
+          id: 3,
+          status: 1,
+          dept: {
+            id: 105,
+            name: "测试部门"
+          },
+          remark: "普通用户",
+          createTime: 1605456000000
+        },
+        {
+          username: "common3",
+          nickname: "common3",
+          avatar: "https://avatars.githubusercontent.com/u/52823142",
+          phone: "18288882345",
+          email: "@email",
+          sex: 1,
+          id: 4,
+          status: 1,
+          dept: {
+            id: 105,
+            name: "测试部门"
+          },
+          remark: "普通用户",
+          createTime: 1605456000000
+        },
+        {
+          username: "common4",
+          nickname: "common4",
+          avatar: "https://avatars.githubusercontent.com/u/52823142",
+          phone: "18288882345",
+          email: "@email",
+          sex: 1,
+          id: 5,
+          status: 1,
+          dept: {
+            id: 105,
+            name: "测试部门"
+          },
+          remark: "普通用户",
+          createTime: 1605456000000
+        },
+        {
+          username: "common5",
+          nickname: "common5",
+          avatar: "https://avatars.githubusercontent.com/u/52823142",
+          phone: "18288882345",
+          email: "@email",
+          sex: 1,
+          id: 6,
+          status: 1,
+          dept: {
+            id: 105,
+            name: "测试部门"
+          },
+          remark: "普通用户",
+          createTime: 1605456000000
+        },
+        {
+          username: "common6",
+          nickname: "common6",
+          avatar: "https://avatars.githubusercontent.com/u/52823142",
+          phone: "18288882345",
+          email: "@email",
+          sex: 1,
+          id: 7,
+          status: 1,
+          dept: {
+            id: 105,
+            name: "测试部门"
+          },
+          remark: "普通用户",
+          createTime: 1605456000000
+        },
+        {
+          username: "common7",
+          nickname: "common7",
+          avatar: "https://avatars.githubusercontent.com/u/52823142",
+          phone: "18288882345",
+          email: "@email",
+          sex: 1,
+          id: 8,
+          status: 1,
+          dept: {
+            id: 105,
+            name: "测试部门"
+          },
+          remark: "普通用户",
+          createTime: 1605456000000
+        },
+        {
+          username: "common8",
+          nickname: "common8",
+          avatar: "https://avatars.githubusercontent.com/u/52823142",
+          phone: "18288882345",
+          email: "@email",
+          sex: 1,
+          id: 9,
+          status: 1,
+          dept: {
+            id: 105,
+            name: "测试部门"
+          },
+          remark: "普通用户",
+          createTime: 1605456000000
+        },
+        {
+          username: "common9",
+          nickname: "common9",
+          avatar: "https://avatars.githubusercontent.com/u/52823142",
+          phone: "18288882345",
+          email: "@email",
+          sex: 1,
+          id: 10,
+          status: 1,
+          dept: {
+            id: 105,
+            name: "测试部门"
+          },
+          remark: "普通用户",
+          createTime: 1605456000000
+        },
+        {
+          username: "common10",
+          nickname: "common10",
+          avatar: "https://avatars.githubusercontent.com/u/52823142",
+          phone: "18288882345",
+          email: "@email",
+          sex: 1,
+          id: 11,
+          status: 1,
+          dept: {
+            id: 105,
+            name: "测试部门"
+          },
+          remark: "普通用户",
+          createTime: 1605456000000
+        },
+        {
+          username: "common11",
+          nickname: "common11",
+          avatar: "https://avatars.githubusercontent.com/u/52823142",
+          phone: "18288882345",
+          email: "@email",
+          sex: 1,
+          id: 12,
+          status: 1,
+          dept: {
+            id: 105,
+            name: "测试部门"
+          },
+          remark: "普通用户",
+          createTime: 1605456000000
+        },
+        {
+          username: "common12",
+          nickname: "common12",
+          avatar: "https://avatars.githubusercontent.com/u/52823142",
+          phone: "18288882345",
+          email: "@email",
+          sex: 1,
+          id: 13,
+          status: 1,
+          dept: {
+            id: 105,
+            name: "测试部门"
+          },
+          remark: "普通用户",
+          createTime: 1605456000000
         }
       ];
       list = list.filter(item => item.username.includes(body?.username));
