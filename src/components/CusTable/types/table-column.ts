@@ -107,6 +107,8 @@ export type TableColumn = {
  * @see {@link https://element-plus.org/zh-CN/component/table.html#table-column-%E5%B1%9E%E6%80%A7}
  */
 export interface TableColumns extends TableColumn {
+  /** Meta扩展数据 */
+  meta?: any;
   /** 是否隐藏 */
   hide?: boolean | CallableFunction;
   /** 自定义列的内容插槽 */
