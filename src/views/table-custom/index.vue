@@ -11,14 +11,6 @@ const tableRef = ref();
 
 const columns = [
   {
-    label: "",
-    type: "selection"
-  },
-  {
-    label: "No",
-    type: "index"
-  },
-  {
     label: "日期",
     prop: "date",
     meta: { filterType: "date" }
@@ -67,6 +59,11 @@ const params = ref({
   address: "",
   sex: []
 });
+
+const props = ref({
+  showSelection: true,
+  showIndex: true
+});
 </script>
 
 <template>
@@ -80,7 +77,15 @@ const params = ref({
           style="width: 100%"
         >
           <el-table-column
-            v-for="(column, index) in dynamicColumns"
+            label=""
+            type="selection"
+            v-if="props.showSelection"
+          />
+          <el-table-column label="序号" type="index" v-if="props.showIndex" />
+          <el-table-column
+            v-for="(column, index) in dynamicColumns.filter(item => {
+              return !item.hide || item.hide == false;
+            })"
             :key="index"
             :label="column.label"
             :type="column.type"
