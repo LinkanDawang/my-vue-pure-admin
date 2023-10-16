@@ -2,6 +2,7 @@
 import { ref } from "vue";
 // import CusTable from "@/components/CusTable";
 import { TableColumns } from "@/components/CusTable/types";
+import { PureTableBar } from "@/components/RePureTableBar";
 
 const columns: TableColumns[] = [
   {
@@ -65,45 +66,49 @@ const params = ref({
 
 <template>
   <!--  <CusTable :data="cusData" :columns="columns" headerFilter />-->
-  <el-table :data="cusData">
-    <el-table-column
-      v-for="(column, index) in columns"
-      :key="index"
-      :label="column.label"
-      :type="column.type"
-      :prop="column.prop"
-    >
-      <template #header>
-        <el-col @click="headerFilter = !headerFilter">
-          {{ column.label }}
-        </el-col>
-        <el-row v-if="column.meta?.filterType ?? false" v-show="headerFilter">
-          <el-date-picker
-            v-if="column.meta.filterType == 'date'"
-            v-model="params[column.prop]"
-            type="date"
-            placeholder="Pick a day"
-          />
-          <el-select
-            v-else-if="column.meta.filterType == 'select'"
-            v-model="params[column.prop]"
-            clearable
-            multiple
-            collapse-tags
-            collapse-tags-tooltip
-            placeholder="请选择"
-            style="width: 240px"
-          >
-            <el-option
-              v-for="item in column.meta.selectOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+  <PureTableBar title="" use-column-filter>
+    <el-table :data="cusData">
+      <el-table-column
+        v-for="(column, index) in columns"
+        :key="index"
+        :label="column.label"
+        :type="column.type"
+        :prop="column.prop"
+        :align="column.align ?? 'center'"
+      >
+        <template #header>
+          <el-col @click="headerFilter = !headerFilter">
+            {{ column.label }}
+          </el-col>
+          <el-col v-if="column.meta?.filterType ?? false" v-show="headerFilter">
+            <el-date-picker
+              v-if="column.meta.filterType == 'date'"
+              v-model="params[column.prop]"
+              type="date"
+              width="100%"
+              placeholder="Pick a day"
             />
-          </el-select>
-          <el-input v-else v-model="params[column.prop]" />
-        </el-row>
-      </template>
-    </el-table-column>
-  </el-table>
+            <el-select
+              v-else-if="column.meta.filterType == 'select'"
+              v-model="params[column.prop]"
+              clearable
+              multiple
+              collapse-tags
+              collapse-tags-tooltip
+              placeholder="请选择"
+              style="width: 240px"
+            >
+              <el-option
+                v-for="item in column.meta.selectOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+            <el-input v-else v-model="params[column.prop]" />
+          </el-col>
+        </template>
+      </el-table-column>
+    </el-table>
+  </PureTableBar>
 </template>
