@@ -1,5 +1,4 @@
 import Base from "./base.vue";
-import Custom from "./custom.vue";
 import Stripe from "./stripe.vue";
 import Border from "./border.vue";
 import Status from "./status.vue";
@@ -26,12 +25,6 @@ const rendContent = (val: string) =>
   `代码位置：src/views/pure-table/base/${val}.vue`;
 
 export const list = [
-  {
-    key: "custom",
-    content: rendContent("custom"),
-    title: "自定义表格组件",
-    component: Custom
-  },
   {
     key: "base",
     content: rendContent("base"),

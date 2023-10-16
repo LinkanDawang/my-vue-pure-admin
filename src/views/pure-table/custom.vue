@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import CusTable from "@/components/CusTable";
+// import CusTable from "@/components/CusTable";
 import { TableColumns } from "@/components/CusTable/types";
 
 const columns: TableColumns[] = [
