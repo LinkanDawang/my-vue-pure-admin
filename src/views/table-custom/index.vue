@@ -38,20 +38,7 @@ const columns = [
   }
 ];
 
-const cusData = [
-  {
-    date: "2023-05-03",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-    sex: 1
-  },
-  {
-    date: "2023-05-02",
-    name: "Jenny",
-    address: "No. 189, Grove St, Los Angeles",
-    sex: 2
-  }
-];
+const cusData = ref([]);
 const headerFilter = ref(false);
 const params = ref({
   date: "",
@@ -62,18 +49,41 @@ const params = ref({
 
 const props = ref({
   showSelection: true,
-  showIndex: true
+  showIndex: true,
+  loading: false
 });
+
+function onSearch() {
+  props.value.loading = true;
+  cusData.value = [
+    {
+      date: "2023-05-03",
+      name: "Tom",
+      address: "No. 189, Grove St, Los Angeles",
+      sex: 1
+    },
+    {
+      date: "2023-05-02",
+      name: "Jenny",
+      address: "No. 189, Grove St, Los Angeles",
+      sex: 2
+    }
+  ];
+  props.value.loading = false;
+}
+
+onSearch();
 </script>
 
 <template>
   <div class="main">
-    <PureTableBar title="" :columns="columns">
+    <PureTableBar title="" :columns="columns" @refresh="onSearch">
       <template v-slot="{ size, dynamicColumns }">
         <el-table
           ref="tableRef"
           :data="cusData"
           :size="size"
+          v-loading="props.loading"
           style="width: 100%"
         >
           <el-table-column
