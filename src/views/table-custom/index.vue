@@ -2,6 +2,7 @@
 import { ref } from "vue";
 // import { TableColumns } from "@/components/CusTable/types";
 import { PureTableBar } from "@/components/RePureTableBar";
+import { CusTable } from "@/components/CusTable";
 
 defineOptions({
   name: "TableCustom"
@@ -49,27 +50,36 @@ const params = ref({
 
 const props = ref({
   showSelection: true,
-  showIndex: true,
-  loading: false
+  showIndex: true
 });
 
+const loading = ref(false);
+
 function onSearch() {
-  props.value.loading = true;
+  loading.value = true;
+  const qr1 = Math.floor(Math.random() * 10 + 1);
+  const qr2 = Math.floor(Math.random() * 10 + 1);
   cusData.value = [
     {
       date: "2023-05-03",
-      name: "Tom",
+      name: `Tom${qr1}`,
       address: "No. 189, Grove St, Los Angeles",
       sex: 1
     },
     {
       date: "2023-05-02",
-      name: "Jenny",
+      name: `Jenny${qr2}`,
       address: "No. 189, Grove St, Los Angeles",
       sex: 2
     }
   ];
-  props.value.loading = false;
+  setTimeout(() => {
+    loading.value = false;
+  }, 1500);
+}
+
+function displayHeaderFilter() {
+  headerFilter.value = !headerFilter.value;
 }
 
 onSearch();
@@ -77,13 +87,34 @@ onSearch();
 
 <template>
   <div class="main">
-    <PureTableBar title="" :columns="columns" @refresh="onSearch">
+    <PureTableBar
+      title=""
+      :columns="columns"
+      @refresh="onSearch"
+      useColumnFilter
+      @displayHeaderFilter="displayHeaderFilter"
+    >
       <template v-slot="{ size, dynamicColumns }">
+        <el-divider />
+        <CusTable
+          :columns="dynamicColumns"
+          :data="cusData"
+          :size="size"
+          :loading="loading"
+          :headerFilter="headerFilter"
+          showIndex
+          @showHeaderFilter="displayHeaderFilter"
+        >
+          <template #append>
+            <el-col>hahaha</el-col>
+          </template>
+        </CusTable>
+        <el-divider />
         <el-table
           ref="tableRef"
           :data="cusData"
           :size="size"
-          v-loading="props.loading"
+          v-loading="loading"
           style="width: 100%"
         >
           <el-table-column
@@ -138,6 +169,9 @@ onSearch();
               </el-col>
             </template>
           </el-table-column>
+          <template #append>
+            <el-col>hahaha</el-col>
+          </template>
         </el-table>
       </template>
     </PureTableBar>

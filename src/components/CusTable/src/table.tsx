@@ -2,14 +2,12 @@ import { defineComponent, ref } from "vue";
 import { CusTableProps } from "../types";
 
 const props: CusTableProps = {
-  size: {
-    type: String,
-    default: "default"
-  },
+  /** 开启行选中 */
   showSelection: {
     type: Boolean,
     default: true
   },
+  /** 展示行号 */
   showIndex: {
     type: Boolean,
     default: false
@@ -19,84 +17,106 @@ const props: CusTableProps = {
     type: Array as PropType<TableColumnList>,
     default: () => []
   },
-  data: {
-    type: Array,
-    default: () => []
+  headerFilter: {
+    type: Boolean,
+    default: false
   }
 };
 
 export default defineComponent({
   name: "CusTable",
   props,
-  emits: [],
+  emits: ["showHeaderFilter"],
   setup(props, { emit, slots, attrs }) {
-    console.log(emit);
-    console.log(slots);
+    const searchParams = ref({});
     console.log(attrs);
-    const headerFilter = ref(false);
-    const params = ref({});
 
-    return () => (
-      <>
-        <el-table
-          v-model={props.data}
-          // size={props.size}
-          v-loading={props.loading}
-          // style={props.style ?? { width: "100%" }}
-        >
-          <el-table-column
-            label=""
-            type="selection"
-            v-if={props.showSelection}
-          ></el-table-column>
-          <el-table-column
-            label="序号"
-            type="index"
-            v-if={props.showIndex}
-          ></el-table-column>
-          {props.columns.map((column, index) => (
-            <el-table-column
-              key={index}
-              label={column.label}
-              prop={column.prop}
-              align={column.align ?? "default"}
-            >
-              <el-col onClick={(headerFilter.value = !headerFilter.value)}>
-                {column.label}
-              </el-col>
-              <el-col
-                v-if={column.meta?.filterType ?? false}
-                v-show={headerFilter.value}
-              >
+    function showHeaderFilter() {
+      emit("showHeaderFilter");
+    }
+
+    /** 根据表头字段类型格式化筛选方式 */
+    function formatColumnFilter(column) {
+      return (
+        <div>
+          <el-col onClick={showHeaderFilter}>{column.label}</el-col>
+          {column.meta?.filterType ? (
+            <el-col v-show={props.headerFilter == true}>
+              {column.meta.filterType == "date" ? (
                 <el-date-picker
-                  v-if={column.meta.filterType == "date"}
-                  v-model={params.value[column.prop]}
                   type="date"
-                  placeholder="Pick a day"
+                  placeholder="请选择日期"
+                  v-model={searchParams.value[column.prop]}
                 />
+              ) : column.meta.filterType == "select" ? (
                 <el-select
-                  v-else-if={column.meta.filterType == "select"}
-                  v-model={params.value[column.prop]}
                   clearable
                   multiple
                   collapse-tags
                   collapse-tags-tooltip
                   placeholder="请选择"
+                  v-model={searchParams.value[column.prop]}
                 >
-                  {column.meta?.selectOptions?.map(option => {
-                    return (
-                      <el-option
-                        key={option.value}
-                        label={option.label}
-                        value={option.value}
-                      />
-                    );
-                  })}
+                  {column.meta?.selectOptions?.map(option => (
+                    <el-option
+                      key={option.value}
+                      label={option.label}
+                      value={option.value}
+                    />
+                  ))}
                 </el-select>
-                <el-input v-else v-model={params.value[column.prop]} />
-              </el-col>
-            </el-table-column>
-          ))}
+              ) : (
+                <el-input v-model={searchParams.value[column.prop]} />
+              )}
+            </el-col>
+          ) : null}
+        </div>
+      );
+    }
+
+    function tableDefault() {
+      return (
+        <>
+          {props.showSelection ? (
+            <el-table-column label="" type="selection" fixed={"left"} />
+          ) : null}
+          {props.showIndex ? (
+            <el-table-column label="序号" type="index" />
+          ) : null}
+          {props.columns.map((column, index) => {
+            if (column.hide) {
+              return null;
+            }
+            const { label, prop, align, ...args } = column;
+            return (
+              <el-table-column
+                key={index}
+                label={label}
+                prop={prop}
+                align={align ?? "center"}
+                {...args}
+                v-slots={{
+                  header: () => formatColumnFilter(column)
+                }}
+              ></el-table-column>
+            );
+          })}
+        </>
+      );
+    }
+
+    return () => (
+      <>
+        <el-table
+          {...attrs}
+          v-loading={attrs.loading}
+          header-cell-style={{ background: "#f5f7fa", color: "#303133" }}
+        >
+          {{
+            default: () => (slots.default ? slots.default() : tableDefault()),
+            append: () => slots.append && slots.append(),
+            empty: () => slots.empty && slots.empty()
+          }}
         </el-table>
       </>
     );
