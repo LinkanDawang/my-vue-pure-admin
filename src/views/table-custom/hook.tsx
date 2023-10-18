@@ -1,4 +1,14 @@
+import { onMounted, reactive, ref } from "vue";
+
 export function useTable() {
+  const searchParams = reactive({
+    date: "",
+    name: "",
+    sex: []
+  });
+  const dataList = ref([]);
+  const loading = ref(false);
+
   const columns = [
     {
       label: "日期",
@@ -37,5 +47,38 @@ export function useTable() {
     }
   ];
 
-  return { columns };
+  async function onSearch() {
+    loading.value = true;
+    const qr1 = Math.floor(Math.random() * 10 + 1);
+    const qr2 = Math.floor(Math.random() * 10 + 1);
+    dataList.value = [
+      {
+        date: "2023-05-03",
+        name: `Tom${qr1}`,
+        address: "No. 189, Grove St, Los Angeles",
+        sex: 1
+      },
+      {
+        date: "2023-05-02",
+        name: `Jenny${qr2}`,
+        address: "No. 189, Grove St, Los Angeles",
+        sex: 2
+      }
+    ];
+    setTimeout(() => {
+      loading.value = false;
+    }, 1500);
+  }
+
+  onMounted(() => {
+    onSearch();
+  });
+
+  return {
+    searchParams,
+    loading,
+    columns,
+    dataList,
+    onSearch
+  };
 }
