@@ -2,12 +2,13 @@ import { onMounted, reactive, ref } from "vue";
 
 export function useTable() {
   const searchParams = reactive({
-    date: "",
     name: "",
-    sex: []
+    sex: [],
+    address: ""
   });
   const dataList = ref([]);
   const loading = ref(false);
+  const headerFilter = ref(false);
 
   const columns = [
     {
@@ -67,7 +68,11 @@ export function useTable() {
     ];
     setTimeout(() => {
       loading.value = false;
-    }, 1500);
+    }, 1000);
+  }
+
+  function displayHeaderFilter() {
+    headerFilter.value = !headerFilter.value;
   }
 
   onMounted(() => {
@@ -79,6 +84,8 @@ export function useTable() {
     loading,
     columns,
     dataList,
-    onSearch
+    headerFilter,
+    onSearch,
+    displayHeaderFilter
   };
 }
