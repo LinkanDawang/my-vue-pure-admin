@@ -62,5 +62,9 @@ export default {
       zIndex: 100
     }
   },
+  headerFilter: {
+    type: Boolean,
+    default: false
+  },
   ...defaultProps
 };

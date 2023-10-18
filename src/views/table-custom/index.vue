@@ -3,43 +3,14 @@ import { reactive, ref } from "vue";
 // import { TableColumns } from "@/components/CusTable/types";
 import { RePureTable } from "@/components/RePureTable";
 import { PureTableBar } from "@/components/RePureTableBar";
-import { CusTable } from "@/components/CusTable";
 import { PaginationProps } from "@pureadmin/table";
+import { useTable } from "./hook";
 
 defineOptions({
   name: "TableCustom"
 });
 
 const tableRef = ref();
-
-const columns = [
-  {
-    label: "日期",
-    prop: "date",
-    meta: { filterType: "date" }
-  },
-  {
-    label: "姓名",
-    prop: "name",
-    meta: { filterType: "input" }
-  },
-  {
-    label: "性别",
-    prop: "sex",
-    meta: {
-      filterType: "select",
-      selectOptions: [
-        { value: 1, label: "男" },
-        { value: 2, label: "女" }
-      ]
-    }
-  },
-  {
-    label: "地址",
-    prop: "address",
-    meta: { filterType: "input" }
-  }
-];
 
 const cusData = ref([]);
 const headerFilter = ref(false);
@@ -60,20 +31,20 @@ const loading = ref(false);
 function onSearch() {
   loading.value = true;
   const qr1 = Math.floor(Math.random() * 10 + 1);
-  // const qr2 = Math.floor(Math.random() * 10 + 1);
+  const qr2 = Math.floor(Math.random() * 10 + 1);
   cusData.value = [
     {
       date: "2023-05-03",
       name: `Tom${qr1}`,
       address: "No. 189, Grove St, Los Angeles",
       sex: 1
+    },
+    {
+      date: "2023-05-02",
+      name: `Jenny${qr2}`,
+      address: "No. 189, Grove St, Los Angeles",
+      sex: 2
     }
-    // {
-    //   date: "2023-05-02",
-    //   name: `Jenny${qr2}`,
-    //   address: "No. 189, Grove St, Los Angeles",
-    //   sex: 2
-    // }
   ];
   setTimeout(() => {
     loading.value = false;
@@ -92,6 +63,14 @@ const pagination = reactive<PaginationProps>({
   currentPage: 1,
   background: true
 });
+const tableShow = {
+  cusTable: false,
+  pureTableLocal: true,
+  pureTable: true,
+  elTable: false
+};
+
+const { columns } = useTable();
 </script>
 
 <template>
@@ -104,23 +83,9 @@ const pagination = reactive<PaginationProps>({
       @displayHeaderFilter="displayHeaderFilter"
     >
       <template v-slot="{ size, dynamicColumns }">
-        <el-divider>CusTable</el-divider>
-        <CusTable
-          :columns="dynamicColumns"
-          :data="cusData"
-          :size="size"
-          :loading="loading"
-          :headerFilter="headerFilter"
-          :showSelection="false"
-          table-layout="auto"
-          @showHeaderFilter="displayHeaderFilter"
-        >
-          <template #append>
-            <el-col>hahaha</el-col>
-          </template>
-        </CusTable>
         <el-divider>PureTableLocal</el-divider>
         <RePureTable
+          v-if="tableShow.pureTableLocal"
           :columns="dynamicColumns"
           :data="cusData"
           :size="size"
@@ -133,9 +98,12 @@ const pagination = reactive<PaginationProps>({
             background: 'var(--el-fill-color-light)',
             color: 'var(--el-text-color-primary)'
           }"
+          :headerFilter="headerFilter"
+          @showHeaderFilter="displayHeaderFilter"
         />
         <el-divider>PureTable</el-divider>
         <pure-table
+          v-if="tableShow.pureTable"
           :columns="dynamicColumns"
           :data="cusData"
           :size="size"
@@ -149,9 +117,9 @@ const pagination = reactive<PaginationProps>({
             color: 'var(--el-text-color-primary)'
           }"
         />
-        <el-divider />
         <el-divider>ElTable</el-divider>
         <el-table
+          v-if="tableShow.elTable"
           ref="tableRef"
           :data="cusData"
           :size="size"

@@ -1,4 +1,5 @@
 import {
+  ref,
   unref,
   toRefs,
   computed,
@@ -11,15 +12,18 @@ import {
 } from "vue";
 import props from "./props";
 import Renderer from "./renderer";
-// import { PureTableProps, TableColumnScope } from "../../types";
 import { PureTableProps, TableColumnScope } from "@pureadmin/table";
 import { ElTable, ElTableColumn, ElPagination } from "element-plus";
 import { isFunction, isBoolean, useDark, debounce } from "@pureadmin/utils";
 
+interface RePureTableProps extends PureTableProps {
+  headerFilter?: boolean;
+}
+
 export default defineComponent({
   name: "RePureTable",
   props,
-  emits: ["page-size-change", "page-current-change"],
+  emits: ["page-size-change", "page-current-change", "showHeaderFilter"],
   setup(props, { slots, attrs, emit, expose }) {
     const {
       key,
@@ -32,8 +36,14 @@ export default defineComponent({
       loadingConfig,
       adaptiveConfig,
       rowHoverBgColor,
-      showOverflowTooltip
-    } = toRefs(props) as unknown as PureTableProps;
+      showOverflowTooltip,
+      headerFilter
+    } = toRefs(props) as unknown as RePureTableProps;
+
+    const searchParams = ref({});
+    function showHeaderFilter() {
+      emit("showHeaderFilter");
+    }
 
     const { isDark } = useDark();
     const instance = getCurrentInstance()!;
@@ -90,6 +100,49 @@ export default defineComponent({
       unref(pagination).currentPage = val;
       emit("page-current-change", val);
     };
+
+    function formatColumnFilter(column) {
+      return (
+        <>
+          <el-col onClick={showHeaderFilter}>{column.label}</el-col>
+          {column.meta?.filterType ? (
+            <el-col v-show={unref(headerFilter) == true}>
+              {column.meta.filterType == "date" ? (
+                <el-date-picker
+                  size={props.size}
+                  type="date"
+                  placeholder="请选择日期"
+                  v-model={searchParams.value[column.prop]}
+                />
+              ) : column.meta.filterType == "select" ? (
+                <el-select
+                  size={props.size}
+                  clearable
+                  multiple
+                  collapse-tags
+                  collapse-tags-tooltip
+                  placeholder="请选择"
+                  v-model={searchParams.value[column.prop]}
+                >
+                  {column.meta?.selectOptions?.map(option => (
+                    <el-option
+                      key={option.value}
+                      label={option.label}
+                      value={option.value}
+                    />
+                  ))}
+                </el-select>
+              ) : (
+                <el-input
+                  size={props.size}
+                  v-model={searchParams.value[column.prop]}
+                />
+              )}
+            </el-col>
+          ) : null}
+        </>
+      );
+    }
 
     const renderColumns = (columns: Record<string, any>, index: number) => {
       const {
@@ -165,7 +218,11 @@ export default defineComponent({
             },
             ...defaultSlots
           }
-        : defaultSlots;
+        : {
+            // fixme New 自定义表头搜索功能呢过
+            header: () => formatColumnFilter(columns),
+            ...defaultSlots
+          };
 
       if (children?.length > 0) {
         scopedSlots = children.map(renderColumns);
