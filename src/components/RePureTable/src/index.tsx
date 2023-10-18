@@ -1,5 +1,4 @@
 import {
-  ref,
   unref,
   toRefs,
   computed,
@@ -37,10 +36,11 @@ export default defineComponent({
       adaptiveConfig,
       rowHoverBgColor,
       showOverflowTooltip,
-      headerFilter
+      headerFilter,
+      searchParams
     } = toRefs(props) as unknown as RePureTableProps;
 
-    const searchParams = ref({});
+    // const searchParams = ref({});
     function showHeaderFilter() {
       emit("showHeaderFilter");
     }

@@ -66,5 +66,9 @@ export default {
     type: Boolean,
     default: false
   },
+  searchParams: {
+    type: Object,
+    default: {}
+  },
   ...defaultProps
 };
