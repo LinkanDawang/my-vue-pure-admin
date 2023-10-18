@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 // import { TableColumns } from "@/components/CusTable/types";
+import { RePureTable } from "@/components/RePureTable";
 import { PureTableBar } from "@/components/RePureTableBar";
 import { CusTable } from "@/components/CusTable";
+import { PaginationProps } from "@pureadmin/table";
 
 defineOptions({
   name: "TableCustom"
@@ -58,20 +60,20 @@ const loading = ref(false);
 function onSearch() {
   loading.value = true;
   const qr1 = Math.floor(Math.random() * 10 + 1);
-  const qr2 = Math.floor(Math.random() * 10 + 1);
+  // const qr2 = Math.floor(Math.random() * 10 + 1);
   cusData.value = [
     {
       date: "2023-05-03",
       name: `Tom${qr1}`,
       address: "No. 189, Grove St, Los Angeles",
       sex: 1
-    },
-    {
-      date: "2023-05-02",
-      name: `Jenny${qr2}`,
-      address: "No. 189, Grove St, Los Angeles",
-      sex: 2
     }
+    // {
+    //   date: "2023-05-02",
+    //   name: `Jenny${qr2}`,
+    //   address: "No. 189, Grove St, Los Angeles",
+    //   sex: 2
+    // }
   ];
   setTimeout(() => {
     loading.value = false;
@@ -83,6 +85,13 @@ function displayHeaderFilter() {
 }
 
 onSearch();
+
+const pagination = reactive<PaginationProps>({
+  total: 0,
+  pageSize: 10,
+  currentPage: 1,
+  background: true
+});
 </script>
 
 <template>
@@ -95,21 +104,53 @@ onSearch();
       @displayHeaderFilter="displayHeaderFilter"
     >
       <template v-slot="{ size, dynamicColumns }">
-        <el-divider />
+        <el-divider>CusTable</el-divider>
         <CusTable
           :columns="dynamicColumns"
           :data="cusData"
           :size="size"
           :loading="loading"
           :headerFilter="headerFilter"
-          showIndex
+          :showSelection="false"
+          table-layout="auto"
           @showHeaderFilter="displayHeaderFilter"
         >
           <template #append>
             <el-col>hahaha</el-col>
           </template>
         </CusTable>
+        <el-divider>PureTableLocal</el-divider>
+        <RePureTable
+          :columns="dynamicColumns"
+          :data="cusData"
+          :size="size"
+          :loading="loading"
+          align-whole="center"
+          table-layout="auto"
+          :pagination="pagination"
+          :paginationSmall="true"
+          :header-cell-style="{
+            background: 'var(--el-fill-color-light)',
+            color: 'var(--el-text-color-primary)'
+          }"
+        />
+        <el-divider>PureTable</el-divider>
+        <pure-table
+          :columns="dynamicColumns"
+          :data="cusData"
+          :size="size"
+          :loading="loading"
+          align-whole="center"
+          table-layout="auto"
+          :pagination="pagination"
+          :paginationSmall="true"
+          :header-cell-style="{
+            background: 'var(--el-fill-color-light)',
+            color: 'var(--el-text-color-primary)'
+          }"
+        />
         <el-divider />
+        <el-divider>ElTable</el-divider>
         <el-table
           ref="tableRef"
           :data="cusData"
