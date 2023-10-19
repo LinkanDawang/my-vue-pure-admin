@@ -33,11 +33,7 @@ export function useTable() {
         ]
       },
       cellRenderer: ({ row, props }) => (
-        <el-tag
-          size={props.size}
-          type={row.sex === 1 ? "danger" : ""}
-          effect="plain"
-        >
+        <el-tag size={props.size} type={row.sex === 1 ? "" : "danger"}>
           {row.sex === 1 ? "男" : "女"}
         </el-tag>
       )
