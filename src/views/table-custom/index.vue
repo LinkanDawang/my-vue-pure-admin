@@ -27,6 +27,7 @@ const {
   dataList,
   headerFilter,
   onSearch,
+  onReFresh,
   displayHeaderFilter
 } = useTable();
 </script>
@@ -36,7 +37,7 @@ const {
     <PureTableBar
       title=""
       :columns="columns"
-      @refresh="onSearch"
+      @refresh="onReFresh"
       useColumnFilter
       @displayHeaderFilter="displayHeaderFilter"
     >
@@ -72,6 +73,7 @@ const {
             :headerFilter="headerFilter"
             @showHeaderFilter="displayHeaderFilter"
             :searchParams="searchParams"
+            @onSearch="onSearch"
           />
         </el-col>
         <el-col v-show="showTables.includes(standTables[1])">

@@ -17,12 +17,18 @@ import { isFunction, isBoolean, useDark, debounce } from "@pureadmin/utils";
 
 interface RePureTableProps extends PureTableProps {
   headerFilter?: boolean;
+  searchParams?: any;
 }
 
 export default defineComponent({
   name: "RePureTable",
   props,
-  emits: ["page-size-change", "page-current-change", "showHeaderFilter"],
+  emits: [
+    "page-size-change",
+    "page-current-change",
+    "showHeaderFilter",
+    "onSearch"
+  ],
   setup(props, { slots, attrs, emit, expose }) {
     const {
       key,
@@ -43,6 +49,10 @@ export default defineComponent({
     // const searchParams = ref({});
     function showHeaderFilter() {
       emit("showHeaderFilter");
+    }
+
+    function onSearch() {
+      emit("onSearch");
     }
 
     const { isDark } = useDark();
@@ -113,6 +123,7 @@ export default defineComponent({
                   type="date"
                   placeholder="请选择日期"
                   v-model={searchParams.value[column.prop]}
+                  onChange={onSearch}
                 />
               ) : column.meta.filterType == "select" ? (
                 <el-select
@@ -123,6 +134,7 @@ export default defineComponent({
                   collapse-tags-tooltip
                   placeholder="请选择"
                   v-model={searchParams.value[column.prop]}
+                  onChange={onSearch}
                 >
                   {column.meta?.selectOptions?.map(option => (
                     <el-option
@@ -135,7 +147,9 @@ export default defineComponent({
               ) : (
                 <el-input
                   size={props.size}
+                  clearable
                   v-model={searchParams.value[column.prop]}
+                  onChange={onSearch}
                 />
               )}
             </el-col>

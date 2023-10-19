@@ -1,16 +1,12 @@
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, ref } from "vue";
 
 export function useTable() {
-  const searchParams = reactive({
-    name: "",
-    sex: [],
-    address: ""
-  });
+  const searchParams = ref({});
   const dataList = ref([]);
   const loading = ref(false);
   const headerFilter = ref(false);
 
-  const columns = [
+  const columns: TableColumnList = [
     {
       label: "日期",
       prop: "date",
@@ -37,7 +33,7 @@ export function useTable() {
           type={row.sex === 1 ? "danger" : ""}
           effect="plain"
         >
-          {row.sex === 1 ? "女" : "男"}
+          {row.sex === 1 ? "男" : "女"}
         </el-tag>
       )
     },
@@ -50,25 +46,71 @@ export function useTable() {
 
   async function onSearch() {
     loading.value = true;
-    const qr1 = Math.floor(Math.random() * 10 + 1);
-    const qr2 = Math.floor(Math.random() * 10 + 1);
     dataList.value = [
       {
-        date: "2023-05-03",
-        name: `Tom${qr1}`,
-        address: "No. 189, Grove St, Los Angeles",
+        date: "2023-10-13",
+        name: `Tom`,
+        address: "No. 211, Grove St, Los Angeles",
         sex: 1
       },
       {
-        date: "2023-05-02",
-        name: `Jenny${qr2}`,
+        date: "2023-10-12",
+        name: `Jenny`,
         address: "No. 189, Grove St, Los Angeles",
         sex: 2
+      },
+      {
+        date: "2023-10-11",
+        name: `Penny`,
+        address: "No. 432, Grove St, Los Angeles",
+        sex: 2
+      },
+      {
+        date: "2023-10-09",
+        name: `Jack`,
+        address: "No. 888, Grove St, Los Angeles",
+        sex: 1
       }
     ];
+    dataList.value = dataList.value.filter(item => {
+      if (searchParams.value.name) {
+        if (
+          !item.name
+            .toUpperCase()
+            .includes(searchParams.value.name.toUpperCase())
+        ) {
+          return false;
+        }
+      }
+      if (searchParams.value.date) {
+        if (!item.date == searchParams.value.date) {
+          return false;
+        }
+      }
+      if (searchParams.value.sex && searchParams.value.sex.length > 0) {
+        if (!searchParams.value.sex.includes(item.sex)) {
+          return false;
+        }
+      }
+      if (searchParams.value.address) {
+        if (
+          !item.address
+            .toUpperCase()
+            .includes(searchParams.value.address.toUpperCase())
+        ) {
+          return false;
+        }
+      }
+      return true;
+    });
     setTimeout(() => {
       loading.value = false;
     }, 1000);
+  }
+
+  function onReFresh() {
+    searchParams.value = {};
+    onSearch();
   }
 
   function displayHeaderFilter() {
@@ -86,6 +128,7 @@ export function useTable() {
     dataList,
     headerFilter,
     onSearch,
+    onReFresh,
     displayHeaderFilter
   };
 }
