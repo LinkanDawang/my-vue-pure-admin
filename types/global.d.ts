@@ -69,9 +69,21 @@ declare global {
   /**
    *  TODO interface ReTableColumns.meta
    */
+  type filterType =
+    | "input"
+    | "date"
+    | "dateRange"
+    | "dateTime"
+    | "dateTimeRange"
+    | "select"
+    | "selectMultiple";
+  interface ReTableColumnMeta {
+    filterType: filterType;
+    selectOptions?: Array;
+  }
   interface ReTableColumns extends TableColumns {
     children?: Array<ReTableColumns>;
-    meta?: any;
+    meta?: ReTableColumnMeta;
   }
 
   /**

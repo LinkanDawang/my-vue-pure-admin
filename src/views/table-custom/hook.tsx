@@ -13,6 +13,11 @@ export function useTable() {
       meta: { filterType: "date" }
     },
     {
+      label: "日期2",
+      prop: "date2",
+      meta: { filterType: "dateRange" }
+    },
+    {
       label: "姓名",
       prop: "name",
       meta: { filterType: "input" }
@@ -21,7 +26,7 @@ export function useTable() {
       label: "性别",
       prop: "sex",
       meta: {
-        filterType: "select",
+        filterType: "selectMultiple",
         selectOptions: [
           { value: 1, label: "男" },
           { value: 2, label: "女" }
@@ -41,68 +46,77 @@ export function useTable() {
       label: "地址",
       prop: "address",
       meta: { filterType: "input" }
+    },
+    {
+      label: "创建时间",
+      prop: "created_at",
+      meta: { filterType: "dateTimeRange" }
+    },
+    {
+      label: "更新时间",
+      prop: "updated_at",
+      meta: { filterType: "dateTimeRange" }
     }
   ];
 
+  function pad(num) {
+    return num.toString().padStart(2, "0");
+  }
+
+  function formatDateTime(date) {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const second = date.getSeconds();
+    return `${year}-${pad(month)}-${pad(day)} ${pad(hour)}:${pad(minute)}:${pad(
+      second
+    )}`;
+  }
+
   async function onSearch() {
     loading.value = true;
+    const now = new Date();
+    const nowStr = formatDateTime(now);
     dataList.value = [
       {
         date: "2023-10-13",
+        date2: "2023-10-13",
         name: `Tom`,
         address: "No. 211, Grove St, Los Angeles",
-        sex: 1
+        sex: 1,
+        created_at: nowStr,
+        updated_at: nowStr
       },
       {
         date: "2023-10-12",
+        date2: "2023-10-13",
         name: `Jenny`,
         address: "No. 189, Grove St, Los Angeles",
-        sex: 2
+        sex: 2,
+        created_at: nowStr,
+        updated_at: nowStr
       },
       {
         date: "2023-10-11",
+        date2: "2023-10-13",
         name: `Penny`,
         address: "No. 432, Grove St, Los Angeles",
-        sex: 2
+        sex: 2,
+        created_at: nowStr,
+        updated_at: nowStr
       },
       {
         date: "2023-10-09",
+        date2: "2023-10-13",
         name: `Jack`,
         address: "No. 888, Grove St, Los Angeles",
-        sex: 1
+        sex: 1,
+        created_at: nowStr,
+        updated_at: nowStr
       }
     ];
-    dataList.value = dataList.value.filter(item => {
-      if (searchParams.value.name) {
-        if (
-          !item.name
-            .toUpperCase()
-            .includes(searchParams.value.name.toUpperCase())
-        ) {
-          return false;
-        }
-      }
-      if (searchParams.value.date) {
-        if (!item.date == searchParams.value.date) {
-          return false;
-        }
-      }
-      if (searchParams.value.sex && searchParams.value.sex.length > 0) {
-        if (!searchParams.value.sex.includes(item.sex)) {
-          return false;
-        }
-      }
-      if (searchParams.value.address) {
-        if (
-          !item.address
-            .toUpperCase()
-            .includes(searchParams.value.address.toUpperCase())
-        ) {
-          return false;
-        }
-      }
-      return true;
-    });
     setTimeout(() => {
       loading.value = false;
     }, 1000);

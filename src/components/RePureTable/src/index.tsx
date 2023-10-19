@@ -122,14 +122,41 @@ export default defineComponent({
                   size={props.size}
                   type="date"
                   placeholder="请选择日期"
+                  format="YYYY-MM-DD"
+                  value-format="YYYY-MM-DD"
                   v-model={searchParams.value[column.prop]}
                   onChange={onSearch}
                 />
-              ) : column.meta.filterType == "select" ? (
+              ) : column.meta.filterType == "dateRange" ? (
+                <el-date-picker
+                  style="width: auto;"
+                  size={props.size}
+                  type="daterange"
+                  start-placeholder="开始"
+                  end-placeholder="结束"
+                  v-model={searchParams.value[column.prop]}
+                  onChange={onSearch}
+                />
+              ) : ["dateTime", "dateTimeRange"].includes(
+                  column.meta.filterType
+                ) ? (
+                <el-date-picker
+                  style="width: auto;"
+                  type="datetimerange"
+                  start-placeholder="开始"
+                  end-placeholder="结束"
+                  format="YYYY-MM-DD HH:mm:ss"
+                  value-format="YYYY-MM-DD HH:mm:ss"
+                  v-model={searchParams.value[column.prop]}
+                  onChange={onSearch}
+                />
+              ) : ["select", "selectMultiple"].includes(
+                  column.meta.filterType
+                ) ? (
                 <el-select
                   size={props.size}
                   clearable
-                  multiple
+                  multiple={column.meta.filterType == "selectMultiple"}
                   collapse-tags
                   collapse-tags-tooltip
                   placeholder="请选择"

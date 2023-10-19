@@ -17,8 +17,8 @@ const pagination = reactive<PaginationProps>({
   background: true
 });
 
-const standTables = ["RePureTable", "PureTable", "ElTable"];
-const showTables = ref(["RePureTable", "PureTable", "ElTable"]);
+const standTables = ["RePureTable", "PureTable"];
+const showTables = ref(["RePureTable", "PureTable"]);
 
 const {
   searchParams,
@@ -58,6 +58,7 @@ const {
         <el-col v-show="showTables.includes(standTables[0])">
           <el-divider>{{ standTables[0] }}</el-divider>
           <RePureTable
+            border
             :columns="dynamicColumns"
             :data="dataList"
             :size="size"
