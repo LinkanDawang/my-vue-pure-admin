@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Lint Code
+    name: Build Production
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -41,7 +41,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: Start Lint Code
+      - name: Start Build Production
         run: |
           pnpm install --no-frozen-lockfile
           pnpm build
