@@ -67,9 +67,29 @@ declare global {
   }
 
   /**
+   *  TODO interface ReTableColumns.meta
+   */
+  type filterType =
+    | "input"
+    | "date"
+    | "dateRange"
+    | "dateTime"
+    | "dateTimeRange"
+    | "select"
+    | "selectMultiple";
+  interface ReTableColumnMeta {
+    filterType: filterType;
+    selectOptions?: Array;
+  }
+  interface ReTableColumns extends TableColumns {
+    children?: Array<ReTableColumns>;
+    meta?: ReTableColumnMeta;
+  }
+
+  /**
    *  继承 `@pureadmin/table` 的 `TableColumns` ，方便全局直接调用
    */
-  interface TableColumnList extends Array<TableColumns> {}
+  interface TableColumnList extends Array<ReTableColumns> {}
 
   /**
    * 对应 `public/serverConfig.json` 文件的类型声明

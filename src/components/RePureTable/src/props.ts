@@ -10,10 +10,6 @@ export default {
     type: Array,
     default: []
   },
-  headerFilter: {
-    type: Boolean,
-    default: true
-  },
   loading: {
     type: Boolean,
     default: false
@@ -65,6 +61,14 @@ export default {
       timeout: 60,
       zIndex: 100
     }
+  },
+  headerFilter: {
+    type: Boolean,
+    default: false
+  },
+  searchParams: {
+    type: Object,
+    default: {}
   },
   ...defaultProps
 };

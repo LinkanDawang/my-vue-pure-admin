@@ -26,15 +26,6 @@ export default {
       meta: {
         title: $t("menus.hsPureTableHigh")
       }
-    },
-    {
-      path: "/pure-table/custom",
-      name: "PureTableCustom",
-      component: () => import("@/views/pure-table/custom.vue"),
-      meta: {
-        // title: $t("menus.hsPureTableHigh")
-        title: "自定义组件"
-      }
     }
   ]
 } as RouteConfigsTable;

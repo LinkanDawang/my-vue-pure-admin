@@ -163,6 +163,7 @@ function switchMenuType(value: number) {
         <el-form-item label="菜单名称" prop="meta">
           <el-select
             v-model="newFormInline.meta.title"
+            allow-create
             placeholder="请选择"
             clearable
             filterable

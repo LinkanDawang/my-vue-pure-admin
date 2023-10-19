@@ -5,5 +5,5 @@ export const apiUrl = (url: string) => {
   if (!url.endsWith("/")) {
     url = `${url}/`;
   }
-  return `/proxy/api/${url}`;
+  return `/api/${url}`;
 };
