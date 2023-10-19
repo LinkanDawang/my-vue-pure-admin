@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-// import { TableColumns } from "@/components/CusTable/types";
 import { RePureTable } from "@/components/RePureTable";
 import { PureTableBar } from "@/components/RePureTableBar";
 import { ReSelect } from "@/components/ReSelect";
