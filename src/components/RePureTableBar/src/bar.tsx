@@ -44,14 +44,27 @@ export default defineComponent({
   props,
   emits: ["refresh", "displayHeaderFilter"],
   setup(props, { emit, slots, attrs }) {
+    const tableBorders = [
+      { value: 0, label: "隐藏" },
+      { value: 1, label: "展示" }
+    ];
+    const tableAligns = [
+      { value: "left", label: "左对齐" },
+      { value: "center", label: "居中" },
+      { value: "right", label: "右对齐" }
+    ];
+    const tableLayouts = [
+      { value: "fixed", label: "固定" },
+      { value: "auto", label: "自动" }
+    ];
+    const showTableBorder = ref(1);
+    const headerAlign = ref("center");
+    const tableLayout = ref("fixed");
     const buttonRef = ref();
     const size = ref("default");
     const isExpandAll = ref(true);
     const loading = ref(false);
     const checkAll = ref(true);
-    const showTableBorder = ref(1);
-    const headerAlign = ref("center");
-    const tableLayout = ref("fixed");
     const isIndeterminate = ref(false);
     const filterColumns = cloneDeep(props?.columns).filter(column =>
       isBoolean(column?.hide)
@@ -352,6 +365,7 @@ export default defineComponent({
               <el-divider direction="vertical" />
               <el-tooltip effect="dark" content="表设置" placement="top">
                 <el-popover
+                  width="300"
                   v-slots={{
                     reference: () => (
                       <IconifyIconOnline
@@ -362,22 +376,39 @@ export default defineComponent({
                   }}
                   trigger="click"
                 >
-                  <div class={[topClass.value]}></div>
-                  <el-select v-model={showTableBorder.value}>
-                    {[1, 0].map(border => (
-                      <el-option value={border} label={border} />
-                    ))}
-                  </el-select>
-                  <el-select v-model={headerAlign.value}>
-                    {["left", "center", "right"].map(alignType => (
-                      <el-option value={alignType} label={alignType} />
-                    ))}
-                  </el-select>
-                  <el-select v-model={tableLayout.value}>
-                    {["fixed", "auto"].map(layout => (
-                      <el-option value={layout} label={layout} />
-                    ))}
-                  </el-select>
+                  <el-row>
+                    <el-col span="8">边框</el-col>
+                    <el-divider span="8" direction="vertical" />
+                    <el-col span="8">
+                      <el-select v-model={showTableBorder.value}>
+                        {tableBorders.map(item => (
+                          <el-option value={item.value} label={item.label} />
+                        ))}
+                      </el-select>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col span="8">对齐</el-col>
+                    <el-divider span="8" direction="vertical" />
+                    <el-col span="8">
+                      <el-select v-model={headerAlign.value}>
+                        {tableAligns.map(item => (
+                          <el-option value={item.value} label={item.label} />
+                        ))}
+                      </el-select>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col span="8">排列</el-col>
+                    <el-divider span="8" direction="vertical" />
+                    <el-col span="8">
+                      <el-select v-model={tableLayout.value}>
+                        {tableLayouts.map(item => (
+                          <el-option value={item.value} label={item.label} />
+                        ))}
+                      </el-select>
+                    </el-col>
+                  </el-row>
                 </el-popover>
               </el-tooltip>
             </div>

@@ -53,17 +53,15 @@ const {
           </el-checkbox-group>
         </div>
       </template>
-      <template v-slot="{ size, dynamicColumns }">
+      <template v-slot="{ size, dynamicColumns, tableConf }">
         <el-col v-show="showTables.includes(standTables[0])">
           <el-divider>{{ standTables[0] }}</el-divider>
           <RePureTable
-            border
+            v-bind="tableConf"
             :columns="dynamicColumns"
             :data="dataList"
             :size="size"
             :loading="loading"
-            align-whole="center"
-            table-layout="fixed"
             :pagination="pagination"
             :paginationSmall="true"
             :header-cell-style="{
