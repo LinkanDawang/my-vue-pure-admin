@@ -106,11 +106,10 @@ const {
           新增角色
         </el-button>
       </template>
-      <template v-slot="{ size, dynamicColumns }">
+      <template v-slot="{ size, dynamicColumns, tableConf }">
         <pure-table
-          align-whole="center"
+          v-bind="tableConf"
           showOverflowTooltip
-          table-layout="auto"
           :loading="loading"
           :size="size"
           adaptive
@@ -132,57 +131,59 @@ const {
             }}</el-tag>
           </template>
           <template #operation="{ row }">
-            <el-button
-              v-if="useUserStoreHook().hasPermission('sys:role:edit')"
-              class="reset-margin"
-              link
-              type="primary"
-              :size="size"
-              :icon="useRenderIcon(EditPen)"
-              @click="openDialog('编辑', row)"
-            >
-              {{ transformI18n("buttons.hsedit") }}
-            </el-button>
-            <el-button
-              v-if="useUserStoreHook().hasPermission('sys:role:permDispatch')"
-              class="reset-margin"
-              link
-              type="primary"
-              :size="size"
-              :icon="useRenderIcon(Menu)"
-              @click="setPermissionDialog(row)"
-            >
-              {{ transformI18n("buttons.hsPermission") }}
-            </el-button>
-            <el-button
-              v-if="useUserStoreHook().hasPermission('sys:role:setMember')"
-              class="reset-margin"
-              link
-              type="primary"
-              :size="size"
-              :icon="useRenderIcon(Group)"
-              @click="setMemberDialog(row)"
-            >
-              {{ transformI18n("buttons.hsSetMember") }}
-            </el-button>
-            <el-popconfirm
-              v-if="useUserStoreHook().hasPermission('sys:role:delete')"
-              :title="`是否确认删除角色名称为${row.name}的这条数据`"
-              @confirm="handleDelete(row)"
-            >
-              <template #reference>
-                <el-button
-                  class="reset-margin"
-                  link
-                  type="danger"
-                  :disabled="row.is_super_role"
-                  :size="size"
-                  :icon="useRenderIcon(Delete)"
-                >
-                  {{ transformI18n("buttons.hsdelete") }}
-                </el-button>
-              </template>
-            </el-popconfirm>
+            <el-space wrap>
+              <el-button
+                v-if="useUserStoreHook().hasPermission('sys:role:edit')"
+                class="reset-margin"
+                link
+                type="primary"
+                :size="size"
+                :icon="useRenderIcon(EditPen)"
+                @click="openDialog('编辑', row)"
+              >
+                {{ transformI18n("buttons.hsedit") }}
+              </el-button>
+              <el-button
+                v-if="useUserStoreHook().hasPermission('sys:role:permDispatch')"
+                class="reset-margin"
+                link
+                type="primary"
+                :size="size"
+                :icon="useRenderIcon(Menu)"
+                @click="setPermissionDialog(row)"
+              >
+                {{ transformI18n("buttons.hsPermission") }}
+              </el-button>
+              <el-button
+                v-if="useUserStoreHook().hasPermission('sys:role:setMember')"
+                class="reset-margin"
+                link
+                type="primary"
+                :size="size"
+                :icon="useRenderIcon(Group)"
+                @click="setMemberDialog(row)"
+              >
+                {{ transformI18n("buttons.hsSetMember") }}
+              </el-button>
+              <el-popconfirm
+                v-if="useUserStoreHook().hasPermission('sys:role:delete')"
+                :title="`是否确认删除角色名称为${row.name}的这条数据`"
+                @confirm="handleDelete(row)"
+              >
+                <template #reference>
+                  <el-button
+                    class="reset-margin"
+                    link
+                    type="danger"
+                    :disabled="row.is_super_role"
+                    :size="size"
+                    :icon="useRenderIcon(Delete)"
+                  >
+                    {{ transformI18n("buttons.hsdelete") }}
+                  </el-button>
+                </template>
+              </el-popconfirm>
+            </el-space>
             <!-- <el-dropdown>
               <el-button
                 class="ml-3 mt-[2px]"

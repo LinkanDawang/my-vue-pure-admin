@@ -15,6 +15,7 @@ import RefreshIcon from "./svg/refresh.svg?component";
 import SettingIcon from "./svg/settings.svg?component";
 import CollapseIcon from "./svg/collapse.svg?component";
 import SearchIcon from "./svg/search.svg?component";
+import { IconifyIconOnline } from "@/components/ReIcon";
 
 const props = {
   /** 头部最左边的标题 */
@@ -48,6 +49,9 @@ export default defineComponent({
     const isExpandAll = ref(true);
     const loading = ref(false);
     const checkAll = ref(true);
+    const showTableBorder = ref(1);
+    const headerAlign = ref("center");
+    const tableLayout = ref("fixed");
     const isIndeterminate = ref(false);
     const filterColumns = cloneDeep(props?.columns).filter(column =>
       isBoolean(column?.hide)
@@ -344,6 +348,38 @@ export default defineComponent({
                   </el-checkbox-group>
                 </div>
               </el-popover>
+
+              <el-divider direction="vertical" />
+              <el-tooltip effect="dark" content="表设置" placement="top">
+                <el-popover
+                  v-slots={{
+                    reference: () => (
+                      <IconifyIconOnline
+                        icon="ep:menu"
+                        onMouseover={e => (buttonRef.value = e.currentTarget)}
+                      />
+                    )
+                  }}
+                  trigger="click"
+                >
+                  <div class={[topClass.value]}></div>
+                  <el-select v-model={showTableBorder.value}>
+                    {[1, 0].map(border => (
+                      <el-option value={border} label={border} />
+                    ))}
+                  </el-select>
+                  <el-select v-model={headerAlign.value}>
+                    {["left", "center", "right"].map(alignType => (
+                      <el-option value={alignType} label={alignType} />
+                    ))}
+                  </el-select>
+                  <el-select v-model={tableLayout.value}>
+                    {["fixed", "auto"].map(layout => (
+                      <el-option value={layout} label={layout} />
+                    ))}
+                  </el-select>
+                </el-popover>
+              </el-tooltip>
             </div>
 
             <el-tooltip
@@ -367,7 +403,13 @@ export default defineComponent({
           </div>
           {slots.default({
             size: size.value,
-            dynamicColumns: dynamicColumns.value
+            dynamicColumns: dynamicColumns.value,
+            tableConf: {
+              // todo 完善表设置
+              border: showTableBorder.value,
+              alignWhole: headerAlign.value,
+              tableLayout: tableLayout.value
+            }
           })}
         </div>
       </>

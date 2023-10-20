@@ -41,22 +41,18 @@ export function useRole() {
   const columns: TableColumnList = [
     {
       label: "ID",
-      prop: "id",
-      minWidth: 100
+      prop: "id"
     },
     {
       label: "角色名称",
-      prop: "name",
-      minWidth: 120
+      prop: "name"
     },
     {
       label: "角色编号",
-      prop: "code",
-      minWidth: 150
+      prop: "code"
     },
     {
       label: "状态",
-      minWidth: 130,
       cellRenderer: scope => (
         <el-switch
           size={scope.props.size === "small" ? "small" : "default"}
@@ -77,30 +73,25 @@ export function useRole() {
     },
     {
       label: "成员",
-      slot: "member",
-      minWidth: 130
+      slot: "member"
     },
     {
       label: "备注",
-      prop: "remark",
-      minWidth: 150
+      prop: "remark"
     },
     {
       label: "创建时间",
-      minWidth: 180,
       prop: "created_at"
       // formatter: ({ createTime }) =>
       //   dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
     },
     {
       label: "修改时间",
-      minWidth: 180,
       prop: "updated_at"
     },
     {
       label: "操作",
       fixed: "right",
-      minWidth: 320,
       slot: "operation"
     }
   ];
