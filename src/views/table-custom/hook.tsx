@@ -1,4 +1,5 @@
 import { onMounted, ref } from "vue";
+import { getRoleColumns } from "@/api/system";
 
 export function useTable() {
   const searchParams = ref({});
@@ -72,6 +73,10 @@ export function useTable() {
   }
 
   async function onSearch() {
+    // fixme axios options请求返回 no content
+    getRoleColumns().then(res => {
+      console.log(res);
+    });
     loading.value = true;
     const now = new Date();
     const nowStr = formatDateTime(now);

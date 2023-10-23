@@ -56,6 +56,11 @@ export const getRoleList = (data?: object) => {
   return http.request<ResultTable>("get", apiUrl("rbac/roles/"), { data });
 };
 
+export const getRoleColumns = () => {
+  // return http.request<ResultTable>("post", "/role", { data });
+  return http.request<postArrayResult>("options", apiUrl("rbac/roles/"), {});
+};
+
 /** 新增角色 */
 export const createRole = (data?: object) => {
   // return http.request<Result>("get", apiUrl("rbac/menus/"));
