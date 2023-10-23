@@ -53,7 +53,8 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
           target: "https://pure.linkandawang.top",
           changeOrigin: true
         }
-      }
+      },
+      cors: false
     },
     plugins: getPluginsList(command, VITE_CDN, VITE_COMPRESSION),
     // https://cn.vitejs.dev/config/dep-optimization-options.html#dep-optimization-options

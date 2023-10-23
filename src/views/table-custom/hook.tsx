@@ -56,6 +56,21 @@ export function useTable() {
     }
   ];
 
+  function getColumns() {
+    // TODO columns字段转换
+    getRoleColumns().then(res => {
+      const rawColumns = res.data ?? [];
+      console.log(rawColumns);
+      const newColumns = rawColumns.map(column => {
+        return {
+          label: column.ui.label,
+          prop: column.key
+        };
+      });
+      console.log(newColumns);
+    });
+  }
+
   function pad(num) {
     return num.toString().padStart(2, "0");
   }
@@ -73,10 +88,6 @@ export function useTable() {
   }
 
   async function onSearch() {
-    // fixme axios options请求返回 no content
-    getRoleColumns().then(res => {
-      console.log(res);
-    });
     loading.value = true;
     const now = new Date();
     const nowStr = formatDateTime(now);
@@ -133,6 +144,7 @@ export function useTable() {
   }
 
   onMounted(() => {
+    getColumns();
     onSearch();
   });
 
