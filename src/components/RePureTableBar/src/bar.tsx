@@ -61,6 +61,7 @@ export default defineComponent({
     const headerAlign = ref("center");
     const tableLayout = ref("fixed");
     const buttonRef = ref();
+    const tableConfRef = ref();
     const size = ref("default");
     const isExpandAll = ref(true);
     const loading = ref(false);
@@ -363,54 +364,95 @@ export default defineComponent({
               </el-popover>
 
               <el-divider direction="vertical" />
-              <el-tooltip effect="dark" content="表设置" placement="top">
-                <el-popover
-                  width="300"
-                  v-slots={{
-                    reference: () => (
-                      <IconifyIconOnline
-                        icon="ep:menu"
-                        onMouseover={e => (buttonRef.value = e.currentTarget)}
-                      />
-                    )
-                  }}
-                  trigger="click"
-                >
-                  <el-row>
-                    <el-col span="8">边框</el-col>
-                    <el-divider span="8" direction="vertical" />
-                    <el-col span="8">
-                      <el-select v-model={showTableBorder.value}>
-                        {tableBorders.map(item => (
-                          <el-option value={item.value} label={item.label} />
-                        ))}
-                      </el-select>
-                    </el-col>
-                  </el-row>
-                  <el-row>
-                    <el-col span="8">对齐</el-col>
-                    <el-divider span="8" direction="vertical" />
-                    <el-col span="8">
-                      <el-select v-model={headerAlign.value}>
-                        {tableAligns.map(item => (
-                          <el-option value={item.value} label={item.label} />
-                        ))}
-                      </el-select>
-                    </el-col>
-                  </el-row>
-                  <el-row>
-                    <el-col span="8">排列</el-col>
-                    <el-divider span="8" direction="vertical" />
-                    <el-col span="8">
-                      <el-select v-model={tableLayout.value}>
-                        {tableLayouts.map(item => (
-                          <el-option value={item.value} label={item.label} />
-                        ))}
-                      </el-select>
-                    </el-col>
-                  </el-row>
-                </el-popover>
-              </el-tooltip>
+              <el-popover
+                width="180"
+                v-slots={{
+                  reference: () => (
+                    <IconifyIconOnline
+                      class={["w-[16px]", iconClass.value]}
+                      icon="ep:menu"
+                      onMouseover={e => (tableConfRef.value = e.currentTarget)}
+                    />
+                  )
+                }}
+                trigger="click"
+              >
+                <el-row>
+                  <el-col
+                    span={6}
+                    style={
+                      "display: flex; justify-content: center; align-items: center;"
+                    }
+                  >
+                    边框
+                  </el-col>
+                  <el-col
+                    span={3}
+                    style={
+                      "display: flex; justify-content: center; align-items: center;"
+                    }
+                  >
+                    <el-divider align={"center"} direction="vertical" />
+                  </el-col>
+                  <el-col span={15}>
+                    <el-select v-model={showTableBorder.value}>
+                      {tableBorders.map(item => (
+                        <el-option value={item.value} label={item.label} />
+                      ))}
+                    </el-select>
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col
+                    span={6}
+                    style={
+                      "display: flex; justify-content: center; align-items: center;"
+                    }
+                  >
+                    对齐
+                  </el-col>
+                  <el-col
+                    span={3}
+                    style={
+                      "display: flex; justify-content: center; align-items: center;"
+                    }
+                  >
+                    <el-divider direction="vertical" />
+                  </el-col>
+                  <el-col span={15}>
+                    <el-select v-model={headerAlign.value}>
+                      {tableAligns.map(item => (
+                        <el-option value={item.value} label={item.label} />
+                      ))}
+                    </el-select>
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col
+                    span={6}
+                    style={
+                      "display: flex; justify-content: center; align-items: center;"
+                    }
+                  >
+                    排列
+                  </el-col>
+                  <el-col
+                    span={3}
+                    style={
+                      "display: flex; justify-content: center; align-items: center;"
+                    }
+                  >
+                    <el-divider direction="vertical" />
+                  </el-col>
+                  <el-col span={15}>
+                    <el-select v-model={tableLayout.value}>
+                      {tableLayouts.map(item => (
+                        <el-option value={item.value} label={item.label} />
+                      ))}
+                    </el-select>
+                  </el-col>
+                </el-row>
+              </el-popover>
             </div>
 
             <el-tooltip
@@ -432,12 +474,30 @@ export default defineComponent({
               content="列设置"
             />
           </div>
+          <el-tooltip
+            popper-options={{
+              modifiers: [
+                {
+                  name: "computeStyles",
+                  options: {
+                    adaptive: false,
+                    enabled: false
+                  }
+                }
+              ]
+            }}
+            placement="top"
+            virtual-ref={tableConfRef.value}
+            virtual-triggering
+            trigger="hover"
+            content="表设置"
+          />
           {slots.default({
             size: size.value,
             dynamicColumns: dynamicColumns.value,
             tableConf: {
               // todo 完善表设置
-              border: showTableBorder.value,
+              border: Boolean(showTableBorder.value),
               alignWhole: headerAlign.value,
               tableLayout: tableLayout.value
             }
