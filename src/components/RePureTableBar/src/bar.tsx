@@ -57,9 +57,10 @@ export default defineComponent({
       { value: "fixed", label: "固定" },
       { value: "auto", label: "自动" }
     ];
-    const showTableBorder = ref(1);
+    const showTableBorder = ref(0);
     const headerAlign = ref("center");
     const tableLayout = ref("fixed");
+    const tableStripe = ref(0);
     const buttonRef = ref();
     const tableConfRef = ref();
     const size = ref("default");
@@ -365,7 +366,7 @@ export default defineComponent({
 
               <el-divider direction="vertical" />
               <el-popover
-                width="180"
+                width="240"
                 v-slots={{
                   reference: () => (
                     <IconifyIconOnline
@@ -452,6 +453,31 @@ export default defineComponent({
                     </el-select>
                   </el-col>
                 </el-row>
+                <el-row>
+                  <el-col
+                    span={6}
+                    style={
+                      "display: flex; justify-content: center; align-items: center;"
+                    }
+                  >
+                    <p>斑马纹</p>
+                  </el-col>
+                  <el-col
+                    span={3}
+                    style={
+                      "display: flex; justify-content: center; align-items: center;"
+                    }
+                  >
+                    <el-divider direction="vertical" />
+                  </el-col>
+                  <el-col span={15}>
+                    <el-select v-model={tableStripe.value}>
+                      {tableBorders.map(item => (
+                        <el-option value={item.value} label={item.label} />
+                      ))}
+                    </el-select>
+                  </el-col>
+                </el-row>
               </el-popover>
             </div>
 
@@ -497,6 +523,7 @@ export default defineComponent({
             dynamicColumns: dynamicColumns.value,
             tableConf: {
               // todo 完善表设置
+              stripe: Boolean(tableStripe.value),
               border: Boolean(showTableBorder.value),
               alignWhole: headerAlign.value,
               tableLayout: tableLayout.value

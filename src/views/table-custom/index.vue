@@ -59,6 +59,7 @@ const {
           <RePureTable
             v-bind="tableConf"
             :columns="dynamicColumns"
+            highlight-current-row
             :data="dataList"
             :size="size"
             :loading="loading"
