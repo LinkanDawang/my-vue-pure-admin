@@ -11,6 +11,7 @@ import Search from "@iconify-icons/ep/search";
 import Refresh from "@iconify-icons/ep/refresh";
 // import Operation from "@iconify-icons/ep/operation";
 import AddFill from "@iconify-icons/ri/add-circle-line";
+import { useUserStoreHook } from "@/store/modules/user";
 
 defineOptions({
   // eslint-disable-next-line vue/no-reserved-component-names
@@ -33,6 +34,13 @@ const {
   handleDelete,
   handleSelectionChange
 } = useMenu();
+
+const permissionMap = {
+  add: useUserStoreHook().hasPermission("sys:menu:add"),
+  edit: useUserStoreHook().hasPermission("sys:menu:edit"),
+  delete: useUserStoreHook().hasPermission("sys:menu:delete"),
+  buttons: useUserStoreHook().hasPermission("sys:menu:buttons")
+};
 </script>
 
 <template>
@@ -86,6 +94,7 @@ const {
     >
       <template #buttons>
         <el-button
+          v-if="permissionMap.add"
           type="primary"
           :icon="useRenderIcon(AddFill)"
           @click="openDialog()"
@@ -95,17 +104,16 @@ const {
           }}
         </el-button>
       </template>
-      <template v-slot="{ size, dynamicColumns }">
+      <template v-slot="{ size, dynamicColumns, tableConf }">
         <pure-table
           ref="tableRef"
+          v-bind="tableConf"
           adaptive
           :adaptiveConfig="{ offsetBottom: 32 }"
-          align-whole="center"
           row-key="id"
           :size="size"
           showOverflowTooltip
           tooltip-effect="dark"
-          table-layout="auto"
           default-expand-all
           :loading="loading"
           :data="dataList"
@@ -117,47 +125,45 @@ const {
           @selection-change="handleSelectionChange"
         >
           <template #operation="{ row }">
-            <el-row>
-              <el-col :span="8">
-                <el-button
-                  class="reset-margin"
-                  link
-                  type="primary"
-                  :icon="useRenderIcon(EditPen)"
-                  @click="openDialog('编辑', JSON.parse(JSON.stringify(row)))"
-                >
-                  {{ transformI18n("buttons.hsedit") }}
-                </el-button>
-              </el-col>
-              <el-col :span="8">
-                <el-popconfirm
-                  :title="`是否确认删除部门名称为${row.name}的这条数据`"
-                  @confirm="handleDelete(row)"
-                >
-                  <template #reference>
-                    <el-button
-                      class="reset-margin"
-                      link
-                      type="danger"
-                      :icon="useRenderIcon(Delete)"
-                    >
-                      {{ transformI18n("buttons.hsdelete") }}
-                    </el-button>
-                  </template>
-                </el-popconfirm>
-              </el-col>
-              <el-col :span="8" v-show="row.type === menuTypes.page.value">
-                <el-button
-                  class="reset-margin"
-                  link
-                  type="primary"
-                  :icon="useRenderIcon('fa:hand-pointer-o')"
-                  @click="buttonsDialog(JSON.parse(JSON.stringify(row)))"
-                >
-                  {{ transformI18n("buttons.hsbutton") }}
-                </el-button>
-              </el-col>
-            </el-row>
+            <el-space wrap>
+              <el-button
+                v-if="permissionMap.edit"
+                class="reset-margin"
+                link
+                type="primary"
+                :icon="useRenderIcon(EditPen)"
+                @click="openDialog('编辑', JSON.parse(JSON.stringify(row)))"
+              >
+                {{ transformI18n("buttons.hsedit") }}
+              </el-button>
+              <el-popconfirm
+                :title="`是否确认删除部门名称为${row.name}的这条数据`"
+                @confirm="handleDelete(row)"
+              >
+                <template #reference>
+                  <el-button
+                    v-if="permissionMap.delete"
+                    class="reset-margin"
+                    link
+                    type="danger"
+                    :icon="useRenderIcon(Delete)"
+                  >
+                    {{ transformI18n("buttons.hsdelete") }}
+                  </el-button>
+                </template>
+              </el-popconfirm>
+              <el-button
+                v-if="permissionMap.buttons"
+                v-show="row.type === menuTypes.page.value"
+                class="reset-margin"
+                link
+                type="primary"
+                :icon="useRenderIcon('fa:hand-pointer-o')"
+                @click="buttonsDialog(JSON.parse(JSON.stringify(row)))"
+              >
+                {{ transformI18n("buttons.hsbutton") }}
+              </el-button>
+            </el-space>
           </template>
         </pure-table>
       </template>

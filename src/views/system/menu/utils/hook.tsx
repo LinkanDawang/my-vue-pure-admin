@@ -17,6 +17,7 @@ import { cloneDeep, isAllEmpty } from "@pureadmin/utils";
 import { transformI18n } from "@/plugins/i18n";
 import { IconifyIconOnline } from "@/components/ReIcon";
 import { onStatusChange, usePublicHooks } from "@/utils/common";
+import { useUserStoreHook } from "@/store/modules/user";
 
 export function useMenu() {
   const form = reactive({
@@ -114,6 +115,7 @@ export function useMenu() {
           size={scope.props.size === "small" ? "small" : "default"}
           loading={switchLoadMap.value[scope.index]?.loading}
           v-model={scope.row.status}
+          disabled={!useUserStoreHook().hasPermission("sys:menu:edit")}
           active-value={50}
           inactive-value={100}
           active-text="已启用"

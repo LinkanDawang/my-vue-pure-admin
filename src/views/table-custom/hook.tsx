@@ -56,6 +56,7 @@ export function useTable() {
     }
   ];
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function getColumns() {
     // TODO columns字段转换
     getRoleColumns().then(res => {

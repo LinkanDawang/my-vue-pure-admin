@@ -20,6 +20,7 @@ import {
 import { type PaginationProps } from "@pureadmin/table";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
 import { usePublicHooks, onStatusChange } from "@/utils/common";
+import { useUserStoreHook } from "@/store/modules/user";
 
 export function useRole() {
   const form = reactive({
@@ -58,7 +59,10 @@ export function useRole() {
           size={scope.props.size === "small" ? "small" : "default"}
           loading={switchLoadMap.value[scope.index]?.loading}
           v-model={scope.row.status}
-          disabled={scope.row.is_super_role}
+          disabled={
+            scope.row.is_super_role ||
+            !useUserStoreHook().hasPermission("sys:role:edit")
+          }
           active-value={50}
           inactive-value={100}
           active-text="已启用"
