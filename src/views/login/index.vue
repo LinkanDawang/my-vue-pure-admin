@@ -103,6 +103,10 @@ function onkeypress({ code }: KeyboardEvent) {
   }
 }
 
+function unLinkage() {
+  message("抱歉，暂未接入该平台", { type: "warning" });
+}
+
 onMounted(() => {
   window.document.addEventListener("keypress", onkeypress);
 });
@@ -284,6 +288,7 @@ watch(imgCode, value => {
                 >
                   <IconifyIconOnline
                     :icon="`ri:${item.icon}-fill`"
+                    @click="unLinkage"
                     width="20"
                     class="cursor-pointer text-gray-500 hover:text-blue-400"
                   />
