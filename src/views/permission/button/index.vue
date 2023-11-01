@@ -12,10 +12,10 @@ const elStyle = computed((): CSSProperties => {
     justifyContent: "start"
   };
 });
+// 使用 useUserStore().hasPermission("permissionCode")代替
 </script>
 
 <template>
-  <!-- 使用 useUserStore().hasPermission("permissionCode")代替	-->
   <el-space direction="vertical" size="large">
     <el-tag :style="elStyle" size="large" effect="dark">
       当前拥有的code列表：{{ getAuths() }}
