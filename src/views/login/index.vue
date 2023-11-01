@@ -103,12 +103,73 @@ function onkeypress({ code }: KeyboardEvent) {
   }
 }
 
-function unLinkage() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
+function dingTalkOauthRedirect() {
+  // const redirectUrl = "http://localhost:8848/accounts/dingtalk/login/callback/";
+  // const redirectUrl =
+  //   "http://localhost:8848/accounts/cus-dingtalk/login/callback/";
+  const redirectUrl = "http://localhost:8848";
+  const clientId = "dingiofqb4odmmpw9end";
+  const state = "12345";
+
+  window.location.href =
+    "https://login.dingtalk.com/oauth2/auth?" +
+    `redirect_uri=${redirectUrl}` +
+    "&response_type=code" +
+    `&client_id=${clientId}` +
+    "&scope=openid+corpid" +
+    `&state=${state}` +
+    "&prompt=consent";
+}
+
+function unLinkage(platForm: string) {
+  console.log(platForm);
   message("抱歉，暂未接入该平台", { type: "warning" });
+  return;
+  // if (platForm == "dingding") {
+  //   dingTalkOauthRedirect();
+  // } else {
+  //   message("抱歉，暂未接入该平台", { type: "warning" });
+  // }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
+function dingTalkOauth() {
+  const urlSearch = window.location.search;
+  if (urlSearch) {
+    const qsString = urlSearch.split("?")[1];
+    const qs = qsString.split("&");
+    const postData = {};
+    for (let i = 0; i < qs.length; i++) {
+      const [k, v] = qs[i].split("=");
+      if (k == "authCode") {
+        postData["code"] = v;
+      } else {
+        postData[k] = v;
+      }
+    }
+    useUserStoreHook()
+      .loginByDinTalk(postData)
+      .then(res => {
+        console.log(res);
+        if (res.ret == 200) {
+          // 获取后端路由
+          initRouter().then(() => {
+            router.push(getTopMenu(true).path);
+            message("登录成功", { type: "success" });
+            // window.location.href = "/";
+          });
+        }
+      })
+      .catch(() => {
+        loading.value = false;
+      });
+  }
 }
 
 onMounted(() => {
   window.document.addEventListener("keypress", onkeypress);
+  // dingTalkOauth();
 });
 
 onBeforeUnmount(() => {
@@ -288,7 +349,7 @@ watch(imgCode, value => {
                 >
                   <IconifyIconOnline
                     :icon="`ri:${item.icon}-fill`"
-                    @click="unLinkage"
+                    @click="unLinkage(item.icon)"
                     width="20"
                     class="cursor-pointer text-gray-500 hover:text-blue-400"
                   />

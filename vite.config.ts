@@ -45,14 +45,22 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
       // 本地跨域代理 https://cn.vitejs.dev/config/server-options.html#server-proxy
       proxy: {
         "/api": {
-          target: "https://pure.linkandawang.top",
+          target: "http://127.0.0.1:8000",
           changeOrigin: true
           // rewrite: path => path.replace(/^\/proxy/, "")
+        },
+        "/static-backend": {
+          target: "http://127.0.0.1:8000",
+          changeOrigin: true
+        },
+        "/accounts": {
+          target: "http://127.0.0.1:8000",
+          changeOrigin: true
+        },
+        "/dj-rest-auth": {
+          target: "http://127.0.0.1:8000",
+          changeOrigin: true
         }
-        // "/static-backend": {
-        //   target: "https://pure.linkandawang.top",
-        //   changeOrigin: true
-        // }
       },
       cors: false
     },
