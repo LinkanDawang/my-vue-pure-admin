@@ -46,6 +46,7 @@ defineOptions({
 const imgCode = ref("");
 const router = useRouter();
 const loading = ref(false);
+const oauthLoading = ref(false);
 const checked = ref(false);
 const ruleFormRef = ref<FormInstance>();
 const currentPage = computed(() => {
@@ -106,7 +107,7 @@ function onkeypress({ code }: KeyboardEvent) {
 
 function dingTalkOauthRedirect() {
   const redirectUrl = encodeURIComponent(
-    "http://localhost:8848/?platform=dingTalk"
+    `${location.origin}/?platform=dingTalk`
   );
   const clientId = "dingiofqb4odmmpw9end";
   const state = "12345";
@@ -147,7 +148,7 @@ function dingTalkOauth(postData) {
       }
     })
     .catch(() => {
-      loading.value = false;
+      oauthLoading.value = true;
     });
 }
 
@@ -171,6 +172,7 @@ function checkOauth2Login() {
   const platform = params.platform;
   delete params["platform"];
   if (!platform) return;
+  oauthLoading.value = true;
   if (platform === "dingTalk") {
     dingTalkOauth(params);
   }
@@ -178,6 +180,7 @@ function checkOauth2Login() {
 
 onMounted(() => {
   checkOauth2Login();
+  // oauthLoading.value = false;
   window.document.addEventListener("keypress", onkeypress);
 });
 
@@ -248,132 +251,140 @@ watch(imgCode, value => {
             </h2>
           </Motion>
 
-          <el-form
-            v-if="currentPage === 0"
-            ref="ruleFormRef"
-            :model="ruleForm"
-            :rules="loginRules"
-            size="large"
-          >
-            <Motion :delay="100">
-              <el-form-item
-                :rules="[
-                  {
-                    required: true,
-                    message: transformI18n($t('login.usernameReg')),
-                    trigger: 'blur'
-                  }
-                ]"
-                prop="username"
-              >
-                <el-input
-                  clearable
-                  v-model="ruleForm.username"
-                  :placeholder="t('login.username')"
-                  :prefix-icon="useRenderIcon(User)"
-                />
-              </el-form-item>
-            </Motion>
-
-            <Motion :delay="150">
-              <el-form-item prop="password">
-                <el-input
-                  clearable
-                  show-password
-                  v-model="ruleForm.password"
-                  :placeholder="t('login.password')"
-                  :prefix-icon="useRenderIcon(Lock)"
-                />
-              </el-form-item>
-            </Motion>
-
-            <Motion :delay="200">
-              <el-form-item prop="verifyCode">
-                <el-input
-                  clearable
-                  v-model="ruleForm.verifyCode"
-                  :placeholder="t('login.verifyCode')"
-                  :prefix-icon="useRenderIcon('ri:shield-keyhole-line')"
+          <div v-loading="oauthLoading" element-loading-text="Loading...">
+            <el-form
+              v-if="currentPage === 0"
+              ref="ruleFormRef"
+              :model="ruleForm"
+              :rules="loginRules"
+              size="large"
+            >
+              <Motion :delay="100">
+                <el-form-item
+                  :rules="[
+                    {
+                      required: true,
+                      message: transformI18n($t('login.usernameReg')),
+                      trigger: 'blur'
+                    }
+                  ]"
+                  prop="username"
                 >
-                  <template v-slot:append>
-                    <ReImageVerify v-model:code="imgCode" />
-                  </template>
-                </el-input>
-              </el-form-item>
-            </Motion>
+                  <el-input
+                    clearable
+                    v-model="ruleForm.username"
+                    :placeholder="t('login.username')"
+                    :prefix-icon="useRenderIcon(User)"
+                  />
+                </el-form-item>
+              </Motion>
 
-            <Motion :delay="250">
-              <el-form-item>
-                <div class="w-full h-[20px] flex justify-between items-center">
-                  <el-checkbox v-model="checked">
-                    {{ t("login.remember") }}
-                  </el-checkbox>
-                  <el-button
-                    link
-                    type="primary"
-                    @click="useUserStoreHook().SET_CURRENTPAGE(4)"
+              <Motion :delay="150">
+                <el-form-item prop="password">
+                  <el-input
+                    clearable
+                    show-password
+                    v-model="ruleForm.password"
+                    :placeholder="t('login.password')"
+                    :prefix-icon="useRenderIcon(Lock)"
+                  />
+                </el-form-item>
+              </Motion>
+
+              <Motion :delay="200">
+                <el-form-item prop="verifyCode">
+                  <el-input
+                    clearable
+                    v-model="ruleForm.verifyCode"
+                    :placeholder="t('login.verifyCode')"
+                    :prefix-icon="useRenderIcon('ri:shield-keyhole-line')"
                   >
-                    {{ t("login.forget") }}
-                  </el-button>
-                </div>
-                <el-button
-                  class="w-full mt-4"
-                  size="default"
-                  type="primary"
-                  :loading="loading"
-                  @click="onLogin(ruleFormRef)"
-                >
-                  {{ t("login.login") }}
-                </el-button>
-              </el-form-item>
-            </Motion>
+                    <template v-slot:append>
+                      <ReImageVerify v-model:code="imgCode" />
+                    </template>
+                  </el-input>
+                </el-form-item>
+              </Motion>
 
-            <Motion :delay="300">
-              <el-form-item>
-                <div class="w-full h-[20px] flex justify-between items-center">
+              <Motion :delay="250">
+                <el-form-item>
+                  <div
+                    class="w-full h-[20px] flex justify-between items-center"
+                  >
+                    <el-checkbox v-model="checked">
+                      {{ t("login.remember") }}
+                    </el-checkbox>
+                    <el-button
+                      link
+                      type="primary"
+                      @click="useUserStoreHook().SET_CURRENTPAGE(4)"
+                    >
+                      {{ t("login.forget") }}
+                    </el-button>
+                  </div>
                   <el-button
-                    v-for="(item, index) in operates"
-                    :key="index"
                     class="w-full mt-4"
                     size="default"
-                    @click="useUserStoreHook().SET_CURRENTPAGE(index + 1)"
+                    type="primary"
+                    :loading="loading"
+                    @click="onLogin(ruleFormRef)"
                   >
-                    {{ t(item.title) }}
+                    {{ t("login.login") }}
                   </el-button>
+                </el-form-item>
+              </Motion>
+
+              <Motion :delay="300">
+                <el-form-item>
+                  <div
+                    class="w-full h-[20px] flex justify-between items-center"
+                  >
+                    <el-button
+                      v-for="(item, index) in operates"
+                      :key="index"
+                      class="w-full mt-4"
+                      size="default"
+                      @click="useUserStoreHook().SET_CURRENTPAGE(index + 1)"
+                    >
+                      {{ t(item.title) }}
+                    </el-button>
+                  </div>
+                </el-form-item>
+              </Motion>
+            </el-form>
+
+            <Motion v-if="currentPage === 0" :delay="350">
+              <el-form-item>
+                <el-divider>
+                  <p class="text-gray-500 text-xs">
+                    {{ t("login.thirdLogin") }}
+                  </p>
+                </el-divider>
+                <div class="w-full flex justify-evenly">
+                  <span
+                    v-for="(item, index) in thirdParty"
+                    :key="index"
+                    :title="t(item.title)"
+                  >
+                    <IconifyIconOnline
+                      :icon="`ri:${item.icon}-fill`"
+                      @click="unLinkage(item.icon)"
+                      width="20"
+                      class="cursor-pointer text-gray-500 hover:text-blue-400"
+                    />
+                  </span>
                 </div>
               </el-form-item>
             </Motion>
-          </el-form>
-
-          <Motion v-if="currentPage === 0" :delay="350">
-            <el-form-item>
-              <el-divider>
-                <p class="text-gray-500 text-xs">{{ t("login.thirdLogin") }}</p>
-              </el-divider>
-              <div class="w-full flex justify-evenly">
-                <span
-                  v-for="(item, index) in thirdParty"
-                  :key="index"
-                  :title="t(item.title)"
-                >
-                  <IconifyIconOnline
-                    :icon="`ri:${item.icon}-fill`"
-                    @click="unLinkage(item.icon)"
-                    width="20"
-                    class="cursor-pointer text-gray-500 hover:text-blue-400"
-                  />
-                </span>
-              </div>
-            </el-form-item>
-          </Motion>
-          <!-- 手机号登录 -->
-          <phone v-if="currentPage === 1" />
-          <!-- 二维码登录 -->
-          <qrCode v-if="currentPage === 2" />
-          <!-- 注册 -->
-          <regist v-if="currentPage === 3" />
-          <!-- 忘记密码 -->
-          <update v-if="currentPage === 4" />
+            <!-- 手机号登录 -->
+            <phone v-if="currentPage === 1" />
+            <!-- 二维码登录 -->
+            <qrCode v-if="currentPage === 2" />
+            <!-- 注册 -->
+            <regist v-if="currentPage === 3" />
+            <!-- 忘记密码 -->
+            <update v-if="currentPage === 4" />
+          </div>
         </div>
       </div>
     </div>
