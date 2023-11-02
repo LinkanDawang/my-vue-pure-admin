@@ -137,7 +137,7 @@ class PureHttp {
         // fixMe 处理后端同意http status_code == 200 的情况
         if (respData.ret >= 400) {
           if (respData.ret == 401) {
-            message("身份信息已失效", { type: "error" });
+            // message("身份信息已失效", { type: "error" });
             useUserStoreHook().logOut();
           }
 

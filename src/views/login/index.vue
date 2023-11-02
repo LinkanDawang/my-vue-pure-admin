@@ -37,6 +37,7 @@ import globalization from "@/assets/svg/globalization.svg?component";
 import Lock from "@iconify-icons/ri/lock-fill";
 import Check from "@iconify-icons/ep/check";
 import User from "@iconify-icons/ri/user-3-fill";
+import { subBefore } from "@pureadmin/utils";
 
 defineOptions({
   name: "Login"
@@ -103,12 +104,10 @@ function onkeypress({ code }: KeyboardEvent) {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
 function dingTalkOauthRedirect() {
-  // const redirectUrl = "http://localhost:8848/accounts/dingtalk/login/callback/";
-  // const redirectUrl =
-  //   "http://localhost:8848/accounts/cus-dingtalk/login/callback/";
-  const redirectUrl = "http://localhost:8848";
+  const redirectUrl = encodeURIComponent(
+    "http://localhost:8848/?platform=dingTalk"
+  );
   const clientId = "dingiofqb4odmmpw9end";
   const state = "12345";
 
@@ -123,53 +122,63 @@ function dingTalkOauthRedirect() {
 }
 
 function unLinkage(platForm: string) {
-  console.log(platForm);
-  message("抱歉，暂未接入该平台", { type: "warning" });
-  return;
-  // if (platForm == "dingding") {
-  //   dingTalkOauthRedirect();
-  // } else {
-  //   message("抱歉，暂未接入该平台", { type: "warning" });
-  // }
+  if (platForm == "dingding") {
+    dingTalkOauthRedirect();
+  } else {
+    message("抱歉，暂未接入该平台", { type: "warning" });
+  }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
-function dingTalkOauth() {
-  const urlSearch = window.location.search;
-  if (urlSearch) {
-    const qsString = urlSearch.split("?")[1];
-    const qs = qsString.split("&");
-    const postData = {};
-    for (let i = 0; i < qs.length; i++) {
-      const [k, v] = qs[i].split("=");
-      if (k == "authCode") {
-        postData["code"] = v;
-      } else {
-        postData[k] = v;
+function dingTalkOauth(postData) {
+  useUserStoreHook()
+    .loginByDinTalk(postData)
+    .then(res => {
+      if (res.ret == 200) {
+        // 获取后端路由
+        initRouter().then(() => {
+          // router.push(getTopMenu(true).path);
+          message("登录成功", { type: "success" });
+          const newUrl = `${location.origin}${location.pathname}${subBefore(
+            location.hash,
+            "?"
+          )}`;
+          window.location.replace(newUrl);
+        });
       }
+    })
+    .catch(() => {
+      loading.value = false;
+    });
+}
+
+function checkOauth2Login() {
+  if (!location.search) return;
+  const qsString = location.search.split("?")[1];
+  const qs = qsString.split("&");
+  const params = {
+    platform: "",
+    code: "",
+    state: ""
+  };
+  for (let i = 0; i < qs.length; i++) {
+    const [k, v] = qs[i].split("=");
+    if (k == "authCode") {
+      params.code = v;
+    } else {
+      params[k] = v;
     }
-    useUserStoreHook()
-      .loginByDinTalk(postData)
-      .then(res => {
-        console.log(res);
-        if (res.ret == 200) {
-          // 获取后端路由
-          initRouter().then(() => {
-            router.push(getTopMenu(true).path);
-            message("登录成功", { type: "success" });
-            // window.location.href = "/";
-          });
-        }
-      })
-      .catch(() => {
-        loading.value = false;
-      });
+  }
+  const platform = params.platform;
+  delete params["platform"];
+  if (!platform) return;
+  if (platform === "dingTalk") {
+    dingTalkOauth(params);
   }
 }
 
 onMounted(() => {
+  checkOauth2Login();
   window.document.addEventListener("keypress", onkeypress);
-  // dingTalkOauth();
 });
 
 onBeforeUnmount(() => {
