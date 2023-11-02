@@ -109,7 +109,7 @@ function dingTalkOauthRedirect() {
   const redirectUrl = encodeURIComponent(
     `${location.origin}/?platform=dingTalk`
   );
-  const clientId = "dingiofqb4odmmpw9end";
+  const clientId = import.meta.env.VITE_DING_TALK_APPID;
   const state = "12345";
 
   window.location.href =
