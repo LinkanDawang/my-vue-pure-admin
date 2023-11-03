@@ -19,6 +19,7 @@ export interface DataInfo<T> {
     /** 当前登陆用户的角色 */
     roles?: Array<string>;
   };
+  loginType: number;
 }
 
 export const sessionKey = "user-info";

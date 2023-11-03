@@ -1,6 +1,12 @@
 import { http } from "@/utils/http";
 import { apiUrl } from "@/api/utils";
 
+export type BaseResult = {
+  success: boolean;
+  ret: number;
+  data?: any;
+};
+
 export type UserResult = {
   success: boolean;
   ret?: number;
@@ -115,12 +121,16 @@ export const oauth2RevokeTokenApi = (data: object) => {
   };
   data["client_id"] = oauthAppId;
   data["client_secret"] = oauthAppSecret;
-  return http.request<OauthTokenResult>(
+  return http.request<any>(
     "post",
     apiUrl("o/revoke_token"),
     { data },
     { ...axiosConfig }
   );
+};
+
+export const userLogout = () => {
+  return http.request<BaseResult>("get", apiUrl("users/logout"));
 };
 
 export const userInfoApi = () => {

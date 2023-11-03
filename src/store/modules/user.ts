@@ -4,13 +4,15 @@ import { userType } from "./types";
 import { message } from "@/utils/message";
 import { routerArrays } from "@/layout/types";
 import { router, resetRouter } from "@/router";
-import { storageSession } from "@pureadmin/utils";
+import { storageSession, cloneDeep } from "@pureadmin/utils";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // import { getLogin, refreshTokenApi, UserResult, RefreshTokenResult } from "@/api/user";
 import {
   oauth2TokenApi,
+  oauth2RevokeTokenApi,
   userInfoApi,
   dingTalkLogin,
+  userLogout,
   type OauthTokenResult,
   UserInfoResult
 } from "@/api/user";
@@ -23,6 +25,11 @@ import {
   sessionKey,
   permissionKey
 } from "@/utils/auth";
+
+const LoginType = {
+  oauth: 1,
+  sysOrThird: 2
+};
 
 export const useUserStore = defineStore({
   id: "pure-user",
@@ -67,7 +74,9 @@ export const useUserStore = defineStore({
         oauth2TokenApi(data, "password")
           .then(res => {
             if (res) {
-              setToken(res.data);
+              const resData = cloneDeep(res.data);
+              resData["loginType"] = LoginType.oauth;
+              setToken(resData);
               resolve(res);
             }
           })
@@ -92,7 +101,9 @@ export const useUserStore = defineStore({
         dingTalkLogin(data)
           .then(res => {
             if (res) {
-              setToken(res.data);
+              const resData = cloneDeep(res.data);
+              resData["loginType"] = LoginType.sysOrThird;
+              setToken(resData);
               resolve(res);
             }
           })
@@ -106,6 +117,13 @@ export const useUserStore = defineStore({
     },
     /** 前端登出（不调用接口） */
     logOut() {
+      const tokenData = storageSession().getItem<DataInfo<any>>(sessionKey);
+      if (tokenData.loginType === LoginType.oauth) {
+        const tokenObj = { token: tokenData.accessToken };
+        oauth2RevokeTokenApi(tokenObj).then();
+      } else {
+        userLogout().then();
+      }
       this.username = "";
       this.roles = [];
       removeToken();
@@ -120,7 +138,9 @@ export const useUserStore = defineStore({
         oauth2TokenApi(data, "refresh_token")
           .then(res => {
             if (res) {
-              setToken(res.data);
+              const resData = cloneDeep(res.data);
+              resData["loginType"] = LoginType.oauth;
+              setToken(resData);
               resolve(res);
             }
           })

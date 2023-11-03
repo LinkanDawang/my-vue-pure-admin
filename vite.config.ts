@@ -53,6 +53,11 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
           target: VITE_BACKEND_SERVER,
           changeOrigin: true
           // rewrite: path => path.replace(/^\/proxy/, "")
+        },
+        "/backend": {
+          target: VITE_BACKEND_SERVER,
+          changeOrigin: true
+          // rewrite: path => path.replace(/^\/proxy/, "")
         }
       },
       cors: false
