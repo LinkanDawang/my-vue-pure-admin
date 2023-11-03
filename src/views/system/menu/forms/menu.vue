@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<FormProps>(), {
     redirect: "",
     order: 0,
     status: 1,
-    meta: { title: "", icon: "", rank: null, code: "" },
+    meta: { title: "", icon: "", rank: null, code: "", keepAlive: true },
     type: 1,
     menuTransName: ""
   })
@@ -284,6 +284,19 @@ function switchMenuType(value: number) {
             clearable
             placeholder=""
             @input="setMetaFrameSrc"
+          />
+        </el-form-item>
+      </re-col>
+      <re-col v-if="newFormInline.type == 2">
+        <el-form-item label="页面保持">
+          <el-switch
+            v-model="newFormInline.meta.keepAlive"
+            inline-prompt
+            :active-value="true"
+            :inactive-value="false"
+            active-text="开"
+            inactive-text="关"
+            :style="switchStyle"
           />
         </el-form-item>
       </re-col>
