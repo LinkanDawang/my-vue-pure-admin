@@ -125,6 +125,8 @@ function switchMenuType(value: number) {
     :model="newFormInline"
     :rules="formRules"
     label-width="82px"
+    label-position="left"
+    require-asterisk-position="right"
   >
     <el-row :gutter="30">
       <re-col>
@@ -150,7 +152,7 @@ function switchMenuType(value: number) {
           </el-cascader>
         </el-form-item>
       </re-col>
-      <re-col>
+      <re-col :value="12" :xs="24" :sm="24">
         <el-form-item label="菜单类型" prop="type">
           <el-radio-group v-model="newFormInline.type" @change="switchMenuType">
             <el-radio-button label="1">菜单</el-radio-button>
@@ -178,16 +180,21 @@ function switchMenuType(value: number) {
         </el-form-item>
       </re-col>
       <re-col :value="12" :xs="24" :sm="24">
+        <el-form-item label="菜单编码" prop="code">
+          <el-input
+            v-model="newFormInline.code"
+            clearable
+            placeholder="请输入编码"
+            @input="setMetaCode"
+          />
+        </el-form-item>
+      </re-col>
+      <re-col :value="12" :xs="24" :sm="24">
         <el-form-item label="菜单图标">
           <IconSelect v-model="newFormInline.meta.icon" />
         </el-form-item>
       </re-col>
-      <re-col
-        :value="12"
-        :xs="24"
-        :sm="24"
-        v-if="newFormInline.type == 1 || newFormInline.type == 2"
-      >
+      <re-col :value="12" :xs="24" :sm="24">
         <el-form-item
           label="组件名称"
           :prop="newFormInline.type == 2 ? 'name' : ''"
@@ -199,31 +206,7 @@ function switchMenuType(value: number) {
           />
         </el-form-item>
       </re-col>
-      <re-col
-        :value="12"
-        :xs="24"
-        :sm="24"
-        v-if="newFormInline.type == 1 || newFormInline.type == 2"
-      >
-        <el-form-item label="编码" prop="code">
-          <el-input
-            v-model="newFormInline.code"
-            clearable
-            placeholder="请输入编码"
-            @input="setMetaCode"
-          />
-        </el-form-item>
-      </re-col>
-      <re-col v-else>
-        <el-form-item label="编码">
-          <el-input
-            v-model="newFormInline.code"
-            clearable
-            placeholder="请输入编码"
-          />
-        </el-form-item>
-      </re-col>
-      <re-col v-if="newFormInline.type == 1 || newFormInline.type == 2">
+      <re-col :value="12" :xs="24" :sm="24">
         <el-form-item label="组件路径" prop="component">
           <el-input
             v-model="newFormInline.component"
@@ -232,12 +215,7 @@ function switchMenuType(value: number) {
           />
         </el-form-item>
       </re-col>
-      <re-col
-        :value="12"
-        :xs="24"
-        :sm="24"
-        v-if="newFormInline.type == 1 || newFormInline.type == 2"
-      >
+      <re-col :value="12" :xs="24" :sm="24">
         <el-form-item label="路由地址" prop="path">
           <el-input
             v-model="newFormInline.path"
@@ -246,12 +224,7 @@ function switchMenuType(value: number) {
           />
         </el-form-item>
       </re-col>
-      <re-col
-        :value="12"
-        :xs="24"
-        :sm="24"
-        v-if="newFormInline.type == 1 || newFormInline.type == 2"
-      >
+      <re-col :value="12" :xs="24" :sm="24">
         <el-form-item label="重定向" prop="redirect">
           <el-input
             v-model="newFormInline.redirect"
