@@ -48,14 +48,6 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
           target: "https://pure.linkandawang.top",
           changeOrigin: true
           // rewrite: path => path.replace(/^\/proxy/, "")
-        },
-        "/static-backend": {
-          target: "https://pure.linkandawang.top",
-          changeOrigin: true
-        },
-        "/accounts": {
-          target: "https://pure.linkandawang.top",
-          changeOrigin: true
         }
       },
       cors: false
