@@ -65,6 +65,7 @@ declare global {
     VITE_HIDE_HOME: string;
     VITE_COMPRESSION: ViteCompression;
     VITE_DING_TALK_APPID: string;
+    VITE_BACKEND_SERVER: string;
   }
 
   /**
