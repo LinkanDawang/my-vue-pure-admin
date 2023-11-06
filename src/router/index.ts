@@ -24,7 +24,13 @@ import {
   formatFlatteningRoutes
 } from "./utils";
 import { buildHierarchyTree } from "@/utils/tree";
-import { isUrl, openLink, storageSession, isAllEmpty } from "@pureadmin/utils";
+import {
+  isUrl,
+  openLink,
+  isAllEmpty,
+  // storageSession,
+  storageLocal
+} from "@pureadmin/utils";
 
 import remainingRouter from "./modules/remaining";
 
@@ -117,7 +123,7 @@ router.beforeEach((to: ToRouteType, _from, next) => {
       handleAliveRoute(to);
     }
   }
-  const userInfo = storageSession().getItem<DataInfo<number>>(sessionKey);
+  const userInfo = storageLocal().getItem<DataInfo<number>>(sessionKey);
   NProgress.start();
   const externalLink = isUrl(to?.name as string);
   if (!externalLink) {

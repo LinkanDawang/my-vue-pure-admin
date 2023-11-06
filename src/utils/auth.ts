@@ -1,5 +1,8 @@
 import Cookies from "js-cookie";
-import { storageSession } from "@pureadmin/utils";
+import {
+  // storageSession,
+  storageLocal
+} from "@pureadmin/utils";
 import { useUserStoreHook } from "@/store/modules/user";
 
 export interface DataInfo<T> {
@@ -31,7 +34,7 @@ export function getToken(): DataInfo<number> {
   // 此处与`TokenKey`相同，此写法解决初始化时`Cookies`中不存在`TokenKey`报错
   return Cookies.get(TokenKey)
     ? JSON.parse(Cookies.get(TokenKey))
-    : storageSession().getItem(sessionKey);
+    : storageLocal().getItem(sessionKey);
 }
 
 /**
@@ -55,7 +58,7 @@ export function setToken(data: DataInfo<Date>) {
   function setSessionKey(username: string, roles: Array<string>) {
     useUserStoreHook().SET_USERNAME(username);
     useUserStoreHook().SET_ROLES(roles);
-    storageSession().setItem(sessionKey, data);
+    storageLocal().setItem(sessionKey, data);
   }
   const user = data.user;
   if (user.username && user.roles) {
@@ -63,17 +66,16 @@ export function setToken(data: DataInfo<Date>) {
     setSessionKey(username, roles);
   } else {
     const username =
-      storageSession().getItem<DataInfo<number>>(sessionKey)?.user.username ??
-      "";
+      storageLocal().getItem<DataInfo<number>>(sessionKey)?.user.username ?? "";
     const roles =
-      storageSession().getItem<DataInfo<number>>(sessionKey)?.user.roles ?? [];
+      storageLocal().getItem<DataInfo<number>>(sessionKey)?.user.roles ?? [];
     setSessionKey(username, roles);
   }
 }
 
 export function setPermissions(permission: string[]) {
   useUserStoreHook().SET_PERMISSIONS(permission);
-  storageSession().setItem(permissionKey, permission);
+  storageLocal().setItem(permissionKey, permission);
 }
 
 /** 删除`token`以及key值为`user-info`的session信息 */
