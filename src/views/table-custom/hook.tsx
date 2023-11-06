@@ -9,6 +9,10 @@ export function useTable() {
 
   const columns: TableColumnList = [
     {
+      label: "ID",
+      prop: "id"
+    },
+    {
       label: "日期",
       prop: "date",
       meta: { filterType: "date" }
@@ -94,6 +98,7 @@ export function useTable() {
     const nowStr = formatDateTime(now);
     dataList.value = [
       {
+        id: 1,
         date: "2023-10-13",
         date2: "2023-10-13",
         name: `Tom`,
@@ -103,6 +108,7 @@ export function useTable() {
         updated_at: nowStr
       },
       {
+        id: 2,
         date: "2023-10-12",
         date2: "2023-10-13",
         name: `Jenny`,
@@ -112,6 +118,7 @@ export function useTable() {
         updated_at: nowStr
       },
       {
+        id: 3,
         date: "2023-10-11",
         date2: "2023-10-13",
         name: `Penny`,
@@ -121,6 +128,7 @@ export function useTable() {
         updated_at: nowStr
       },
       {
+        id: 4,
         date: "2023-10-09",
         date2: "2023-10-13",
         name: `Jack`,
