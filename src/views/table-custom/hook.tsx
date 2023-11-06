@@ -1,11 +1,15 @@
 import { onMounted, ref } from "vue";
-import { getRoleColumns } from "@/api/system";
+import { getRoleColumns, getRoleList, updateRole } from "@/api/system";
+import { useUserStoreHook } from "@/store/modules/user";
+import { onStatusChange, usePublicHooks } from "@/utils/common";
 
 export function useTable() {
   const searchParams = ref({});
   const dataList = ref([]);
   const loading = ref(false);
   const headerFilter = ref(false);
+  const switchLoadMap = ref({});
+  const { switchStyle } = usePublicHooks();
 
   const columns: TableColumnList = [
     {
@@ -13,73 +17,78 @@ export function useTable() {
       prop: "id"
     },
     {
-      label: "日期",
-      prop: "date",
-      meta: { filterType: "date" }
-    },
-    {
-      label: "日期2",
-      prop: "date2",
-      meta: { filterType: "dateRange" }
-    },
-    {
-      label: "姓名",
+      label: "角色名称",
       prop: "name",
       meta: { filterType: "input" }
     },
     {
-      label: "性别",
-      prop: "sex",
+      label: "角色编号",
+      prop: "code",
+      meta: { filterType: "input" }
+    },
+    {
+      label: "状态",
       meta: {
         filterType: "selectMultiple",
         selectOptions: [
-          { value: 1, label: "男" },
-          { value: 2, label: "女" }
+          { value: 50, label: "启用" },
+          { value: 100, label: "停用" }
         ]
       },
-      cellRenderer: ({ row, props }) => (
-        <el-tag size={props.size} type={row.sex === 1 ? "" : "danger"}>
-          {row.sex === 1 ? "男" : "女"}
-        </el-tag>
+      cellRenderer: scope => (
+        <el-switch
+          size={scope.props.size === "small" ? "small" : "default"}
+          loading={switchLoadMap.value[scope.index]?.loading}
+          v-model={scope.row.status}
+          disabled={
+            scope.row.is_super_role ||
+            !useUserStoreHook().hasPermission("sys:role:edit")
+          }
+          active-value={50}
+          inactive-value={100}
+          active-text="已启用"
+          inactive-text="已停用"
+          inline-prompt
+          style={switchStyle.value}
+          onChange={() =>
+            onStatusChange(scope as any, updateRole, switchLoadMap)
+          }
+        />
       )
     },
     {
-      label: "地址",
-      prop: "address",
+      label: "成员",
+      slot: "member"
+    },
+    {
+      label: "备注",
+      prop: "remark",
       meta: { filterType: "input" }
     },
     {
       label: "创建时间",
       prop: "created_at",
       meta: { filterType: "dateTimeRange" }
+      // formatter: ({ createTime }) =>
+      //   dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
     },
     {
-      label: "更新时间",
+      label: "修改时间",
       prop: "updated_at",
       meta: { filterType: "dateTimeRange" }
+    },
+    {
+      label: "操作",
+      fixed: "right",
+      slot: "operation"
     }
   ];
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function getColumns() {
-    // TODO columns字段转换
-    getRoleColumns().then(res => {
-      const rawColumns = res.data ?? [];
-      console.log(rawColumns);
-      const newColumns = rawColumns.map(column => {
-        return {
-          label: column.ui.label,
-          prop: column.key
-        };
-      });
-      console.log(newColumns);
-    });
-  }
 
   function pad(num) {
     return num.toString().padStart(2, "0");
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
   function formatDateTime(date) {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
@@ -94,53 +103,81 @@ export function useTable() {
 
   async function onSearch() {
     loading.value = true;
-    const now = new Date();
-    const nowStr = formatDateTime(now);
-    dataList.value = [
-      {
-        id: 1,
-        date: "2023-10-13",
-        date2: "2023-10-13",
-        name: `Tom`,
-        address: "No. 211, Grove St, Los Angeles",
-        sex: 1,
-        created_at: nowStr,
-        updated_at: nowStr
-      },
-      {
-        id: 2,
-        date: "2023-10-12",
-        date2: "2023-10-13",
-        name: `Jenny`,
-        address: "No. 189, Grove St, Los Angeles",
-        sex: 2,
-        created_at: nowStr,
-        updated_at: nowStr
-      },
-      {
-        id: 3,
-        date: "2023-10-11",
-        date2: "2023-10-13",
-        name: `Penny`,
-        address: "No. 432, Grove St, Los Angeles",
-        sex: 2,
-        created_at: nowStr,
-        updated_at: nowStr
-      },
-      {
-        id: 4,
-        date: "2023-10-09",
-        date2: "2023-10-13",
-        name: `Jack`,
-        address: "No. 888, Grove St, Los Angeles",
-        sex: 1,
-        created_at: nowStr,
-        updated_at: nowStr
+    const { data } = await getRoleList();
+    dataList.value = data.list;
+    loading.value = false;
+    // const now = new Date();
+    // const nowStr = formatDateTime(now);
+    // dataList.value = [
+    //   {
+    //     id: 1,
+    //     date: "2023-10-13",
+    //     date2: "2023-10-13",
+    //     name: `Tom`,
+    //     address: "No. 211, Grove St, Los Angeles",
+    //     sex: 1,
+    //     created_at: nowStr,
+    //     updated_at: nowStr
+    //   },
+    //   {
+    //     id: 2,
+    //     date: "2023-10-12",
+    //     date2: "2023-10-13",
+    //     name: `Jenny`,
+    //     address: "No. 189, Grove St, Los Angeles",
+    //     sex: 2,
+    //     created_at: nowStr,
+    //     updated_at: nowStr
+    //   },
+    //   {
+    //     id: 3,
+    //     date: "2023-10-11",
+    //     date2: "2023-10-13",
+    //     name: `Penny`,
+    //     address: "No. 432, Grove St, Los Angeles",
+    //     sex: 2,
+    //     created_at: nowStr,
+    //     updated_at: nowStr
+    //   },
+    //   {
+    //     id: 4,
+    //     date: "2023-10-09",
+    //     date2: "2023-10-13",
+    //     name: `Jack`,
+    //     address: "No. 888, Grove St, Los Angeles",
+    //     sex: 1,
+    //     created_at: nowStr,
+    //     updated_at: nowStr
+    //   }
+    // ];
+    // setTimeout(() => {
+    //   loading.value = false;
+    // }, 1000);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
+  async function getColumns() {
+    // TODO columns字段转换
+    const { data } = await getRoleColumns();
+    const rawColumns = data ?? [];
+    return rawColumns.map(column => {
+      const _meta = {};
+      if (["number", "text"].includes(column.type)) {
+        _meta["filterType"] = "input";
+      } else if (column.type === "select") {
+        _meta["filterType"] = "selectMultiple";
+        _meta["selectOptions"] = column.choices;
+      } else if (column.type === "datetime") {
+        _meta["filterType"] = "dateTimeRange";
+      } else if (column.type === "date") {
+        _meta["filterType"] = "dateRange";
       }
-    ];
-    setTimeout(() => {
-      loading.value = false;
-    }, 1000);
+      return {
+        label: column.ui.label,
+        prop: column.key,
+        meta: _meta
+      };
+    });
   }
 
   function onReFresh() {
@@ -153,7 +190,6 @@ export function useTable() {
   }
 
   onMounted(() => {
-    getColumns();
     onSearch();
   });
 

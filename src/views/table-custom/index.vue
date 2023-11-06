@@ -57,7 +57,13 @@ const {
           @showHeaderFilter="displayHeaderFilter"
           :searchParams="searchParams"
           @onSearch="onSearch"
-        />
+        >
+          <template #member="{ row }">
+            <el-tag v-for="user in row.member" :key="user.id">{{
+              user.username
+            }}</el-tag>
+          </template>
+        </RePureTable>
       </template>
     </PureTableBar>
   </div>
