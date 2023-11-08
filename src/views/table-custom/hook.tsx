@@ -219,7 +219,7 @@ export function useTable() {
 
   async function onSearch() {
     loading.value = true;
-    const { data } = await getRoleList();
+    const { data } = await getRoleList(searchParams.value);
     dataList.value = data.list;
     loading.value = false;
     // const now = new Date();

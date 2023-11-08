@@ -51,9 +51,9 @@ export const getRoleIds = (data?: object) => {
 };
 
 /** 获取角色管理列表 */
-export const getRoleList = (data?: object) => {
+export const getRoleList = (params?: object) => {
   // return http.request<ResultTable>("post", "/role", { data });
-  return http.request<ResultTable>("get", apiUrl("rbac/roles/"), { data });
+  return http.request<ResultTable>("get", apiUrl("rbac/roles/"), { params });
 };
 
 export const getRoleColumns = () => {
