@@ -1,5 +1,5 @@
 import { onMounted, ref } from "vue";
-import { getRoleColumns, getRoleList, updateRole } from "@/api/system";
+import { getRoleList, updateRole } from "@/api/system";
 import { useUserStoreHook } from "@/store/modules/user";
 import { onStatusChange, usePublicHooks } from "@/utils/common";
 
@@ -153,31 +153,6 @@ export function useTable() {
     // setTimeout(() => {
     //   loading.value = false;
     // }, 1000);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
-  async function getColumns() {
-    // TODO columns字段转换
-    const { data } = await getRoleColumns();
-    const rawColumns = data ?? [];
-    return rawColumns.map(column => {
-      const _meta = {};
-      if (["number", "text"].includes(column.type)) {
-        _meta["filterType"] = "input";
-      } else if (column.type === "select") {
-        _meta["filterType"] = "selectMultiple";
-        _meta["selectOptions"] = column.choices;
-      } else if (column.type === "datetime") {
-        _meta["filterType"] = "dateTimeRange";
-      } else if (column.type === "date") {
-        _meta["filterType"] = "dateRange";
-      }
-      return {
-        label: column.ui.label,
-        prop: column.key,
-        meta: _meta
-      };
-    });
   }
 
   function onReFresh() {

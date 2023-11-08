@@ -4,6 +4,7 @@ import { RePureTable } from "@/components/RePureTable";
 import { PureTableBar } from "@/components/RePureTableBar";
 import { PaginationProps } from "@pureadmin/table";
 import { useTable } from "./hook";
+import { getRoleColumns } from "@/api/system";
 
 defineOptions({
   name: "TableCustom"
@@ -30,41 +31,45 @@ const {
 
 <template>
   <div class="main">
-    <PureTableBar
-      title=""
-      :columns="columns"
-      @refresh="onReFresh"
-      useColumnFilter
-      @displayHeaderFilter="displayHeaderFilter"
-    >
-      <!--<template #buttons></template>-->
-      <template v-slot="{ size, dynamicColumns, tableConf }">
-        <RePureTable
-          v-bind="tableConf"
-          adaptive
-          :columns="dynamicColumns"
-          highlight-current-row
-          :data="dataList"
-          :size="size"
-          :loading="loading"
-          :pagination="pagination"
-          :paginationSmall="true"
-          :header-cell-style="{
-            background: 'var(--el-fill-color-light)',
-            color: 'var(--el-text-color-primary)'
-          }"
-          :headerFilter="headerFilter"
-          @showHeaderFilter="displayHeaderFilter"
-          :searchParams="searchParams"
-          @onSearch="onSearch"
-        >
-          <template #member="{ row }">
-            <el-tag v-for="user in row.member" :key="user.id">{{
-              user.username
-            }}</el-tag>
-          </template>
-        </RePureTable>
-      </template>
-    </PureTableBar>
+    <Suspense>
+      <PureTableBar
+        title=""
+        message="haha"
+        :columnsApi="getRoleColumns"
+        :columns="columns"
+        @refresh="onReFresh"
+        useColumnFilter
+        @displayHeaderFilter="displayHeaderFilter"
+      >
+        <!--<template #buttons></template>-->
+        <template v-slot="{ size, dynamicColumns, tableConf }">
+          <RePureTable
+            v-bind="tableConf"
+            adaptive
+            :columns="dynamicColumns"
+            highlight-current-row
+            :data="dataList"
+            :size="size"
+            :loading="loading"
+            :pagination="pagination"
+            :paginationSmall="true"
+            :header-cell-style="{
+              background: 'var(--el-fill-color-light)',
+              color: 'var(--el-text-color-primary)'
+            }"
+            :headerFilter="headerFilter"
+            @showHeaderFilter="displayHeaderFilter"
+            :searchParams="searchParams"
+            @onSearch="onSearch"
+          >
+            <template #member="{ row }">
+              <el-tag v-for="user in row.member" :key="user.id">{{
+                user.username
+              }}</el-tag>
+            </template>
+          </RePureTable>
+        </template>
+      </PureTableBar>
+    </Suspense>
   </div>
 </template>
