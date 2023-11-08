@@ -43,11 +43,20 @@ const props = {
   }
 };
 
-async function fixApiColumns(api) {
+async function fixApiColumns(columnsApi, normalColumns) {
   // TODO columns字段转换
-  const { data } = await api();
-  const rawColumns = data ?? [];
-  return rawColumns.map(column => {
+  const columnsExtraInfo = {};
+  const extraColumns = [];
+  normalColumns.forEach(item => {
+    if (item.slot && !item.prop) {
+      extraColumns.push(item);
+      return;
+    }
+    if (!item.prop) return;
+    columnsExtraInfo[item.prop] = item;
+  });
+  const { data } = await columnsApi();
+  let rawColumns = data.map(column => {
     const _meta = {};
     if (["number", "text"].includes(column.type)) {
       _meta["filterType"] = "input";
@@ -59,12 +68,16 @@ async function fixApiColumns(api) {
     } else if (column.type === "date") {
       _meta["filterType"] = "dateRange";
     }
+    const extraInfo = columnsExtraInfo[column.key] ?? {};
     return {
+      ...extraInfo,
       label: column.ui.label,
       prop: column.key,
       meta: _meta
     };
   });
+  rawColumns = rawColumns.concat(extraColumns);
+  return rawColumns;
 }
 
 function SetUp(props, { emit, slots, attrs }) {
@@ -565,7 +578,7 @@ export default defineComponent({
     if (props?.columnsApi !== undefined) {
       const fixedProps = cloneDeep(props);
       return new Promise(resolve => {
-        fixApiColumns(props.columnsApi).then(fixedColumns => {
+        fixApiColumns(props.columnsApi, props.columns).then(fixedColumns => {
           fixedProps.columns = fixedColumns;
           resolve(SetUp(fixedProps, { emit, slots, attrs }));
         });

@@ -1,9 +1,26 @@
-import { onMounted, ref } from "vue";
-import { getRoleList, updateRole } from "@/api/system";
+import { onMounted, ref, h } from "vue";
+import {
+  createRole,
+  getRoleList,
+  setRoleMember,
+  setRolePermission,
+  updateRole
+} from "@/api/system";
 import { useUserStoreHook } from "@/store/modules/user";
 import { onStatusChange, usePublicHooks } from "@/utils/common";
+import {
+  FormItemProps,
+  MemberDialogItemProps,
+  PermDialogItemProps
+} from "@/views/system/role/utils/types";
+import { addDialog } from "@/components/ReDialog/index";
+import editForm from "@/views/system/role/form.vue";
+import { message } from "@/utils/message";
+import permForm from "@/views/system/role/permForm.vue";
+import memberFoem from "@/views/system/role/memberForm.vue";
 
 export function useTable() {
+  const formRef = ref();
   const searchParams = ref({});
   const dataList = ref([]);
   const loading = ref(false);
@@ -13,28 +30,8 @@ export function useTable() {
 
   const columns: TableColumnList = [
     {
-      label: "ID",
-      prop: "id"
-    },
-    {
-      label: "角色名称",
-      prop: "name",
-      meta: { filterType: "input" }
-    },
-    {
-      label: "角色编号",
-      prop: "code",
-      meta: { filterType: "input" }
-    },
-    {
       label: "状态",
-      meta: {
-        filterType: "selectMultiple",
-        selectOptions: [
-          { value: 50, label: "启用" },
-          { value: 100, label: "停用" }
-        ]
-      },
+      prop: "status",
       cellRenderer: scope => (
         <el-switch
           size={scope.props.size === "small" ? "small" : "default"}
@@ -58,24 +55,8 @@ export function useTable() {
     },
     {
       label: "成员",
+      prop: "member",
       slot: "member"
-    },
-    {
-      label: "备注",
-      prop: "remark",
-      meta: { filterType: "input" }
-    },
-    {
-      label: "创建时间",
-      prop: "created_at",
-      meta: { filterType: "dateTimeRange" }
-      // formatter: ({ createTime }) =>
-      //   dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
-    },
-    {
-      label: "修改时间",
-      prop: "updated_at",
-      meta: { filterType: "dateTimeRange" }
     },
     {
       label: "操作",
@@ -83,6 +64,141 @@ export function useTable() {
       slot: "operation"
     }
   ];
+
+  function openDialog(title = "新增", row?: FormItemProps) {
+    addDialog({
+      title: `${title}角色`,
+      props: {
+        formInline: {
+          name: row?.name ?? "",
+          code: row?.code ?? "",
+          remark: row?.remark ?? "",
+          is_super_role: row?.is_super_role ?? false
+        }
+      },
+      width: "40%",
+      draggable: true,
+      fullscreenIcon: true,
+      closeOnClickModal: false,
+      contentRenderer: () => h(editForm, { ref: formRef }),
+      beforeSure: (done, { options }) => {
+        const FormRef = formRef.value.getRef();
+        const curData = options.props.formInline as FormItemProps;
+        function chores() {
+          message(`您${title}了角色名称为${curData.name}的这条数据`, {
+            type: "success"
+          });
+          done(); // 关闭弹框
+          onSearch(); // 刷新表格数据
+        }
+        FormRef.validate(valid => {
+          if (valid) {
+            // 表单规则校验通过
+            if (title === "新增") {
+              // 实际开发先调用新增接口，再进行下面操作
+              createRole(curData).then(res => {
+                if (res.ret == 200 || res.ret == 201) {
+                  chores();
+                } else {
+                  message(JSON.stringify(res.data), { type: "error" });
+                }
+              });
+            } else {
+              // 实际开发先调用编辑接口，再进行下面操作
+              updateRole(row.id, curData).then(res => {
+                if (res.ret == 200 || res.ret == 201) {
+                  chores();
+                } else {
+                  message(JSON.stringify(res.data), { type: "error" });
+                }
+              });
+            }
+          }
+        });
+      }
+    });
+  }
+
+  async function setPermissionDialog(row: FormItemProps) {
+    // const menuTree = await getMenuTree();
+    // const rolePermis: any = await getRolePerms(row.id);
+    addDialog({
+      title: "权限设置",
+      props: {
+        formInline: {
+          id: row?.id ?? null,
+          permissions: []
+        }
+      },
+      hideFooter: row.is_super_role,
+      width: "40%",
+      draggable: true,
+      fullscreenIcon: true,
+      closeOnClickModal: false,
+      contentRenderer: () => h(permForm, { ref: formRef }),
+      beforeSure: (done, { options }) => {
+        const FormRef = formRef.value.getRef();
+        const curData = options.props.formInline as PermDialogItemProps;
+        function chores() {
+          message("权限设置成功", {
+            type: "success"
+          });
+          done(); // 关闭弹框
+          onSearch(); // 刷新表格数据
+        }
+        FormRef.validate(valid => {
+          if (valid) {
+            setRolePermission(row.id, curData.permissions).then(res => {
+              if (res.ret == 200 || res.ret == 201) {
+                chores();
+              } else {
+                message(JSON.stringify(res.data), { type: "error" });
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+
+  async function setMemberDialog(row: FormItemProps) {
+    addDialog({
+      title: "成员设置",
+      props: {
+        formInline: {
+          id: row?.id ?? null,
+          member: []
+        }
+      },
+      width: "40%",
+      draggable: true,
+      fullscreenIcon: true,
+      closeOnClickModal: false,
+      contentRenderer: () => h(memberFoem, { ref: formRef }),
+      beforeSure: (done, { options }) => {
+        const FormRef = formRef.value.getRef();
+        const curData = options.props.formInline as MemberDialogItemProps;
+        function chores() {
+          message("成员设置成功", {
+            type: "success"
+          });
+          done(); // 关闭弹框
+          onSearch(); // 刷新表格数据
+        }
+        FormRef.validate(valid => {
+          if (valid) {
+            setRoleMember(row.id, curData.member).then(res => {
+              if (res.ret == 200 || res.ret == 201) {
+                chores();
+              } else {
+                message(JSON.stringify(res.data), { type: "error" });
+              }
+            });
+          }
+        });
+      }
+    });
+  }
 
   function pad(num) {
     return num.toString().padStart(2, "0");
@@ -176,6 +292,9 @@ export function useTable() {
     headerFilter,
     onSearch,
     onReFresh,
-    displayHeaderFilter
+    displayHeaderFilter,
+    openDialog,
+    setPermissionDialog,
+    setMemberDialog
   };
 }
