@@ -143,7 +143,8 @@ class PureHttp {
             // message("身份信息已失效", { type: "error" });
             useUserStoreHook().logOut();
           }
-
+          NProgress.done();
+          message(`${respData.ret}: ${respData.msg}`, { type: "error" });
           return Promise.reject(response);
         }
         // 关闭进度条动画
