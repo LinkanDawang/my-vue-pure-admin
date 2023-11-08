@@ -205,6 +205,14 @@ export default defineComponent({
         return hide;
       }
 
+      let columnOptions = null;
+      if (columns.meta?.selectOptions) {
+        columnOptions = {};
+        columns.meta?.selectOptions.forEach(item => {
+          columnOptions[item.value] = item.label;
+        });
+      }
+
       const defaultSlots = {
         default: (scope: TableColumnScope) => {
           if (cellRenderer) {
@@ -226,6 +234,8 @@ export default defineComponent({
                 attrs
               })
             );
+          } else if (columnOptions && Object.keys(scope.row).length !== 0) {
+            return <span>{columnOptions[scope.row[columns.prop]]}</span>;
           }
         }
       };
