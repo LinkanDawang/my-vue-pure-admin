@@ -26,7 +26,6 @@ const {
   columns,
   dataList,
   menuTypes,
-  displayHeaderFilter,
   onSearch,
   resetForm,
   openDialog,
@@ -89,8 +88,6 @@ const permissionMap = {
       :columns="columns"
       :tableRef="tableRef?.getTableRef()"
       @refresh="onSearch"
-      @displayHeaderFilter="displayHeaderFilter"
-      use-column-filter
     >
       <template #buttons>
         <el-button

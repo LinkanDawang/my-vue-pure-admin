@@ -94,6 +94,7 @@ function SetUp(props, { emit, slots, attrs }) {
     { value: "fixed", label: "固定" },
     { value: "auto", label: "自动" }
   ];
+  const showHeaderFilter = ref(false);
   const showTableBorder = ref(0);
   const headerAlign = ref("center");
   const tableLayout = ref("fixed");
@@ -154,7 +155,7 @@ function SetUp(props, { emit, slots, attrs }) {
   }
 
   function onDisplayFilter() {
-    emit("displayHeaderFilter");
+    showHeaderFilter.value = !showHeaderFilter.value;
   }
 
   function onExpand() {
@@ -558,6 +559,7 @@ function SetUp(props, { emit, slots, attrs }) {
           size: size.value,
           dynamicColumns: dynamicColumns.value,
           tableConf: {
+            showHeaderFilter: showHeaderFilter.value,
             // todo 完善表设置
             stripe: Boolean(tableStripe.value),
             border: Boolean(showTableBorder.value),
@@ -573,7 +575,7 @@ function SetUp(props, { emit, slots, attrs }) {
 export default defineComponent({
   name: "PureTableBar",
   props,
-  emits: ["refresh", "displayHeaderFilter"],
+  emits: ["refresh"],
   setup(props, { emit, slots, attrs }) {
     if (props?.columnsApi !== undefined) {
       const fixedProps = cloneDeep(props);

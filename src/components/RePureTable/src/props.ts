@@ -66,6 +66,10 @@ export default {
     type: Boolean,
     default: false
   },
+  showHeaderFilter: {
+    type: Boolean,
+    default: false
+  },
   searchParams: {
     type: Object,
     default: {}

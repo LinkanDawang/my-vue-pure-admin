@@ -29,7 +29,6 @@ export function useMenu() {
   const formRef = ref();
   const dataList = ref([]);
   const loading = ref(true);
-  const showHeaderFilter = ref(false);
   const switchLoadMap = ref({});
   const { switchStyle } = usePublicHooks();
   const menuTypes = {
@@ -185,10 +184,6 @@ export function useMenu() {
 
   function handleSelectionChange(val) {
     console.log("handleSelectionChange", val);
-  }
-
-  function displayHeaderFilter() {
-    showHeaderFilter.value = !showHeaderFilter.value;
   }
 
   function resetForm(formEl) {
@@ -375,7 +370,6 @@ export function useMenu() {
     columns,
     dataList,
     menuTypes,
-    displayHeaderFilter,
     /** 搜索 */
     onSearch,
     /** 重置 */

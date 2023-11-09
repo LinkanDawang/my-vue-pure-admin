@@ -217,7 +217,6 @@ export function useTable() {
   }
 
   async function onSearch(params?) {
-    console.log(params);
     loading.value = true;
     try {
       const { data } = await getRoleList(params);

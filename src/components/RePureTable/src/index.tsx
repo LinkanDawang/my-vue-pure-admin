@@ -8,7 +8,8 @@ import {
   onBeforeUnmount,
   defineComponent,
   getCurrentInstance,
-  type CSSProperties
+  type CSSProperties,
+  watch
 } from "vue";
 import props from "./props";
 import Renderer from "./renderer";
@@ -18,18 +19,14 @@ import { isFunction, isBoolean, useDark, debounce } from "@pureadmin/utils";
 
 interface RePureTableProps extends PureTableProps {
   headerFilter?: boolean;
+  showHeaderFilter?: boolean;
   // searchParams?: any;
 }
 
 export default defineComponent({
   name: "RePureTable",
   props,
-  emits: [
-    "page-size-change",
-    "page-current-change",
-    "showHeaderFilter",
-    "onSearch"
-  ],
+  emits: ["page-size-change", "page-current-change", "onSearch"],
   setup(props, { slots, attrs, emit, expose }) {
     const {
       key,
@@ -42,16 +39,24 @@ export default defineComponent({
       loadingConfig,
       adaptiveConfig,
       rowHoverBgColor,
-      showOverflowTooltip,
-      headerFilter
+      showOverflowTooltip
+      // showHeaderFilter
       // searchParams
     } = toRefs(props) as unknown as RePureTableProps;
 
+    const _showHeaderFilter = ref(false);
+
+    watch(
+      () => props.showHeaderFilter,
+      () => {
+        disPlayHeaderFilter();
+      }
+    );
+
     const searchParams = ref({});
 
-    // const searchParams = ref({});
-    function showHeaderFilter() {
-      emit("showHeaderFilter");
+    function disPlayHeaderFilter() {
+      _showHeaderFilter.value = !_showHeaderFilter.value;
     }
 
     function onSearch() {
@@ -117,9 +122,9 @@ export default defineComponent({
     function formatColumnFilter(column) {
       return (
         <>
-          <el-col onClick={showHeaderFilter}>{column.label}</el-col>
+          <el-col onClick={disPlayHeaderFilter}>{column.label}</el-col>
           {column.meta?.filterType ? (
-            <el-col v-show={unref(headerFilter) == true}>
+            <el-col v-show={unref(_showHeaderFilter) == true}>
               {column.meta.filterType == "date" ? (
                 <el-date-picker
                   size={props.size}

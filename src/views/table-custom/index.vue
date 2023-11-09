@@ -31,7 +31,6 @@ const {
   headerFilter,
   onSearch,
   onReFresh,
-  displayHeaderFilter,
   openDialog,
   setPermissionDialog,
   setMemberDialog
@@ -48,7 +47,6 @@ const {
         :columns="columns"
         @refresh="onReFresh"
         useColumnFilter
-        @displayHeaderFilter="displayHeaderFilter"
       >
         <!--<template #buttons></template>-->
         <template v-slot="{ size, dynamicColumns, tableConf }">
@@ -67,7 +65,6 @@ const {
               color: 'var(--el-text-color-primary)'
             }"
             :headerFilter="headerFilter"
-            @showHeaderFilter="displayHeaderFilter"
             @onSearch="onSearch"
           >
             <template #member="{ row }">
