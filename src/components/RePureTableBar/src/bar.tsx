@@ -578,17 +578,18 @@ export default defineComponent({
   name: "PureTableBar",
   props,
   emits: [],
-  setup(props, { emit, slots, attrs }) {
+  setup(props, context) {
+    // { attrs, props, emit } = context
     if (props?.columnsApi !== undefined) {
       const fixedProps = cloneDeep(props);
       return new Promise(resolve => {
         fixApiColumns(props.columnsApi, props.columns).then(fixedColumns => {
           fixedProps.columns = fixedColumns;
-          resolve(SetUp(fixedProps, { emit, slots, attrs }));
+          resolve(SetUp(fixedProps, context));
         });
       });
     } else {
-      return SetUp(props, { emit, slots, attrs });
+      return SetUp(props, context);
     }
   }
 });
