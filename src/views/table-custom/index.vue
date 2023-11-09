@@ -25,7 +25,6 @@ const { tableLoading, tableColumns, dataList, onSearch } = useTable();
     <Suspense>
       <PureTableBar
         title=""
-        message="haha"
         :columnsApi="getRoleColumns"
         :columns="tableColumns"
         useColumnFilter

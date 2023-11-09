@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRole } from "./utils/hook";
+import { RePureTable } from "@/components/RePureTable";
 import { PureTableBar } from "@/components/RePureTableBar";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 
@@ -23,10 +24,11 @@ defineOptions({
 const formRef = ref();
 const {
   form,
-  loading,
-  columns,
+  tableLoading,
+  tableColumns,
   dataList,
   pagination,
+  getRoleColumns,
   // buttonClass,
   onSearch,
   resetForm,
@@ -80,7 +82,7 @@ const {
         <el-button
           type="primary"
           :icon="useRenderIcon(Search)"
-          :loading="loading"
+          :loading="tableLoading"
           @click="onSearch"
         >
           搜索
@@ -91,140 +93,146 @@ const {
       </el-form-item>
     </el-form>
 
-    <PureTableBar
-      title="角色列表（仅演示，操作后不生效）"
-      :columns="columns"
-      @refresh="onSearch"
-    >
-      <template #buttons>
-        <el-button
-          v-if="useUserStoreHook().hasPermission('sys:role:add')"
-          type="primary"
-          :icon="useRenderIcon(AddFill)"
-          @click="openDialog()"
-        >
-          新增角色
-        </el-button>
-      </template>
-      <template v-slot="{ size, dynamicColumns, tableConf }">
-        <pure-table
-          v-bind="tableConf"
-          showOverflowTooltip
-          :loading="loading"
-          :size="size"
-          adaptive
-          :data="dataList"
-          :columns="dynamicColumns"
-          :pagination="pagination"
-          :paginationSmall="size === 'small' ? true : false"
-          :header-cell-style="{
-            background: 'var(--el-fill-color-light)',
-            color: 'var(--el-text-color-primary)'
-          }"
-          @selection-change="handleSelectionChange"
-          @page-size-change="handleSizeChange"
-          @page-current-change="handleCurrentChange"
-        >
-          <template #member="{ row }">
-            <el-tag v-for="user in row.member" :key="user.id">{{
-              user.username
-            }}</el-tag>
-          </template>
-          <template #operation="{ row }">
-            <el-space wrap>
-              <el-button
-                v-if="useUserStoreHook().hasPermission('sys:role:edit')"
-                class="reset-margin"
-                link
-                type="primary"
-                :size="size"
-                :icon="useRenderIcon(EditPen)"
-                @click="openDialog('编辑', row)"
-              >
-                {{ transformI18n("buttons.hsedit") }}
-              </el-button>
-              <el-button
-                v-if="useUserStoreHook().hasPermission('sys:role:permDispatch')"
-                class="reset-margin"
-                link
-                type="primary"
-                :size="size"
-                :icon="useRenderIcon(Menu)"
-                @click="setPermissionDialog(row)"
-              >
-                {{ transformI18n("buttons.hsPermission") }}
-              </el-button>
-              <el-button
-                v-if="useUserStoreHook().hasPermission('sys:role:setMember')"
-                class="reset-margin"
-                link
-                type="primary"
-                :size="size"
-                :icon="useRenderIcon(Group)"
-                @click="setMemberDialog(row)"
-              >
-                {{ transformI18n("buttons.hsSetMember") }}
-              </el-button>
-              <el-popconfirm
-                v-if="useUserStoreHook().hasPermission('sys:role:delete')"
-                :title="`是否确认删除角色名称为${row.name}的这条数据`"
-                @confirm="handleDelete(row)"
-              >
-                <template #reference>
-                  <el-button
-                    class="reset-margin"
-                    link
-                    type="danger"
-                    :disabled="row.is_super_role"
-                    :size="size"
-                    :icon="useRenderIcon(Delete)"
-                  >
-                    {{ transformI18n("buttons.hsdelete") }}
-                  </el-button>
-                </template>
-              </el-popconfirm>
-            </el-space>
-            <!-- <el-dropdown>
-              <el-button
-                class="ml-3 mt-[2px]"
-                link
-                type="primary"
-                :size="size"
-                :icon="useRenderIcon(More)"
-              />
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item>
+    <Suspense>
+      <PureTableBar
+        title="角色列表（仅演示，操作后不生效）"
+        :columnsApi="getRoleColumns"
+        :columns="tableColumns"
+        useColumnFilter
+      >
+        <template #buttons>
+          <el-button
+            v-if="useUserStoreHook().hasPermission('sys:role:add')"
+            type="primary"
+            :icon="useRenderIcon(AddFill)"
+            @click="openDialog()"
+          >
+            新增角色
+          </el-button>
+        </template>
+        <template v-slot="{ size, dynamicColumns, tableConf }">
+          <RePureTable
+            v-bind="tableConf"
+            showOverflowTooltip
+            :loading="tableLoading"
+            :size="size"
+            adaptive
+            :data="dataList"
+            :columns="dynamicColumns"
+            :pagination="pagination"
+            :paginationSmall="size === 'small' ? true : false"
+            :header-cell-style="{
+              background: 'var(--el-fill-color-light)',
+              color: 'var(--el-text-color-primary)'
+            }"
+            @selection-change="handleSelectionChange"
+            @page-size-change="handleSizeChange"
+            @page-current-change="handleCurrentChange"
+            @onSearch="onSearch"
+          >
+            <template #member="{ row }">
+              <el-tag v-for="user in row.member" :key="user.id">{{
+                user.username
+              }}</el-tag>
+            </template>
+            <template #operation="{ row }">
+              <el-space wrap>
+                <el-button
+                  v-if="useUserStoreHook().hasPermission('sys:role:edit')"
+                  class="reset-margin"
+                  link
+                  type="primary"
+                  :size="size"
+                  :icon="useRenderIcon(EditPen)"
+                  @click="openDialog('编辑', row)"
+                >
+                  {{ transformI18n("buttons.hsedit") }}
+                </el-button>
+                <el-button
+                  v-if="
+                    useUserStoreHook().hasPermission('sys:role:permDispatch')
+                  "
+                  class="reset-margin"
+                  link
+                  type="primary"
+                  :size="size"
+                  :icon="useRenderIcon(Menu)"
+                  @click="setPermissionDialog(row)"
+                >
+                  {{ transformI18n("buttons.hsPermission") }}
+                </el-button>
+                <el-button
+                  v-if="useUserStoreHook().hasPermission('sys:role:setMember')"
+                  class="reset-margin"
+                  link
+                  type="primary"
+                  :size="size"
+                  :icon="useRenderIcon(Group)"
+                  @click="setMemberDialog(row)"
+                >
+                  {{ transformI18n("buttons.hsSetMember") }}
+                </el-button>
+                <el-popconfirm
+                  v-if="useUserStoreHook().hasPermission('sys:role:delete')"
+                  :title="`是否确认删除角色名称为${row.name}的这条数据`"
+                  @confirm="handleDelete(row)"
+                >
+                  <template #reference>
                     <el-button
-                      :class="buttonClass"
+                      class="reset-margin"
                       link
-                      type="primary"
+                      type="danger"
+                      :disabled="row.is_super_role"
                       :size="size"
-                      :icon="useRenderIcon(Menu)"
-                      @click="handleMenu"
+                      :icon="useRenderIcon(Delete)"
                     >
-                      菜单权限
+                      {{ transformI18n("buttons.hsdelete") }}
                     </el-button>
-                  </el-dropdown-item>
-                  <el-dropdown-item>
-                    <el-button
-                      :class="buttonClass"
-                      link
-                      type="primary"
-                      :size="size"
-                      :icon="useRenderIcon(Database)"
-                      @click="handleDatabase"
-                    >
-                      数据权限
-                    </el-button>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown> -->
-          </template>
-        </pure-table>
-      </template>
-    </PureTableBar>
+                  </template>
+                </el-popconfirm>
+              </el-space>
+              <!-- <el-dropdown>
+								<el-button
+									class="ml-3 mt-[2px]"
+									link
+									type="primary"
+									:size="size"
+									:icon="useRenderIcon(More)"
+								/>
+								<template #dropdown>
+									<el-dropdown-menu>
+										<el-dropdown-item>
+											<el-button
+												:class="buttonClass"
+												link
+												type="primary"
+												:size="size"
+												:icon="useRenderIcon(Menu)"
+												@click="handleMenu"
+											>
+												菜单权限
+											</el-button>
+										</el-dropdown-item>
+										<el-dropdown-item>
+											<el-button
+												:class="buttonClass"
+												link
+												type="primary"
+												:size="size"
+												:icon="useRenderIcon(Database)"
+												@click="handleDatabase"
+											>
+												数据权限
+											</el-button>
+										</el-dropdown-item>
+									</el-dropdown-menu>
+								</template>
+							</el-dropdown> -->
+            </template>
+          </RePureTable>
+        </template>
+      </PureTableBar>
+    </Suspense>
   </div>
 </template>
 
