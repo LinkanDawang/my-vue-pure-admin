@@ -1,7 +1,7 @@
 // import dayjs from "dayjs";
-import editForm from "../form.vue";
-import permForm from "../permForm.vue";
-import memberFoem from "../memberForm.vue";
+import editForm from "../forms/form.vue";
+import permForm from "../forms/permForm.vue";
+import memberFoem from "../forms/memberForm.vue";
 import { message } from "@/utils/message";
 import {
   getRoleList,

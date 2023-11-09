@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { PermDialogProps } from "./utils/types";
+import { PermDialogProps } from "../utils/types";
 import { transformI18n } from "@/plugins/i18n";
 import ElTreeLine from "@/components/ReTreeLine";
 import { getRolePermission, treeMenu } from "@/api/system";

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import { MemberDialogProps } from "./utils/types";
+import { MemberDialogProps } from "../utils/types";
 import { getUserList, getRoleMember } from "@/api/system";
 import { message } from "@/utils/message";
 
@@ -54,7 +54,7 @@ const dataProps = {
     <div style="text-align: center">
       <el-transfer
         v-model="newFormInline.member"
-        style="text-align: left; display: inline-block"
+        style="display: inline-block; text-align: left"
         :props="dataProps"
         filterable
         :titles="['未选', '已选']"
