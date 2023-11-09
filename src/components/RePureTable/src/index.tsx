@@ -53,10 +53,22 @@ export default defineComponent({
       }
     );
 
+    watch(
+      () => props.refreshList,
+      () => {
+        onRefresh();
+      }
+    );
+
     const searchParams = ref({});
 
     function disPlayHeaderFilter() {
       _showHeaderFilter.value = !_showHeaderFilter.value;
+    }
+
+    function onRefresh() {
+      searchParams.value = {};
+      onSearch();
     }
 
     function onSearch() {

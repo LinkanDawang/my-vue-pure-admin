@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useMenu } from "./utils/hook";
+import { RePureTable } from "@/components/RePureTable";
 import { PureTableBar } from "@/components/RePureTableBar";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { transformI18n } from "@/plugins/i18n";
 
 import Delete from "@iconify-icons/ep/delete";
 import EditPen from "@iconify-icons/ep/edit-pen";
-import Search from "@iconify-icons/ep/search";
-import Refresh from "@iconify-icons/ep/refresh";
-// import Operation from "@iconify-icons/ep/operation";
 import AddFill from "@iconify-icons/ri/add-circle-line";
 import { useUserStoreHook } from "@/store/modules/user";
 
@@ -18,16 +16,13 @@ defineOptions({
   name: "Menu"
 });
 
-const formRef = ref();
 const tableRef = ref();
 const {
-  form,
-  loading,
-  columns,
-  dataList,
+  tableLoading,
+  tableColumns,
+  cusDataList,
   menuTypes,
   onSearch,
-  resetForm,
   openDialog,
   buttonsDialog,
   handleDelete,
@@ -44,50 +39,10 @@ const permissionMap = {
 
 <template>
   <div class="main">
-    <el-form
-      ref="formRef"
-      :inline="true"
-      :model="form"
-      class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px]"
-    >
-      <el-form-item label="名称：" prop="name">
-        <el-input
-          v-model="form.name"
-          placeholder="请输入菜单名称"
-          clearable
-          class="!w-[200px]"
-        />
-      </el-form-item>
-      <el-form-item label="状态：" prop="status">
-        <el-select
-          v-model="form.status"
-          placeholder="请选择状态"
-          clearable
-          class="!w-[180px]"
-        >
-          <el-option label="启用" :value="50" />
-          <el-option label="停用" :value="100" />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button
-          type="primary"
-          :icon="useRenderIcon(Search)"
-          :loading="loading"
-          @click="onSearch"
-        >
-          搜索
-        </el-button>
-        <el-button :icon="useRenderIcon(Refresh)" @click="resetForm(formRef)">
-          重置
-        </el-button>
-      </el-form-item>
-    </el-form>
     <PureTableBar
       title=""
-      :columns="columns"
+      :columns="tableColumns"
       :tableRef="tableRef?.getTableRef()"
-      @refresh="onSearch"
     >
       <template #buttons>
         <el-button
@@ -102,7 +57,7 @@ const permissionMap = {
         </el-button>
       </template>
       <template v-slot="{ size, dynamicColumns, tableConf }">
-        <pure-table
+        <RePureTable
           ref="tableRef"
           v-bind="tableConf"
           adaptive
@@ -112,14 +67,15 @@ const permissionMap = {
           showOverflowTooltip
           tooltip-effect="dark"
           default-expand-all
-          :loading="loading"
-          :data="dataList"
+          :loading="tableLoading"
+          :data="cusDataList"
           :columns="dynamicColumns"
           :header-cell-style="{
             background: 'var(--el-fill-color-light)',
             color: 'var(--el-text-color-primary)'
           }"
           @selection-change="handleSelectionChange"
+          @onSearch="onSearch"
         >
           <template #operation="{ row }">
             <el-space wrap>
@@ -162,7 +118,7 @@ const permissionMap = {
               </el-button>
             </el-space>
           </template>
-        </pure-table>
+        </RePureTable>
       </template>
     </PureTableBar>
   </div>

@@ -46,14 +46,15 @@ export function useTable() {
     }
   ];
 
-  const { tableLoading, tableColumns, dataList, onSearch, onReFresh } =
-    useTableBase(getRoleList, columns);
+  const { tableLoading, tableColumns, dataList, onSearch } = useTableBase(
+    getRoleList,
+    columns
+  );
 
   return {
     tableLoading,
     tableColumns,
     dataList,
-    onSearch,
-    onReFresh
+    onSearch
   };
 }

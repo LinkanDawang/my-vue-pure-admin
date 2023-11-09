@@ -17,8 +17,7 @@ const pagination = reactive<PaginationProps>({
   background: true
 });
 
-const { tableLoading, tableColumns, dataList, onSearch, onReFresh } =
-  useTable();
+const { tableLoading, tableColumns, dataList, onSearch } = useTable();
 </script>
 
 <template>
@@ -29,7 +28,6 @@ const { tableLoading, tableColumns, dataList, onSearch, onReFresh } =
         message="haha"
         :columnsApi="getRoleColumns"
         :columns="tableColumns"
-        @refresh="onReFresh"
         useColumnFilter
       >
         <template v-slot="{ size, dynamicColumns, tableConf }">

@@ -74,5 +74,9 @@ export default {
     type: Object,
     default: {}
   },
+  refreshList: {
+    type: Boolean,
+    default: false
+  },
   ...defaultProps
 };

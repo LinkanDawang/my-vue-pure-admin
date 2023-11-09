@@ -10,12 +10,12 @@ export function useTableBase(
   async function onSearch(params?: object | undefined) {
     tableLoading.value = true;
     const { data } = await listApi(params);
-    dataList.value = data.list;
+    if (data instanceof Array) {
+      dataList.value = data;
+    } else if (data instanceof Object) {
+      dataList.value = data.list;
+    }
     tableLoading.value = false;
-  }
-
-  function onReFresh() {
-    onSearch();
   }
 
   onMounted(() => {
@@ -26,7 +26,6 @@ export function useTableBase(
     tableLoading,
     tableColumns,
     dataList,
-    onSearch,
-    onReFresh
+    onSearch
   };
 }

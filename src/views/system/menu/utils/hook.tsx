@@ -11,13 +11,14 @@ import {
 } from "@/api/system";
 // import { usePublicHooks } from "../../hooks";
 import { addDialog } from "@/components/ReDialog";
-import { reactive, ref, onMounted, h } from "vue";
+import { reactive, ref, h, watch } from "vue";
 import { type FormItemProps } from "../utils/types";
 import { cloneDeep, isAllEmpty } from "@pureadmin/utils";
 import { transformI18n } from "@/plugins/i18n";
 import { IconifyIconOnline } from "@/components/ReIcon";
 import { onStatusChange, usePublicHooks } from "@/utils/common";
 import { useUserStoreHook } from "@/store/modules/user";
+import { useTableBase } from "@/utils/tableHook";
 
 export function useMenu() {
   const form = reactive({
@@ -27,8 +28,7 @@ export function useMenu() {
   });
 
   const formRef = ref();
-  const dataList = ref([]);
-  const loading = ref(true);
+  const cusDataList = ref([]);
   const switchLoadMap = ref({});
   const { switchStyle } = usePublicHooks();
   const menuTypes = {
@@ -182,34 +182,13 @@ export function useMenu() {
     }
   ];
 
+  const { tableLoading, tableColumns, dataList, onSearch } = useTableBase(
+    getMenuList,
+    columns
+  );
+
   function handleSelectionChange(val) {
     console.log("handleSelectionChange", val);
-  }
-
-  function resetForm(formEl) {
-    if (!formEl) return;
-    formEl.resetFields();
-    onSearch();
-  }
-
-  async function onSearch() {
-    loading.value = true;
-    const { data } = await getMenuList(); // 这里是返回一维数组结构，前端自行处理成树结构，返回格式要求：唯一id加父节点parentId，parentId取父节点id
-    let newData = data;
-    if (!isAllEmpty(form.name)) {
-      // 前端搜索菜单名称
-      newData = newData.filter(item =>
-        transformI18n(item.meta.title).includes(form.name)
-      );
-    }
-    if (!isAllEmpty(form.status)) {
-      // 前端搜索状态
-      newData = newData.filter(item => item.status === form.status);
-    }
-    dataList.value = handleTree(newData); // 处理成树结构
-    setTimeout(() => {
-      loading.value = false;
-    }, 500);
   }
 
   function formatHigherMenuOptions(
@@ -360,20 +339,33 @@ export function useMenu() {
     onSearch();
   }
 
-  onMounted(() => {
-    onSearch();
+  function handleListData(data: Array<any>) {
+    let newData = data;
+    if (!isAllEmpty(form.name)) {
+      // 前端搜索菜单名称
+      newData = newData.filter(item =>
+        transformI18n(item.meta.title).includes(form.name)
+      );
+    }
+    if (!isAllEmpty(form.status)) {
+      // 前端搜索状态
+      newData = newData.filter(item => item.status === form.status);
+    }
+    cusDataList.value = handleTree(newData); // 处理成树结构
+  }
+
+  watch(dataList, () => {
+    handleListData(dataList.value);
   });
 
   return {
     form,
-    loading,
-    columns,
-    dataList,
+    tableLoading,
+    tableColumns,
+    cusDataList,
     menuTypes,
     /** 搜索 */
     onSearch,
-    /** 重置 */
-    resetForm,
     /** 新增、编辑部门 */
     openDialog,
     buttonsDialog,

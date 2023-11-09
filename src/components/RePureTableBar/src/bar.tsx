@@ -80,7 +80,7 @@ async function fixApiColumns(columnsApi, normalColumns) {
   return rawColumns;
 }
 
-function SetUp(props, { emit, slots, attrs }) {
+function SetUp(props, { slots, attrs }) {
   const tableBorders = [
     { value: 0, label: "隐藏" },
     { value: 1, label: "展示" }
@@ -94,6 +94,7 @@ function SetUp(props, { emit, slots, attrs }) {
     { value: "fixed", label: "固定" },
     { value: "auto", label: "自动" }
   ];
+  const refreshList = ref(false);
   const showHeaderFilter = ref(false);
   const showTableBorder = ref(0);
   const headerAlign = ref("center");
@@ -150,7 +151,7 @@ function SetUp(props, { emit, slots, attrs }) {
 
   function onReFresh() {
     loading.value = true;
-    emit("refresh");
+    refreshList.value = !refreshList.value;
     delay(500).then(() => (loading.value = false));
   }
 
@@ -559,6 +560,7 @@ function SetUp(props, { emit, slots, attrs }) {
           size: size.value,
           dynamicColumns: dynamicColumns.value,
           tableConf: {
+            refreshList: refreshList.value,
             showHeaderFilter: showHeaderFilter.value,
             // todo 完善表设置
             stripe: Boolean(tableStripe.value),
@@ -575,7 +577,7 @@ function SetUp(props, { emit, slots, attrs }) {
 export default defineComponent({
   name: "PureTableBar",
   props,
-  emits: ["refresh"],
+  emits: [],
   setup(props, { emit, slots, attrs }) {
     if (props?.columnsApi !== undefined) {
       const fixedProps = cloneDeep(props);
