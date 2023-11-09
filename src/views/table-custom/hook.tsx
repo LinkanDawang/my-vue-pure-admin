@@ -21,7 +21,6 @@ import memberFoem from "@/views/system/role/memberForm.vue";
 
 export function useTable() {
   const formRef = ref();
-  const searchParams = ref({});
   const dataList = ref([]);
   const loading = ref(false);
   const headerFilter = ref(false);
@@ -217,10 +216,11 @@ export function useTable() {
     )}`;
   }
 
-  async function onSearch() {
+  async function onSearch(params?) {
+    console.log(params);
     loading.value = true;
     try {
-      const { data } = await getRoleList(searchParams.value);
+      const { data } = await getRoleList(params);
       dataList.value = data.list;
     } catch (e) {
       // pass
@@ -276,7 +276,6 @@ export function useTable() {
   }
 
   function onReFresh() {
-    searchParams.value = {};
     onSearch();
   }
 
@@ -289,7 +288,7 @@ export function useTable() {
   });
 
   return {
-    searchParams,
+    // searchParams,
     loading,
     columns,
     dataList,

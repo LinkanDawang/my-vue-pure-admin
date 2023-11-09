@@ -26,7 +26,7 @@ import { usePermissionStoreHook } from "@/store/modules/permission";
 import { useUserStoreHook } from "@/store/modules/user";
 // 动态路由
 import { getAsyncRoutes } from "@/api/routes";
-import { message } from "@/utils/message";
+// import { message } from "@/utils/message";
 
 const IFrame = () => import("@/layout/frameView.vue");
 // https://cn.vitejs.dev/guide/features.html#glob-import
@@ -218,12 +218,11 @@ function setRouter() {
 }
 
 async function initRouter() {
-  await useUserStoreHook()
-    .getUserInfo()
-    .then(() => {})
-    .catch(error => {
-      message(error.data.msg, { type: "error" });
-    });
+  await useUserStoreHook().getUserInfo();
+  // .then(() => {})
+  // .catch(error => {
+  //   message(error.data.msg, { type: "error" });
+  // });
   return setRouter();
 }
 

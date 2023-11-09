@@ -1,4 +1,5 @@
 import {
+  ref,
   unref,
   toRefs,
   computed,
@@ -17,7 +18,7 @@ import { isFunction, isBoolean, useDark, debounce } from "@pureadmin/utils";
 
 interface RePureTableProps extends PureTableProps {
   headerFilter?: boolean;
-  searchParams?: any;
+  // searchParams?: any;
 }
 
 export default defineComponent({
@@ -42,9 +43,11 @@ export default defineComponent({
       adaptiveConfig,
       rowHoverBgColor,
       showOverflowTooltip,
-      headerFilter,
-      searchParams
+      headerFilter
+      // searchParams
     } = toRefs(props) as unknown as RePureTableProps;
+
+    const searchParams = ref({});
 
     // const searchParams = ref({});
     function showHeaderFilter() {
@@ -52,7 +55,7 @@ export default defineComponent({
     }
 
     function onSearch() {
-      emit("onSearch");
+      emit("onSearch", searchParams.value);
     }
 
     const { isDark } = useDark();

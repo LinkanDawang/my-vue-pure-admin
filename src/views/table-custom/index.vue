@@ -10,7 +10,7 @@ import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import EditPen from "@iconify-icons/ep/edit-pen";
 import Menu from "@iconify-icons/ep/menu";
 import Group from "@iconify-icons/ri/group-fill";
-import Delete from "@iconify-icons/ep/delete";
+// import Delete from "@iconify-icons/ep/delete";
 import { transformI18n } from "@/plugins/i18n";
 
 defineOptions({
@@ -25,7 +25,6 @@ const pagination = reactive<PaginationProps>({
 });
 
 const {
-  searchParams,
   loading,
   columns,
   dataList,
@@ -69,7 +68,6 @@ const {
             }"
             :headerFilter="headerFilter"
             @showHeaderFilter="displayHeaderFilter"
-            :searchParams="searchParams"
             @onSearch="onSearch"
           >
             <template #member="{ row }">
@@ -114,24 +112,24 @@ const {
                 >
                   {{ transformI18n("buttons.hsSetMember") }}
                 </el-button>
-                <el-popconfirm
-                  v-if="useUserStoreHook().hasPermission('sys:role:delete')"
-                  :title="`是否确认删除角色名称为${row.name}的这条数据`"
-                  @confirm="handleDelete(row)"
-                >
-                  <template #reference>
-                    <el-button
-                      class="reset-margin"
-                      link
-                      type="danger"
-                      :disabled="row.is_super_role"
-                      :size="size"
-                      :icon="useRenderIcon(Delete)"
-                    >
-                      {{ transformI18n("buttons.hsdelete") }}
-                    </el-button>
-                  </template>
-                </el-popconfirm>
+                <!--                <el-popconfirm-->
+                <!--                  v-if="useUserStoreHook().hasPermission('sys:role:delete')"-->
+                <!--                  :title="`是否确认删除角色名称为${row.name}的这条数据`"-->
+                <!--                  @confirm="handleDelete(row)"-->
+                <!--                >-->
+                <!--                  <template #reference>-->
+                <!--                    <el-button-->
+                <!--                      class="reset-margin"-->
+                <!--                      link-->
+                <!--                      type="danger"-->
+                <!--                      :disabled="row.is_super_role"-->
+                <!--                      :size="size"-->
+                <!--                      :icon="useRenderIcon(Delete)"-->
+                <!--                    >-->
+                <!--                      {{ transformI18n("buttons.hsdelete") }}-->
+                <!--                    </el-button>-->
+                <!--                  </template>-->
+                <!--                </el-popconfirm>-->
               </el-space>
             </template>
           </RePureTable>
