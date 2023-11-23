@@ -45,9 +45,8 @@ export function useMenu() {
     },
     {
       label: "排序",
-      prop: "order",
-      align: "left",
-      minWidth: 40
+      prop: "order"
+      // minWidth: 40
     },
     {
       label: "类型",
@@ -66,9 +65,8 @@ export function useMenu() {
     },
     {
       label: "编码",
-      prop: "code",
-      align: "left",
-      minWidth: 150
+      prop: "code"
+      // minWidth: 150
       // headerRenderer: scope => (
       //   <>
       //     <el-input
@@ -93,7 +91,7 @@ export function useMenu() {
     {
       label: "菜单名称",
       prop: "meta.title",
-      width: 180,
+      // width: 180,
       formatter: ({ meta }) => transformI18n(meta.title)
     },
     {
@@ -108,7 +106,7 @@ export function useMenu() {
     {
       label: "状态",
       prop: "status",
-      minWidth: 100,
+      // minWidth: 100,
       cellRenderer: scope => (
         <el-switch
           size={scope.props.size === "small" ? "small" : "default"}
@@ -129,26 +127,23 @@ export function useMenu() {
     },
     {
       label: "组件名称",
-      prop: "name",
-      width: 180
+      prop: "name"
+      // width: 180
     },
     {
       label: "组件路径",
-      prop: "component",
-      width: 180,
-      align: "left"
+      prop: "component"
+      // width: 180,
     },
     {
       label: "路由地址",
-      prop: "path",
-      width: 180,
-      align: "left"
+      prop: "path"
+      // width: 180,
     },
     {
       label: "重定向",
-      prop: "redirect",
-      width: 180,
-      align: "left"
+      prop: "redirect"
+      // width: 180,
     },
     // {
     //   label: "按钮",
@@ -158,27 +153,27 @@ export function useMenu() {
     {
       label: "Meta",
       prop: "meta",
-      width: 180,
+      // width: 180,
       hide: true,
       formatter: ({ meta }) => JSON.stringify(meta)
     },
     {
       label: "创建时间",
-      minWidth: 200,
+      // minWidth: 200,
       prop: "created_at"
       // formatter: ({ createTime }) => dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
     },
     {
       label: "更新时间",
-      minWidth: 200,
+      // minWidth: 200,
       prop: "updated_at"
       // formatter: ({ createTime }) => dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
     },
     {
       label: "操作",
       fixed: "right",
-      width: 200,
-      slot: "operation"
+      slot: "operation",
+      align: "left"
     }
   ];
 
