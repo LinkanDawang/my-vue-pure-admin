@@ -31,6 +31,7 @@ import {
   // storageSession,
   storageLocal
 } from "@pureadmin/utils";
+import { message } from "@/utils/message";
 
 import remainingRouter from "./modules/remaining";
 
@@ -124,6 +125,16 @@ router.beforeEach((to: ToRouteType, _from, next) => {
     }
   }
   const userInfo = storageLocal().getItem<DataInfo<number>>(sessionKey);
+  if (userInfo) {
+    const userExpires = new Date(userInfo.expires).getTime();
+    const nowTimeStamp = new Date().getTime();
+    const isExpired = userExpires - nowTimeStamp;
+    if (isExpired <= 0) {
+      // next({ path: "/login" });
+      message("身份信息已失效，请重新登录", { type: "error" });
+      useUserStoreHook().logOut();
+    }
+  }
   NProgress.start();
   const externalLink = isUrl(to?.name as string);
   if (!externalLink) {
