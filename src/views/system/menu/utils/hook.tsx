@@ -49,18 +49,14 @@ export function useMenu() {
       // minWidth: 40
     },
     {
-      label: "类型",
-      prop: "type",
-      cellRenderer: ({ row, props }) => (
-        <el-tag
-          size={props.size}
-          type={row.type === menuTypes.menu.value ? "" : "success"}
-          disable-transitions
-        >
-          {row.type === menuTypes.menu.value
-            ? menuTypes.menu.name
-            : menuTypes.page.name}
-        </el-tag>
+      label: "菜单名称",
+      prop: "meta.title",
+      // width: 180,
+      // formatter: ({ meta }) => transformI18n(meta.title),
+      cellRenderer: scope => (
+        <el-link type="primary" onClick={() => openViewDialog(scope.row)}>
+          {transformI18n(scope.row.meta.title)}
+        </el-link>
       )
     },
     {
@@ -89,10 +85,19 @@ export function useMenu() {
       // )
     },
     {
-      label: "菜单名称",
-      prop: "meta.title",
-      // width: 180,
-      formatter: ({ meta }) => transformI18n(meta.title)
+      label: "类型",
+      prop: "type",
+      cellRenderer: ({ row, props }) => (
+        <el-tag
+          size={props.size}
+          type={row.type === menuTypes.menu.value ? "" : "success"}
+          disable-transitions
+        >
+          {row.type === menuTypes.menu.value
+            ? menuTypes.menu.name
+            : menuTypes.page.name}
+        </el-tag>
+      )
     },
     {
       label: "图标",
@@ -182,6 +187,10 @@ export function useMenu() {
     columns
   );
 
+  function openViewDialog(menuObj: FormItemProps) {
+    openDialog("查看", menuObj);
+  }
+
   function handleSelectionChange(val) {
     console.log("handleSelectionChange", val);
   }
@@ -216,7 +225,12 @@ export function useMenu() {
     return newTreeList;
   }
 
-  function openDialog(title = "新增", row?: FormItemProps) {
+  function openDialog(
+    title: "新增" | "编辑" | "查看" = "查看",
+    row?: FormItemProps
+  ) {
+    const formStyle = { "pointer-events": "auto" };
+    if (title == "查看") formStyle["pointer-events"] = "none";
     addDialog({
       title: `${title}菜单`,
       props: {
@@ -247,8 +261,12 @@ export function useMenu() {
       draggable: true,
       fullscreenIcon: true,
       closeOnClickModal: false,
-      contentRenderer: () => h(editForm, { ref: formRef }),
+      contentRenderer: () => h(editForm, { ref: formRef, style: formStyle }),
       beforeSure: (done, { options }) => {
+        if (title === "查看") {
+          done();
+          return;
+        }
         const FormRef = formRef.value.getRef();
         const curData = options.props.formInline as FormItemProps;
         function chores() {

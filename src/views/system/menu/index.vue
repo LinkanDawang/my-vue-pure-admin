@@ -49,7 +49,7 @@ const permissionMap = {
           v-if="permissionMap.add"
           type="primary"
           :icon="useRenderIcon(AddFill)"
-          @click="openDialog()"
+          @click="openDialog('新增')"
         >
           {{
             transformI18n("buttons.hsadd") + transformI18n("menus.hsMenuBase")
