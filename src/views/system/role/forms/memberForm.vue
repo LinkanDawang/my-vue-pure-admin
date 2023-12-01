@@ -47,6 +47,14 @@ const dataProps = {
   key: "id",
   label: "nickname"
 };
+
+function randomAvatar() {
+  const Avatars = [
+    "https://avatars.githubusercontent.com/u/44761321",
+    "https://avatars.githubusercontent.com/u/52823142"
+  ];
+  return Avatars[Math.round(Math.random())];
+}
 </script>
 
 <template>
@@ -68,12 +76,12 @@ const dataProps = {
           <el-image
             fit="cover"
             preview-teleported
-            :src="option.avatar"
-            :preview-src-list="Array.of(option.avatar)"
+            :src="option.avatar || randomAvatar()"
+            :preview-src-list="Array.of(option.avatar || randomAvatar())"
             class="w-[24px] h-[24px] rounded-full align-middle"
           />
           {{ " " }}
-          <span>{{ option.nickname }}</span>
+          <span>{{ option.username }}</span>
         </template>
       </el-transfer>
     </div>
