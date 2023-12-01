@@ -171,7 +171,7 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
       prop: "is_active",
       cellRenderer: ({ row, props }) => (
         <el-tag size={props.size} type={row.is_active ? "success" : "danger"}>
-          {row.is_active ? "启用" : "停用"}
+          {row.is_active ? "已激活" : "未激活"}
         </el-tag>
       )
     },

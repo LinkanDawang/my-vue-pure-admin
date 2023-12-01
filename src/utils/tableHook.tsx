@@ -9,13 +9,16 @@ export function useTableBase(
 
   async function onSearch(params?: object | undefined) {
     tableLoading.value = true;
-    const { data } = await listApi(params);
-    if (data instanceof Array) {
-      dataList.value = data;
-    } else if (data instanceof Object) {
-      dataList.value = data.list;
+    try {
+      const { data } = await listApi(params);
+      if (data instanceof Array) {
+        dataList.value = data;
+      } else if (data instanceof Object) {
+        dataList.value = data.list;
+      }
+    } finally {
+      tableLoading.value = false;
     }
-    tableLoading.value = false;
   }
 
   onMounted(() => {

@@ -175,6 +175,10 @@ export default defineComponent({
                   start-placeholder="开始"
                   end-placeholder="结束"
                   format="YYYY-MM-DD HH:mm:ss"
+                  default-time={[
+                    new Date(2000, 1, 1, 0, 0, 0),
+                    new Date(2000, 1, 1, 23, 59, 59)
+                  ]}
                   value-format="YYYY-MM-DD HH:mm:ss"
                   v-model={autoSearchParams.value[column.prop]}
                   onChange={onSearch}
@@ -196,7 +200,13 @@ export default defineComponent({
                     <el-option
                       key={option.value}
                       label={option.label}
-                      value={option.value}
+                      value={
+                        typeof option.value == "boolean"
+                          ? option.value
+                            ? "True"
+                            : "False"
+                          : option.value
+                      }
                     />
                   ))}
                 </el-select>

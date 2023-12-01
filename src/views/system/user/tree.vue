@@ -3,7 +3,7 @@ import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { ref, computed, watch, getCurrentInstance } from "vue";
 
 import Dept from "@iconify-icons/ri/git-branch-line";
-import Reset from "@iconify-icons/ri/restart-line";
+// import Reset from "@iconify-icons/ri/restart-line";
 import Search from "@iconify-icons/ep/search";
 import More2Fill from "@iconify-icons/ri/more-2-fill";
 import OfficeBuilding from "@iconify-icons/ep/office-building";
@@ -135,7 +135,7 @@ defineExpose({ onTreeReset });
                 {{ isExpand ? "折叠全部" : "展开全部" }}
               </el-button>
             </el-dropdown-item>
-            <el-dropdown-item>
+            <!--<el-dropdown-item>
               <el-button
                 :class="buttonClass"
                 link
@@ -145,7 +145,7 @@ defineExpose({ onTreeReset });
               >
                 重置状态
               </el-button>
-            </el-dropdown-item>
+            </el-dropdown-item>-->
           </el-dropdown-menu>
         </template>
       </el-dropdown>
