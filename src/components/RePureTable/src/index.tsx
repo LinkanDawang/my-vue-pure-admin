@@ -20,13 +20,13 @@ import { isFunction, isBoolean, useDark, debounce } from "@pureadmin/utils";
 interface RePureTableProps extends PureTableProps {
   headerFilter?: boolean;
   showHeaderFilter?: boolean;
-  // searchParams?: any;
+  extraSearchParams?: any;
 }
 
 export default defineComponent({
   name: "RePureTable",
   props,
-  emits: ["page-size-change", "page-current-change", "onSearch"],
+  emits: ["page-size-change", "page-current-change", "onSearch", "subRefresh"],
   setup(props, { slots, attrs, emit, expose }) {
     const {
       key,
@@ -41,7 +41,7 @@ export default defineComponent({
       rowHoverBgColor,
       showOverflowTooltip
       // showHeaderFilter
-      // searchParams
+      // extraSearchParams
     } = toRefs(props) as unknown as RePureTableProps;
 
     const _showHeaderFilter = ref(false);
@@ -60,19 +60,28 @@ export default defineComponent({
       }
     );
 
-    const searchParams = ref({});
+    watch(
+      () => Object.values(props.extraSearchParams),
+      () => {
+        Object.assign(autoSearchParams.value, props.extraSearchParams);
+        onSearch();
+      }
+    );
+
+    const autoSearchParams = ref({});
 
     function disPlayHeaderFilter() {
       _showHeaderFilter.value = !_showHeaderFilter.value;
     }
 
     function onRefresh() {
-      searchParams.value = {};
+      autoSearchParams.value = {};
+      Object.assign(autoSearchParams.value, props.extraSearchParams);
       onSearch();
     }
 
     function onSearch() {
-      emit("onSearch", searchParams.value);
+      emit("onSearch", autoSearchParams.value);
     }
 
     const { isDark } = useDark();
@@ -144,7 +153,7 @@ export default defineComponent({
                   placeholder="请选择日期"
                   format="YYYY-MM-DD"
                   value-format="YYYY-MM-DD"
-                  v-model={searchParams.value[column.prop]}
+                  v-model={autoSearchParams.value[column.prop]}
                   onChange={onSearch}
                 />
               ) : column.meta.filterType == "dateRange" ? (
@@ -154,7 +163,7 @@ export default defineComponent({
                   type="daterange"
                   start-placeholder="开始"
                   end-placeholder="结束"
-                  v-model={searchParams.value[column.prop]}
+                  v-model={autoSearchParams.value[column.prop]}
                   onChange={onSearch}
                 />
               ) : ["dateTime", "dateTimeRange"].includes(
@@ -167,7 +176,7 @@ export default defineComponent({
                   end-placeholder="结束"
                   format="YYYY-MM-DD HH:mm:ss"
                   value-format="YYYY-MM-DD HH:mm:ss"
-                  v-model={searchParams.value[column.prop]}
+                  v-model={autoSearchParams.value[column.prop]}
                   onChange={onSearch}
                 />
               ) : ["select", "selectMultiple"].includes(
@@ -180,7 +189,7 @@ export default defineComponent({
                   collapse-tags
                   collapse-tags-tooltip
                   placeholder="请选择"
-                  v-model={searchParams.value[column.prop]}
+                  v-model={autoSearchParams.value[column.prop]}
                   onChange={onSearch}
                 >
                   {column.meta?.selectOptions?.map(option => (
@@ -195,7 +204,7 @@ export default defineComponent({
                 <el-input
                   size={props.size}
                   clearable
-                  v-model={searchParams.value[column.prop]}
+                  v-model={autoSearchParams.value[column.prop]}
                   onChange={onSearch}
                 />
               )}

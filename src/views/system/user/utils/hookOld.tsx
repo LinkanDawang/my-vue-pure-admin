@@ -28,29 +28,25 @@ import {
   type Ref,
   h,
   ref,
-  // toRaw,
+  toRaw,
   watch,
   computed,
   reactive,
   onMounted
 } from "vue";
-import { useTableBase } from "@/utils/tableHook";
 
 export function useUser(tableRef: Ref, treeRef: Ref) {
   const form = reactive({
     // 左侧部门树的id
-    deptId: ""
-    // username: "",
-    // phone: "",
-    // status: ""
-  });
-  const extraSearchParams = ref({
-    deptId: ""
+    deptId: "",
+    username: "",
+    phone: "",
+    status: ""
   });
   const formRef = ref();
   const ruleFormRef = ref();
-  // const dataList = ref([]);
-  // const loading = ref(true);
+  const dataList = ref([]);
+  const loading = ref(true);
   // 上传头像信息
   const avatarInfo = ref();
   const switchLoadMap = ref({});
@@ -65,8 +61,7 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
     currentPage: 1,
     background: true
   });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
-  const columnsNotUsed: TableColumnList = [
+  const columns: TableColumnList = [
     {
       label: "勾选列", // 如果需要表格多选，此处label必须设置
       type: "selection",
@@ -152,41 +147,14 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
       prop: "createTime",
       formatter: ({ createTime }) =>
         dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
-    }
-  ];
-  const columns: TableColumnList = [
-    {
-      prop: "is_superuser",
-      cellRenderer: ({ row, props }) => (
-        <el-tag
-          size={props.size}
-          type={row.is_superuser ? "success" : "danger"}
-        >
-          {row.is_superuser ? "是" : "否"}
-        </el-tag>
-      )
-    },
-    {
-      label: "状态",
-      prop: "is_active",
-      cellRenderer: ({ row, props }) => (
-        <el-tag size={props.size} type={row.is_active ? "success" : "danger"}>
-          {row.is_active ? "启用" : "停用"}
-        </el-tag>
-      )
     },
     {
       label: "操作",
       fixed: "right",
+      width: 180,
       slot: "operation"
     }
   ];
-
-  const { tableLoading, tableColumns, dataList, onSearch } = useTableBase(
-    getUserList,
-    columns
-  );
-
   const buttonClass = computed(() => {
     return [
       "!h-[20px]",
@@ -295,18 +263,18 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
     tableRef.value.getTableRef().clearSelection();
   }
 
-  // async function onSearch() {
-  //   loading.value = true;
-  //   const { data } = await getUserList(toRaw(form));
-  //   dataList.value = data.list;
-  //   pagination.total = data.total;
-  //   pagination.pageSize = data.pageSize;
-  //   pagination.currentPage = data.currentPage;
-  //
-  //   setTimeout(() => {
-  //     loading.value = false;
-  //   }, 500);
-  // }
+  async function onSearch() {
+    loading.value = true;
+    const { data } = await getUserList(toRaw(form));
+    dataList.value = data.list;
+    pagination.total = data.total;
+    pagination.pageSize = data.pageSize;
+    pagination.currentPage = data.currentPage;
+
+    setTimeout(() => {
+      loading.value = false;
+    }, 500);
+  }
 
   const resetForm = formEl => {
     if (!formEl) return;
@@ -316,13 +284,9 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
     onSearch();
   };
 
-  // function onTreeSelect({ id, selected }) {
-  //   form.deptId = selected ? id : "";
-  //   // onSearch();
-  // }
-
-  function onDeptSelect({ id, selected }) {
-    extraSearchParams.value.deptId = selected ? id : "";
+  function onTreeSelect({ id, selected }) {
+    form.deptId = selected ? id : "";
+    onSearch();
   }
 
   function formatHigherDeptOptions(treeList) {
@@ -516,8 +480,8 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
   }
 
   onMounted(async () => {
-    // treeLoading.value = true;
-    // onSearch();
+    treeLoading.value = true;
+    onSearch();
 
     // 归属部门
     const { data } = await getDeptList();
@@ -531,20 +495,19 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
 
   return {
     form,
-    tableLoading,
-    tableColumns,
+    loading,
+    columns,
     dataList,
     treeData,
     treeLoading,
     selectedNum,
     pagination,
     buttonClass,
-    extraSearchParams,
     onSearch,
     resetForm,
     onbatchDel,
     openDialog,
-    onDeptSelect,
+    onTreeSelect,
     handleUpdate,
     handleDelete,
     handleUpload,

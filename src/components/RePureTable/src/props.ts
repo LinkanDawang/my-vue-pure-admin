@@ -70,7 +70,7 @@ export default {
     type: Boolean,
     default: false
   },
-  searchParams: {
+  extraSearchParams: {
     type: Object,
     default: {}
   },

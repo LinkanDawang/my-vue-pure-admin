@@ -146,3 +146,8 @@ export const dingTalkLogin = data => {
     }
   );
 };
+
+export const getUserColumns = () => {
+  // return http.request<ResultTable>("post", "/role", { data });
+  return http.request<BaseResult>("options", apiUrl("users"));
+};
