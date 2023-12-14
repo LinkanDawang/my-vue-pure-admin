@@ -260,7 +260,7 @@ function switchMenuType(value: number) {
           />
         </el-form-item>
       </re-col>
-      <re-col v-if="newFormInline.type == 2">
+      <re-col v-if="newFormInline.type == 2" :value="12" :xs="24" :sm="24">
         <el-form-item label="页面保持">
           <el-switch
             v-model="newFormInline.meta.keepAlive"
@@ -274,13 +274,15 @@ function switchMenuType(value: number) {
         </el-form-item>
       </re-col>
       <re-col :value="12" :xs="24" :sm="24">
-        <el-form-item label="排序">
-          <el-input-number
-            v-model="newFormInline.order"
-            :min="0"
-            :max="9999"
-            controls-position="right"
-            @change="setMetaRank"
+        <el-form-item label="是否显示">
+          <el-switch
+            v-model="newFormInline.meta.showLink"
+            inline-prompt
+            :active-value="true"
+            :inactive-value="false"
+            active-text="是"
+            inactive-text="否"
+            :style="switchStyle"
           />
         </el-form-item>
       </re-col>
@@ -294,6 +296,17 @@ function switchMenuType(value: number) {
             active-text="启用"
             inactive-text="停用"
             :style="switchStyle"
+          />
+        </el-form-item>
+      </re-col>
+      <re-col :value="12" :xs="24" :sm="24">
+        <el-form-item label="排序">
+          <el-input-number
+            v-model="newFormInline.order"
+            :min="0"
+            :max="9999"
+            controls-position="right"
+            @change="setMetaRank"
           />
         </el-form-item>
       </re-col>
