@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<FormProps>(), {
     redirect: "",
     order: 0,
     status: 1,
-    meta: { title: "", icon: "", rank: null, code: "", keepAlive: true },
+    meta: { title: "", icon: "", rank: null, code: "", showLink: true },
     type: 1,
     menuTransName: ""
   })
@@ -37,6 +37,8 @@ defineExpose({ getRef });
 
 const { switchStyle } = usePublicHooks();
 const newFormInline = ref(props.formInline);
+
+const initKeepAlive = newFormInline.value.meta.keepAlive;
 
 const jsonPreview = reactive({
   val: JSON.stringify(newFormInline.value.meta),
@@ -116,6 +118,15 @@ function setMetaFrameSrc(value: string) {
 function switchMenuType(value: number) {
   menuType.value = value;
   getMenuList();
+  console.log(value, typeof value);
+  if (value === 1) {
+    delete newFormInline.value.meta["keepAlive"];
+  } else {
+    if (newFormInline.value.meta.keepAlive === undefined) {
+      newFormInline.value.meta.keepAlive =
+        initKeepAlive !== undefined ? initKeepAlive : true;
+    }
+  }
 }
 </script>
 
@@ -155,8 +166,8 @@ function switchMenuType(value: number) {
       <re-col :value="12" :xs="24" :sm="24">
         <el-form-item label="菜单类型" prop="type">
           <el-radio-group v-model="newFormInline.type" @change="switchMenuType">
-            <el-radio-button label="1">菜单</el-radio-button>
-            <el-radio-button label="2">页面</el-radio-button>
+            <el-radio-button :label="1">菜单</el-radio-button>
+            <el-radio-button :label="2">页面</el-radio-button>
             <!--<el-radio-button label="3">按钮</el-radio-button>-->
           </el-radio-group>
         </el-form-item>

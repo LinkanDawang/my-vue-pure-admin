@@ -251,7 +251,9 @@ export function useMenu() {
           meta: row?.meta ?? {
             title: "",
             icon: "ep:expand",
-            rank: row?.order ?? null
+            rank: row?.order ?? null,
+            code: row?.code ?? "",
+            showLink: true
           },
           type: row?.type ?? 1,
           menuTransName: transformI18n(row?.meta?.title) ?? ""
