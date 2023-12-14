@@ -38,9 +38,8 @@ const { isDark } = useDark();
 const { device, tooltipEffect } = useNav();
 const { $storage } = useGlobal<GlobalPropertiesApi>();
 const userInfo = storageLocal().getItem<DataInfo<number>>(sessionKey);
-const showStandPages = ref(
-  storageSession().getItem<Boolean>("showStandPages") ?? false
-);
+const showStandPages =
+  storageSession().getItem<Boolean>("showStandPages") ?? false;
 
 const mixRef = ref();
 const verticalRef = ref();
@@ -76,7 +75,8 @@ const settings = reactive({
   tabsVal: $storage.configure.hideTabs,
   showLogo: $storage.configure.showLogo,
   showModel: $storage.configure.showModel,
-  multiTagsCache: $storage.configure.multiTagsCache
+  multiTagsCache: $storage.configure.multiTagsCache,
+  showStandPages: showStandPages
 });
 
 const getThemeColorStyle = computed(() => {
@@ -328,11 +328,10 @@ onBeforeMount(() => {
 
     <el-divider>界面显示</el-divider>
     <ul class="setting">
-      <li>
+      <li v-show="userInfo.user.is_superuser">
         <span class="dark:text-white">展示静态页面</span>
         <el-switch
-          v-show="userInfo.user.is_superuser"
-          v-model="showStandPages"
+          v-model="settings.showStandPages"
           inline-prompt
           inactive-color="#a6a6a6"
           active-text="开"
