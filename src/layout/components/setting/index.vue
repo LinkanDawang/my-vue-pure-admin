@@ -72,7 +72,8 @@ const settings = reactive({
   tabsVal: $storage.configure.hideTabs,
   showLogo: $storage.configure.showLogo,
   showModel: $storage.configure.showModel,
-  multiTagsCache: $storage.configure.multiTagsCache
+  multiTagsCache: $storage.configure.multiTagsCache,
+  showStandPages: $storage.configure.showStandPages
 });
 
 const getThemeColorStyle = computed(() => {
@@ -100,6 +101,12 @@ function toggleClass(flag: boolean, clsName: string, target?: HTMLElement) {
   className = className.replace(clsName, "").trim();
   targetEl.className = flag ? `${className} ${clsName} ` : className;
 }
+
+/** 展示和关闭静态页面 */
+const showStandPages = (value): void => {
+  storageConfigureChange("showStandPages", value);
+  location.href = "/";
+};
 
 /** 灰色模式设置 */
 const greyChange = (value): void => {
@@ -318,6 +325,18 @@ onBeforeMount(() => {
 
     <el-divider>界面显示</el-divider>
     <ul class="setting">
+      <li>
+        <span class="dark:text-white">展示静态页面</span>
+        <!--TODO 展示和关闭静态页面 -->
+        <el-switch
+          v-model="settings.showStandPages"
+          inline-prompt
+          inactive-color="#a6a6a6"
+          active-text="开"
+          inactive-text="关"
+          @change="showStandPages"
+        />
+      </li>
       <li>
         <span class="dark:text-white">灰色模式</span>
         <el-switch

@@ -39,19 +39,23 @@ import remainingRouter from "./modules/remaining";
  * 如何匹配所有文件请看：https://github.com/mrmlnc/fast-glob#basic-syntax
  * 如何排除文件请看：https://cn.vitejs.dev/guide/features.html#negative-patterns
  */
-const modules: Record<string, any> = import.meta.glob(
-  // [
-  //   "./modules/able.ts",
-  //   "./modules/home.ts",
-  //   "./modules/editor.ts",
-  //   "./modules/table.ts",
-  //   "!./modules/**/remaining.ts"
-  // ],
-  ["./modules/**/*.ts", "!./modules/**/remaining.ts"],
-  {
-    eager: true
-  }
-);
+let modules: Record<string, any> = undefined;
+const responsiveConfigure = storageLocal().getItem<any>("responsive-configure");
+if (responsiveConfigure.showStandPages) {
+  modules = import.meta.glob(
+    ["./modules/**/*.ts", "!./modules/**/remaining.ts"],
+    {
+      eager: true
+    }
+  );
+} else {
+  modules = import.meta.glob(
+    ["./modules/home.ts", "!./modules/**/remaining.ts"],
+    {
+      eager: true
+    }
+  );
+}
 
 /** 原始静态路由（未做任何处理） */
 const routes = [];
