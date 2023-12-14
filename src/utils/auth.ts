@@ -21,6 +21,7 @@ export interface DataInfo<T> {
     last_name?: string;
     /** 当前登陆用户的角色 */
     roles?: Array<string>;
+    is_superuser?: boolean;
   };
   loginType: number;
 }

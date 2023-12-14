@@ -20,7 +20,7 @@ import { useRouter } from "vue-router";
 import panel from "../panel/index.vue";
 import { emitter } from "@/utils/mitt";
 import { resetRouter } from "@/router";
-import { removeToken } from "@/utils/auth";
+import { type DataInfo, removeToken, sessionKey } from "@/utils/auth";
 import { routerArrays } from "@/layout/types";
 import { useNav } from "@/layout/hooks/useNav";
 import { useAppStoreHook } from "@/store/modules/app";
@@ -37,6 +37,7 @@ const router = useRouter();
 const { isDark } = useDark();
 const { device, tooltipEffect } = useNav();
 const { $storage } = useGlobal<GlobalPropertiesApi>();
+const userInfo = storageLocal().getItem<DataInfo<number>>(sessionKey);
 
 const mixRef = ref();
 const verticalRef = ref();
@@ -327,8 +328,8 @@ onBeforeMount(() => {
     <ul class="setting">
       <li>
         <span class="dark:text-white">展示静态页面</span>
-        <!--TODO 展示和关闭静态页面 -->
         <el-switch
+          v-show="userInfo.user.is_superuser"
           v-model="settings.showStandPages"
           inline-prompt
           inactive-color="#a6a6a6"
