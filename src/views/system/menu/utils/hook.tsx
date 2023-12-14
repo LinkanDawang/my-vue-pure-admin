@@ -236,7 +236,7 @@ export function useMenu() {
       props: {
         formInline: {
           higherMenuOptions: formatHigherMenuOptions(
-            cloneDeep(dataList.value),
+            cloneDeep(cusDataList.value),
             row?.id ?? null
           ),
           id: row?.id ?? null,
