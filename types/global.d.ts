@@ -127,7 +127,6 @@ declare global {
         zoom?: number;
       };
     };
-    ShowStandPages?: boolean;
   }
 
   /**
@@ -184,7 +183,6 @@ declare global {
       showLogo?: boolean;
       showModel?: string;
       multiTagsCache?: boolean;
-      showStandPages?: boolean;
     };
     tags?: Array<any>;
   }

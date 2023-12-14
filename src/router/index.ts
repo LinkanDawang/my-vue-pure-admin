@@ -28,7 +28,7 @@ import {
   isUrl,
   openLink,
   isAllEmpty,
-  // storageSession,
+  storageSession,
   storageLocal
 } from "@pureadmin/utils";
 import { message } from "@/utils/message";
@@ -40,8 +40,8 @@ import remainingRouter from "./modules/remaining";
  * 如何排除文件请看：https://cn.vitejs.dev/guide/features.html#negative-patterns
  */
 let modules: Record<string, any> = undefined;
-const responsiveConfigure = storageLocal().getItem<any>("responsive-configure");
-if (responsiveConfigure.showStandPages) {
+const showStandPages = storageSession().getItem<Boolean>("showStandPages");
+if (showStandPages) {
   modules = import.meta.glob(
     ["./modules/**/*.ts", "!./modules/**/remaining.ts"],
     {

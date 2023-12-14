@@ -38,6 +38,9 @@ const { isDark } = useDark();
 const { device, tooltipEffect } = useNav();
 const { $storage } = useGlobal<GlobalPropertiesApi>();
 const userInfo = storageLocal().getItem<DataInfo<number>>(sessionKey);
+const showStandPages = ref(
+  storageSession().getItem<Boolean>("showStandPages") ?? false
+);
 
 const mixRef = ref();
 const verticalRef = ref();
@@ -73,8 +76,7 @@ const settings = reactive({
   tabsVal: $storage.configure.hideTabs,
   showLogo: $storage.configure.showLogo,
   showModel: $storage.configure.showModel,
-  multiTagsCache: $storage.configure.multiTagsCache,
-  showStandPages: $storage.configure.showStandPages
+  multiTagsCache: $storage.configure.multiTagsCache
 });
 
 const getThemeColorStyle = computed(() => {
@@ -104,8 +106,8 @@ function toggleClass(flag: boolean, clsName: string, target?: HTMLElement) {
 }
 
 /** 展示和关闭静态页面 */
-const showStandPages = (value): void => {
-  storageConfigureChange("showStandPages", value);
+const switchStandPages = (value): void => {
+  storageSession().setItem<Boolean>("showStandPages", value);
   location.href = "/";
 };
 
@@ -330,12 +332,12 @@ onBeforeMount(() => {
         <span class="dark:text-white">展示静态页面</span>
         <el-switch
           v-show="userInfo.user.is_superuser"
-          v-model="settings.showStandPages"
+          v-model="showStandPages"
           inline-prompt
           inactive-color="#a6a6a6"
           active-text="开"
           inactive-text="关"
-          @change="showStandPages"
+          @change="switchStandPages"
         />
       </li>
       <li>
