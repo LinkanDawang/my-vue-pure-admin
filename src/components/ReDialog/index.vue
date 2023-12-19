@@ -12,6 +12,11 @@ import Fullscreen from "@iconify-icons/ri/fullscreen-fill";
 import ExitFullscreen from "@iconify-icons/ri/fullscreen-exit-fill";
 
 const fullscreen = ref(false);
+const confirmLoading = ref(false);
+
+function setButtonLoading(value: boolean) {
+  confirmLoading.value = value;
+}
 
 const footerButtons = computed(() => {
   return (options: DialogOptions) => {
@@ -41,7 +46,7 @@ const footerButtons = computed(() => {
               const done = () =>
                 closeDialog(options, index, { command: "sure" });
               if (options?.beforeSure && isFunction(options?.beforeSure)) {
-                options.beforeSure(done, { options, index });
+                options.beforeSure(done, { options, index }, setButtonLoading);
               } else {
                 done();
               }
@@ -80,6 +85,11 @@ function handleClose(
   closeDialog(options, index, args);
   eventsCallBack("close", options, index);
 }
+
+/* 点击确定提交数据到后端的过程中弹框不可关闭 */
+function beforeCloseCheck(done: Function) {
+  if (!confirmLoading.value) done();
+}
 </script>
 
 <template>
@@ -94,6 +104,7 @@ function handleClose(
     @opened="eventsCallBack('open', options, index)"
     @openAutoFocus="eventsCallBack('openAutoFocus', options, index)"
     @closeAutoFocus="eventsCallBack('closeAutoFocus', options, index)"
+    :beforeClose="beforeCloseCheck"
   >
     <!-- header -->
     <template
@@ -142,6 +153,7 @@ function handleClose(
           v-for="(btn, key) in footerButtons(options)"
           :key="key"
           v-bind="btn"
+          :loading="confirmLoading"
           @click="
             btn.btnClick({
               dialog: { options, index },

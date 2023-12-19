@@ -265,7 +265,7 @@ export function useMenu() {
       fullscreenIcon: true,
       closeOnClickModal: false,
       contentRenderer: () => h(editForm, { ref: formRef, style: formStyle }),
-      beforeSure: (done, { options }) => {
+      beforeSure: (done, { options }, setButtonLoading) => {
         if (title === "查看") {
           done();
           return;
@@ -273,6 +273,7 @@ export function useMenu() {
         const FormRef = formRef.value.getRef();
         const curData = options.props.formInline as FormItemProps;
         function chores() {
+          setButtonLoading(false);
           message(`您${title}了名称为${curData.name}的这条数据`, {
             type: "success"
           });
@@ -285,18 +286,26 @@ export function useMenu() {
             const postData = JSON.parse(JSON.stringify(curData));
             postData.meta.rank = postData.order;
             delete postData.higherMenuOptions;
+            setButtonLoading(true);
             // postData.meta = JSON.parse(postData.meta);
+            let requestFunction: Function = null;
+            let funcParams: Array<any> = null;
             if (title === "新增") {
+              requestFunction = createMenu;
+              funcParams = [postData];
               // 实际开发先调用新增接口，再进行下面操作
-              createMenu(postData).then(() => {
-                chores();
-              });
             } else {
+              requestFunction = updateMenu;
+              funcParams = [curData.id, postData];
               // 实际开发先调用编辑接口，再进行下面操作
-              updateMenu(curData.id, postData).then(() => {
-                chores();
-              });
             }
+            requestFunction(...funcParams)
+              .then(() => {
+                chores();
+              })
+              .catch(() => {
+                setButtonLoading(false);
+              });
           }
         });
       }
