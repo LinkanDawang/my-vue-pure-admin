@@ -339,11 +339,12 @@ export function useMenu() {
       closeOnClickModal: false,
       contentRenderer: () =>
         h(buttonForm, { ref: formRef, onGetButtons: getButtons }),
-      beforeSure: (done, { options }) => {
+      beforeSure: (done, { options }, setButtonLoading) => {
         const FormRefs = formRef.value.getRef();
         const curData = options.props.formInline as FormItemProps;
         const postData = JSON.parse(JSON.stringify(curData));
         function chores() {
+          setButtonLoading(false);
           message("OK", {
             type: "success"
           });
@@ -352,13 +353,14 @@ export function useMenu() {
         }
         FormRefs.validate(valid => {
           if (valid && postData.buttons.length > 0) {
-            setMenuButtons(postData.parentId, postData.buttons).then(res => {
-              if (res.ret == 200) {
+            setButtonLoading(true);
+            setMenuButtons(postData.parentId, postData.buttons)
+              .then(() => {
                 chores();
-              } else {
-                message(res.msg, { type: "error" });
-              }
-            });
+              })
+              .catch(() => {
+                setButtonLoading(false);
+              });
           }
         });
       }
