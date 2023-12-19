@@ -260,6 +260,7 @@ export function useMenu() {
         }
       },
       width: "40%",
+      top: "0vh",
       draggable: true,
       fullscreenIcon: true,
       closeOnClickModal: false,
@@ -287,21 +288,13 @@ export function useMenu() {
             // postData.meta = JSON.parse(postData.meta);
             if (title === "新增") {
               // 实际开发先调用新增接口，再进行下面操作
-              createMenu(postData).then(res => {
-                if (res.ret == 200) {
-                  chores();
-                } else {
-                  message(res.msg, { type: "error" });
-                }
+              createMenu(postData).then(() => {
+                chores();
               });
             } else {
               // 实际开发先调用编辑接口，再进行下面操作
-              updateMenu(curData.id, postData).then(res => {
-                if (res.ret == 200) {
-                  chores();
-                } else {
-                  message(res.msg, { type: "error" });
-                }
+              updateMenu(curData.id, postData).then(() => {
+                chores();
               });
             }
           }
