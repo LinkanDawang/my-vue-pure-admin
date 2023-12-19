@@ -1,11 +1,10 @@
 <script lang="ts" setup>
-import { nextTick, ref } from "vue";
+import { nextTick, ref, onBeforeMount } from "vue";
 import type { FormInstance } from "element-plus";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { ButtonProps } from "@/views/system/menu/utils/types";
 import { localesConfigs, transformI18n } from "@/plugins/i18n";
 import IconSelect from "@/components/ReIcon/src/Select.vue";
-import { getMenuButtons } from "@/api/system";
 import Sortable from "sortablejs";
 import { Delete } from "@element-plus/icons-vue";
 
@@ -15,10 +14,10 @@ function getRef() {
 }
 
 defineExpose({ getRef });
-
-const loading = ref(true);
+const emits = defineEmits(["getButtons"]);
 
 const props = withDefaults(defineProps<ButtonProps>(), {
+  loading: () => false,
   formInline: () => ({
     parentId: null,
     buttons: [
@@ -35,11 +34,6 @@ const props = withDefaults(defineProps<ButtonProps>(), {
 });
 
 const dynamicValidateForm = ref(props.formInline);
-
-getMenuButtons(dynamicValidateForm.value.parentId).then(res => {
-  dynamicValidateForm.value.buttons = res.data || [];
-  loading.value = false;
-});
 
 const buttonSort = () => {
   dynamicValidateForm.value.buttons.sort(function (a, b) {
@@ -139,6 +133,12 @@ const rowDrop = (event: { preventDefault: () => void }) => {
     });
   });
 };
+
+onBeforeMount(() => {
+  dynamicValidateForm.value.buttons.length = 0;
+});
+
+emits("getButtons", dynamicValidateForm.value.parentId);
 </script>
 
 <template>
@@ -160,7 +160,7 @@ const rowDrop = (event: { preventDefault: () => void }) => {
   </el-form>
   <el-form
     ref="formRef"
-    v-loading="loading"
+    v-loading="props.loading"
     :model="dynamicValidateForm"
     label-width="100px"
     class="demo-dynamic"

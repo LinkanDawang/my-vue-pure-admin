@@ -112,7 +112,7 @@ const permissionMap = {
                 link
                 type="primary"
                 :icon="useRenderIcon('fa:hand-pointer-o')"
-                @click="buttonsDialog(JSON.parse(JSON.stringify(row)))"
+                @click="buttonsDialog(row.id)"
               >
                 {{ transformI18n("buttons.hsbutton") }}
               </el-button>

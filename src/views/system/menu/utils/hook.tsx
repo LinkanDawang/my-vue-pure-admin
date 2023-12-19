@@ -7,7 +7,8 @@ import {
   getMenuList,
   createMenu,
   updateMenu,
-  setMenuButtons
+  setMenuButtons,
+  getMenuButtons
 } from "@/api/system";
 // import { usePublicHooks } from "../../hooks";
 import { addDialog } from "@/components/ReDialog";
@@ -29,6 +30,8 @@ export function useMenu() {
 
   const formRef = ref();
   const cusDataList = ref([]);
+  const menuDialogLoading = ref(false);
+  const menuButtons = ref([]);
   const switchLoadMap = ref({});
   const { switchStyle } = usePublicHooks();
   const menuTypes = {
@@ -311,20 +314,31 @@ export function useMenu() {
       }
     });
   }
-  async function buttonsDialog(row: FormItemProps) {
+
+  const getButtons = (menuId: number) => {
+    menuDialogLoading.value = true;
+    getMenuButtons(menuId).then(res => {
+      menuButtons.value = res.data ?? [];
+      menuDialogLoading.value = false;
+    });
+  };
+
+  function buttonsDialog(rowId: number) {
     addDialog({
       title: "按钮设置",
       props: {
+        loading: menuDialogLoading,
         formInline: {
-          parentId: row.id,
-          buttons: []
+          parentId: rowId,
+          buttons: menuButtons
         }
       },
       width: "60%",
       draggable: true,
       fullscreenIcon: true,
       closeOnClickModal: false,
-      contentRenderer: () => h(buttonForm, { ref: formRef }),
+      contentRenderer: () =>
+        h(buttonForm, { ref: formRef, onGetButtons: getButtons }),
       beforeSure: (done, { options }) => {
         const FormRefs = formRef.value.getRef();
         const curData = options.props.formInline as FormItemProps;
