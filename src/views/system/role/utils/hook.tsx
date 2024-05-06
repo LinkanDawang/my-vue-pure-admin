@@ -1,10 +1,11 @@
 // import dayjs from "dayjs";
-import editForm from "../form.vue";
-import permForm from "../permForm.vue";
-import memberFoem from "../memberForm.vue";
+import editForm from "../forms/form.vue";
+import permForm from "../forms/permForm.vue";
+import memberFoem from "../forms/memberForm.vue";
 import { message } from "@/utils/message";
 import {
   getRoleList,
+  getRoleColumns,
   createRole,
   updateRole,
   setRolePermission,
@@ -18,8 +19,10 @@ import {
   MemberDialogItemProps
 } from "../utils/types";
 import { type PaginationProps } from "@pureadmin/table";
-import { reactive, ref, onMounted, h, toRaw } from "vue";
+import { reactive, ref, h } from "vue";
 import { usePublicHooks, onStatusChange } from "@/utils/common";
+import { useUserStoreHook } from "@/store/modules/user";
+import { useTableBase } from "@/utils/tableHook";
 
 export function useRole() {
   const form = reactive({
@@ -28,8 +31,6 @@ export function useRole() {
     status: ""
   });
   const formRef = ref();
-  const dataList = ref([]);
-  const loading = ref(true);
   const switchLoadMap = ref({});
   const { switchStyle } = usePublicHooks();
   const pagination = reactive<PaginationProps>({
@@ -40,25 +41,17 @@ export function useRole() {
   });
   const columns: TableColumnList = [
     {
-      label: "ID",
-      prop: "id"
-    },
-    {
-      label: "角色名称",
-      prop: "name"
-    },
-    {
-      label: "角色编号",
-      prop: "code"
-    },
-    {
       label: "状态",
+      prop: "status",
       cellRenderer: scope => (
         <el-switch
           size={scope.props.size === "small" ? "small" : "default"}
           loading={switchLoadMap.value[scope.index]?.loading}
           v-model={scope.row.status}
-          disabled={scope.row.is_super_role}
+          disabled={
+            scope.row.is_super_role ||
+            !useUserStoreHook().hasPermission("sys:role:edit")
+          }
           active-value={50}
           inactive-value={100}
           active-text="已启用"
@@ -73,21 +66,8 @@ export function useRole() {
     },
     {
       label: "成员",
+      prop: "member",
       slot: "member"
-    },
-    {
-      label: "备注",
-      prop: "remark"
-    },
-    {
-      label: "创建时间",
-      prop: "created_at"
-      // formatter: ({ createTime }) =>
-      //   dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
-    },
-    {
-      label: "修改时间",
-      prop: "updated_at"
     },
     {
       label: "操作",
@@ -95,15 +75,11 @@ export function useRole() {
       slot: "operation"
     }
   ];
-  // const buttonClass = computed(() => {
-  //   return [
-  //     "!h-[20px]",
-  //     "reset-margin",
-  //     "!text-gray-500",
-  //     "dark:!text-white",
-  //     "dark:hover:!text-primary"
-  //   ];
-  // });
+
+  const { tableLoading, tableColumns, dataList, onSearch } = useTableBase(
+    getRoleList,
+    columns
+  );
 
   function handleDelete(row) {
     message(`您删除了角色名称为${row.name}的这条数据`, { type: "success" });
@@ -120,20 +96,6 @@ export function useRole() {
 
   function handleSelectionChange(val) {
     console.log("handleSelectionChange", val);
-  }
-
-  async function onSearch() {
-    loading.value = true;
-    const { data } = await getRoleList(toRaw(form));
-    dataList.value = data.list;
-    pagination.total = data.total;
-    pagination.pageSize = data.pageSize;
-    pagination.currentPage = data.currentPage;
-
-    // setTimeout(() => {
-    //   loading.value = false;
-    // }, 500);
-    loading.value = false;
   }
 
   const resetForm = formEl => {
@@ -285,17 +247,14 @@ export function useRole() {
   /** 数据权限 可自行开发 */
   // function handleDatabase() {}
 
-  onMounted(() => {
-    onSearch();
-  });
-
   return {
     form,
-    loading,
-    columns,
+    tableLoading,
+    tableColumns,
     dataList,
     pagination,
     // buttonClass,
+    getRoleColumns,
     onSearch,
     resetForm,
     openDialog,

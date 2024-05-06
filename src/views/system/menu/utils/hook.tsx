@@ -7,16 +7,19 @@ import {
   getMenuList,
   createMenu,
   updateMenu,
-  setMenuButtons
+  setMenuButtons,
+  getMenuButtons
 } from "@/api/system";
 // import { usePublicHooks } from "../../hooks";
 import { addDialog } from "@/components/ReDialog";
-import { reactive, ref, onMounted, h } from "vue";
+import { reactive, ref, h, watch } from "vue";
 import { type FormItemProps } from "../utils/types";
 import { cloneDeep, isAllEmpty } from "@pureadmin/utils";
 import { transformI18n } from "@/plugins/i18n";
 import { IconifyIconOnline } from "@/components/ReIcon";
 import { onStatusChange, usePublicHooks } from "@/utils/common";
+import { useUserStoreHook } from "@/store/modules/user";
+import { useTableBase } from "@/utils/tableHook";
 
 export function useMenu() {
   const form = reactive({
@@ -26,9 +29,9 @@ export function useMenu() {
   });
 
   const formRef = ref();
-  const dataList = ref([]);
-  const loading = ref(true);
-  const showHeaderFilter = ref(false);
+  const cusDataList = ref([]);
+  const menuDialogLoading = ref(false);
+  const menuButtons = ref([]);
   const switchLoadMap = ref({});
   const { switchStyle } = usePublicHooks();
   const menuTypes = {
@@ -45,30 +48,24 @@ export function useMenu() {
     },
     {
       label: "排序",
-      prop: "order",
-      align: "left",
-      minWidth: 40
+      prop: "order"
+      // minWidth: 40
     },
     {
-      label: "类型",
-      prop: "type",
-      cellRenderer: ({ row, props }) => (
-        <el-tag
-          size={props.size}
-          type={row.type === menuTypes.menu.value ? "" : "success"}
-          disable-transitions
-        >
-          {row.type === menuTypes.menu.value
-            ? menuTypes.menu.name
-            : menuTypes.page.name}
-        </el-tag>
+      label: "菜单名称",
+      prop: "meta.title",
+      // width: 180,
+      // formatter: ({ meta }) => transformI18n(meta.title),
+      cellRenderer: scope => (
+        <el-link type="primary" onClick={() => openViewDialog(scope.row)}>
+          {transformI18n(scope.row.meta.title)}
+        </el-link>
       )
     },
     {
       label: "编码",
-      prop: "code",
-      align: "left",
-      minWidth: 150
+      prop: "code"
+      // minWidth: 150
       // headerRenderer: scope => (
       //   <>
       //     <el-input
@@ -91,10 +88,19 @@ export function useMenu() {
       // )
     },
     {
-      label: "菜单名称",
-      prop: "meta.title",
-      width: 180,
-      formatter: ({ meta }) => transformI18n(meta.title)
+      label: "类型",
+      prop: "type",
+      cellRenderer: ({ row, props }) => (
+        <el-tag
+          size={props.size}
+          type={row.type === menuTypes.menu.value ? "" : "success"}
+          disable-transitions
+        >
+          {row.type === menuTypes.menu.value
+            ? menuTypes.menu.name
+            : menuTypes.page.name}
+        </el-tag>
+      )
     },
     {
       label: "图标",
@@ -108,12 +114,13 @@ export function useMenu() {
     {
       label: "状态",
       prop: "status",
-      minWidth: 100,
+      // minWidth: 100,
       cellRenderer: scope => (
         <el-switch
           size={scope.props.size === "small" ? "small" : "default"}
           loading={switchLoadMap.value[scope.index]?.loading}
           v-model={scope.row.status}
+          disabled={!useUserStoreHook().hasPermission("sys:menu:edit")}
           active-value={50}
           inactive-value={100}
           active-text="已启用"
@@ -128,26 +135,23 @@ export function useMenu() {
     },
     {
       label: "组件名称",
-      prop: "name",
-      width: 180
+      prop: "name"
+      // width: 180
     },
     {
       label: "组件路径",
-      prop: "component",
-      width: 180,
-      align: "left"
+      prop: "component"
+      // width: 180,
     },
     {
       label: "路由地址",
-      prop: "path",
-      width: 180,
-      align: "left"
+      prop: "path"
+      // width: 180,
     },
     {
       label: "重定向",
-      prop: "redirect",
-      width: 180,
-      align: "left"
+      prop: "redirect"
+      // width: 180,
     },
     // {
     //   label: "按钮",
@@ -157,62 +161,41 @@ export function useMenu() {
     {
       label: "Meta",
       prop: "meta",
-      width: 180,
+      // width: 180,
       hide: true,
       formatter: ({ meta }) => JSON.stringify(meta)
     },
     {
       label: "创建时间",
-      minWidth: 200,
+      // minWidth: 200,
       prop: "created_at"
       // formatter: ({ createTime }) => dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
     },
     {
       label: "更新时间",
-      minWidth: 200,
+      // minWidth: 200,
       prop: "updated_at"
       // formatter: ({ createTime }) => dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
     },
     {
       label: "操作",
       fixed: "right",
-      width: 200,
-      slot: "operation"
+      slot: "operation",
+      align: "left"
     }
   ];
 
+  const { tableLoading, tableColumns, dataList, onSearch } = useTableBase(
+    getMenuList,
+    columns
+  );
+
+  function openViewDialog(menuObj: FormItemProps) {
+    openDialog("查看", menuObj);
+  }
+
   function handleSelectionChange(val) {
     console.log("handleSelectionChange", val);
-  }
-
-  function displayHeaderFilter() {
-    showHeaderFilter.value = !showHeaderFilter.value;
-  }
-
-  function resetForm(formEl) {
-    if (!formEl) return;
-    formEl.resetFields();
-    onSearch();
-  }
-
-  async function onSearch() {
-    loading.value = true;
-    const { data } = await getMenuList(); // 这里是返回一维数组结构，前端自行处理成树结构，返回格式要求：唯一id加父节点parentId，parentId取父节点id
-    let newData = data;
-    if (!isAllEmpty(form.name)) {
-      // 前端搜索菜单名称
-      newData = newData.filter(item =>
-        transformI18n(item.meta.title).includes(form.name)
-      );
-    }
-    if (!isAllEmpty(form.status)) {
-      // 前端搜索状态
-      newData = newData.filter(item => item.status === form.status);
-    }
-    dataList.value = handleTree(newData); // 处理成树结构
-    setTimeout(() => {
-      loading.value = false;
-    }, 500);
   }
 
   function formatHigherMenuOptions(
@@ -245,13 +228,18 @@ export function useMenu() {
     return newTreeList;
   }
 
-  function openDialog(title = "新增", row?: FormItemProps) {
+  function openDialog(
+    title: "新增" | "编辑" | "查看" = "查看",
+    row?: FormItemProps
+  ) {
+    const formStyle = { "pointer-events": "auto" };
+    if (title == "查看") formStyle["pointer-events"] = "none";
     addDialog({
       title: `${title}菜单`,
       props: {
         formInline: {
           higherMenuOptions: formatHigherMenuOptions(
-            cloneDeep(dataList.value),
+            cloneDeep(cusDataList.value),
             row?.id ?? null
           ),
           id: row?.id ?? null,
@@ -266,21 +254,29 @@ export function useMenu() {
           meta: row?.meta ?? {
             title: "",
             icon: "ep:expand",
-            rank: row?.order ?? null
+            rank: row?.order ?? null,
+            code: row?.code ?? "",
+            showLink: true
           },
           type: row?.type ?? 1,
           menuTransName: transformI18n(row?.meta?.title) ?? ""
         }
       },
       width: "40%",
+      top: "0vh",
       draggable: true,
       fullscreenIcon: true,
       closeOnClickModal: false,
-      contentRenderer: () => h(editForm, { ref: formRef }),
-      beforeSure: (done, { options }) => {
+      contentRenderer: () => h(editForm, { ref: formRef, style: formStyle }),
+      beforeSure: (done, { options }, setButtonLoading) => {
+        if (title === "查看") {
+          done();
+          return;
+        }
         const FormRef = formRef.value.getRef();
         const curData = options.props.formInline as FormItemProps;
         function chores() {
+          setButtonLoading(false);
           message(`您${title}了名称为${curData.name}的这条数据`, {
             type: "success"
           });
@@ -293,50 +289,62 @@ export function useMenu() {
             const postData = JSON.parse(JSON.stringify(curData));
             postData.meta.rank = postData.order;
             delete postData.higherMenuOptions;
+            setButtonLoading(true);
             // postData.meta = JSON.parse(postData.meta);
+            let requestFunction: Function = null;
+            let funcParams: Array<any> = null;
             if (title === "新增") {
+              requestFunction = createMenu;
+              funcParams = [postData];
               // 实际开发先调用新增接口，再进行下面操作
-              createMenu(postData).then(res => {
-                if (res.ret == 200) {
-                  chores();
-                } else {
-                  message(res.msg, { type: "error" });
-                }
-              });
             } else {
+              requestFunction = updateMenu;
+              funcParams = [curData.id, postData];
               // 实际开发先调用编辑接口，再进行下面操作
-              updateMenu(curData.id, postData).then(res => {
-                if (res.ret == 200) {
-                  chores();
-                } else {
-                  message(res.msg, { type: "error" });
-                }
-              });
             }
+            requestFunction(...funcParams)
+              .then(() => {
+                chores();
+              })
+              .catch(() => {
+                setButtonLoading(false);
+              });
           }
         });
       }
     });
   }
-  async function buttonsDialog(row: FormItemProps) {
+
+  const getButtons = (menuId: number) => {
+    menuDialogLoading.value = true;
+    getMenuButtons(menuId).then(res => {
+      menuButtons.value = res.data ?? [];
+      menuDialogLoading.value = false;
+    });
+  };
+
+  function buttonsDialog(rowId: number) {
     addDialog({
       title: "按钮设置",
       props: {
+        loading: menuDialogLoading,
         formInline: {
-          parentId: row.id,
-          buttons: []
+          parentId: rowId,
+          buttons: menuButtons
         }
       },
       width: "60%",
       draggable: true,
       fullscreenIcon: true,
       closeOnClickModal: false,
-      contentRenderer: () => h(buttonForm, { ref: formRef }),
-      beforeSure: (done, { options }) => {
+      contentRenderer: () =>
+        h(buttonForm, { ref: formRef, onGetButtons: getButtons }),
+      beforeSure: (done, { options }, setButtonLoading) => {
         const FormRefs = formRef.value.getRef();
         const curData = options.props.formInline as FormItemProps;
         const postData = JSON.parse(JSON.stringify(curData));
         function chores() {
+          setButtonLoading(false);
           message("OK", {
             type: "success"
           });
@@ -345,13 +353,14 @@ export function useMenu() {
         }
         FormRefs.validate(valid => {
           if (valid && postData.buttons.length > 0) {
-            setMenuButtons(postData.parentId, postData.buttons).then(res => {
-              if (res.ret == 200) {
+            setButtonLoading(true);
+            setMenuButtons(postData.parentId, postData.buttons)
+              .then(() => {
                 chores();
-              } else {
-                message(res.msg, { type: "error" });
-              }
-            });
+              })
+              .catch(() => {
+                setButtonLoading(false);
+              });
           }
         });
       }
@@ -363,21 +372,33 @@ export function useMenu() {
     onSearch();
   }
 
-  onMounted(() => {
-    onSearch();
+  function handleListData(data: Array<any>) {
+    let newData = data;
+    if (!isAllEmpty(form.name)) {
+      // 前端搜索菜单名称
+      newData = newData.filter(item =>
+        transformI18n(item.meta.title).includes(form.name)
+      );
+    }
+    if (!isAllEmpty(form.status)) {
+      // 前端搜索状态
+      newData = newData.filter(item => item.status === form.status);
+    }
+    cusDataList.value = handleTree(newData); // 处理成树结构
+  }
+
+  watch(dataList, () => {
+    handleListData(dataList.value);
   });
 
   return {
     form,
-    loading,
-    columns,
-    dataList,
+    tableLoading,
+    tableColumns,
+    cusDataList,
     menuTypes,
-    displayHeaderFilter,
     /** 搜索 */
     onSearch,
-    /** 重置 */
-    resetForm,
     /** 新增、编辑部门 */
     openDialog,
     buttonsDialog,

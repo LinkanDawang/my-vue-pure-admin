@@ -1,7 +1,7 @@
 import Axios, {
   AxiosInstance,
-  AxiosRequestConfig,
-  CustomParamsSerializer
+  AxiosRequestConfig
+  // CustomParamsSerializer
 } from "axios";
 import {
   PureHttpError,
@@ -32,8 +32,11 @@ const defaultConfig: AxiosRequestConfig = {
     "X-Requested-With": "XMLHttpRequest"
   },
   // 数组格式参数序列化（https://github.com/axios/axios/issues/5142）
-  paramsSerializer: {
-    serialize: stringify as unknown as CustomParamsSerializer
+  // paramsSerializer: {
+  //   serialize: stringify as unknown as CustomParamsSerializer
+  // }
+  paramsSerializer: function (params) {
+    return stringify(params, { arrayFormat: "brackets" });
   }
 };
 
@@ -137,10 +140,11 @@ class PureHttp {
         // fixMe 处理后端同意http status_code == 200 的情况
         if (respData.ret >= 400) {
           if (respData.ret == 401) {
-            message("身份信息已失效", { type: "error" });
+            // message("身份信息已失效", { type: "error" });
             useUserStoreHook().logOut();
           }
-
+          NProgress.done();
+          message(`${respData.ret}: ${respData.msg}`, { type: "error" });
           return Promise.reject(response);
         }
         // 关闭进度条动画

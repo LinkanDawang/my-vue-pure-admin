@@ -1,4 +1,5 @@
 import {
+  ref,
   unref,
   toRefs,
   computed,
@@ -7,7 +8,8 @@ import {
   onBeforeUnmount,
   defineComponent,
   getCurrentInstance,
-  type CSSProperties
+  type CSSProperties,
+  watch
 } from "vue";
 import props from "./props";
 import Renderer from "./renderer";
@@ -17,18 +19,14 @@ import { isFunction, isBoolean, useDark, debounce } from "@pureadmin/utils";
 
 interface RePureTableProps extends PureTableProps {
   headerFilter?: boolean;
-  searchParams?: any;
+  showHeaderFilter?: boolean;
+  extraSearchParams?: any;
 }
 
 export default defineComponent({
   name: "RePureTable",
   props,
-  emits: [
-    "page-size-change",
-    "page-current-change",
-    "showHeaderFilter",
-    "onSearch"
-  ],
+  emits: ["page-size-change", "page-current-change", "onSearch", "subRefresh"],
   setup(props, { slots, attrs, emit, expose }) {
     const {
       key,
@@ -41,18 +39,49 @@ export default defineComponent({
       loadingConfig,
       adaptiveConfig,
       rowHoverBgColor,
-      showOverflowTooltip,
-      headerFilter,
-      searchParams
+      showOverflowTooltip
+      // showHeaderFilter
+      // extraSearchParams
     } = toRefs(props) as unknown as RePureTableProps;
 
-    // const searchParams = ref({});
-    function showHeaderFilter() {
-      emit("showHeaderFilter");
+    const _showHeaderFilter = ref(false);
+
+    watch(
+      () => props.showHeaderFilter,
+      () => {
+        disPlayHeaderFilter();
+      }
+    );
+
+    watch(
+      () => props.refreshList,
+      () => {
+        onRefresh();
+      }
+    );
+
+    watch(
+      () => Object.values(props.extraSearchParams),
+      () => {
+        Object.assign(autoSearchParams.value, props.extraSearchParams);
+        onSearch();
+      }
+    );
+
+    const autoSearchParams = ref({});
+
+    function disPlayHeaderFilter() {
+      _showHeaderFilter.value = !_showHeaderFilter.value;
+    }
+
+    function onRefresh() {
+      autoSearchParams.value = {};
+      Object.assign(autoSearchParams.value, props.extraSearchParams);
+      onSearch();
     }
 
     function onSearch() {
-      emit("onSearch");
+      emit("onSearch", autoSearchParams.value);
     }
 
     const { isDark } = useDark();
@@ -114,9 +143,9 @@ export default defineComponent({
     function formatColumnFilter(column) {
       return (
         <>
-          <el-col onClick={showHeaderFilter}>{column.label}</el-col>
+          <el-col onClick={disPlayHeaderFilter}>{column.label}</el-col>
           {column.meta?.filterType ? (
-            <el-col v-show={unref(headerFilter) == true}>
+            <el-col v-show={unref(_showHeaderFilter) == true}>
               {column.meta.filterType == "date" ? (
                 <el-date-picker
                   size={props.size}
@@ -124,7 +153,7 @@ export default defineComponent({
                   placeholder="请选择日期"
                   format="YYYY-MM-DD"
                   value-format="YYYY-MM-DD"
-                  v-model={searchParams.value[column.prop]}
+                  v-model={autoSearchParams.value[column.prop]}
                   onChange={onSearch}
                 />
               ) : column.meta.filterType == "dateRange" ? (
@@ -134,7 +163,7 @@ export default defineComponent({
                   type="daterange"
                   start-placeholder="开始"
                   end-placeholder="结束"
-                  v-model={searchParams.value[column.prop]}
+                  v-model={autoSearchParams.value[column.prop]}
                   onChange={onSearch}
                 />
               ) : ["dateTime", "dateTimeRange"].includes(
@@ -146,8 +175,12 @@ export default defineComponent({
                   start-placeholder="开始"
                   end-placeholder="结束"
                   format="YYYY-MM-DD HH:mm:ss"
+                  default-time={[
+                    new Date(2000, 1, 1, 0, 0, 0),
+                    new Date(2000, 1, 1, 23, 59, 59)
+                  ]}
                   value-format="YYYY-MM-DD HH:mm:ss"
-                  v-model={searchParams.value[column.prop]}
+                  v-model={autoSearchParams.value[column.prop]}
                   onChange={onSearch}
                 />
               ) : ["select", "selectMultiple"].includes(
@@ -160,14 +193,20 @@ export default defineComponent({
                   collapse-tags
                   collapse-tags-tooltip
                   placeholder="请选择"
-                  v-model={searchParams.value[column.prop]}
+                  v-model={autoSearchParams.value[column.prop]}
                   onChange={onSearch}
                 >
                   {column.meta?.selectOptions?.map(option => (
                     <el-option
                       key={option.value}
                       label={option.label}
-                      value={option.value}
+                      value={
+                        typeof option.value == "boolean"
+                          ? option.value
+                            ? "True"
+                            : "False"
+                          : option.value
+                      }
                     />
                   ))}
                 </el-select>
@@ -175,7 +214,7 @@ export default defineComponent({
                 <el-input
                   size={props.size}
                   clearable
-                  v-model={searchParams.value[column.prop]}
+                  v-model={autoSearchParams.value[column.prop]}
                   onChange={onSearch}
                 />
               )}
@@ -205,6 +244,14 @@ export default defineComponent({
         return hide;
       }
 
+      let columnOptions = null;
+      if (columns.meta?.selectOptions) {
+        columnOptions = {};
+        columns.meta?.selectOptions.forEach(item => {
+          columnOptions[item.value] = item.label;
+        });
+      }
+
       const defaultSlots = {
         default: (scope: TableColumnScope) => {
           if (cellRenderer) {
@@ -226,6 +273,8 @@ export default defineComponent({
                 attrs
               })
             );
+          } else if (columnOptions && Object.keys(scope.row).length !== 0) {
+            return <span>{columnOptions[scope.row[columns.prop]]}</span>;
           }
         }
       };

@@ -66,9 +66,17 @@ export default {
     type: Boolean,
     default: false
   },
-  searchParams: {
+  showHeaderFilter: {
+    type: Boolean,
+    default: false
+  },
+  extraSearchParams: {
     type: Object,
     default: {}
+  },
+  refreshList: {
+    type: Boolean,
+    default: false
   },
   ...defaultProps
 };

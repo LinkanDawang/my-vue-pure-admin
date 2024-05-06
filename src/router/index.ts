@@ -24,7 +24,14 @@ import {
   formatFlatteningRoutes
 } from "./utils";
 import { buildHierarchyTree } from "@/utils/tree";
-import { isUrl, openLink, storageSession, isAllEmpty } from "@pureadmin/utils";
+import {
+  isUrl,
+  openLink,
+  isAllEmpty,
+  storageSession,
+  storageLocal
+} from "@pureadmin/utils";
+import { message } from "@/utils/message";
 
 import remainingRouter from "./modules/remaining";
 
@@ -32,19 +39,23 @@ import remainingRouter from "./modules/remaining";
  * 如何匹配所有文件请看：https://github.com/mrmlnc/fast-glob#basic-syntax
  * 如何排除文件请看：https://cn.vitejs.dev/guide/features.html#negative-patterns
  */
-const modules: Record<string, any> = import.meta.glob(
-  // [
-  //   "./modules/able.ts",
-  //   "./modules/home.ts",
-  //   "./modules/editor.ts",
-  //   "./modules/table.ts",
-  //   "!./modules/**/remaining.ts"
-  // ],
-  ["./modules/**/*.ts", "!./modules/**/remaining.ts"],
-  {
-    eager: true
-  }
-);
+let modules: Record<string, any> = undefined;
+const showStandPages = storageSession().getItem<Boolean>("showStandPages");
+if (showStandPages) {
+  modules = import.meta.glob(
+    ["./modules/**/*.ts", "!./modules/**/remaining.ts"],
+    {
+      eager: true
+    }
+  );
+} else {
+  modules = import.meta.glob(
+    ["./modules/home.ts", "!./modules/**/remaining.ts"],
+    {
+      eager: true
+    }
+  );
+}
 
 /** 原始静态路由（未做任何处理） */
 const routes = [];
@@ -117,7 +128,17 @@ router.beforeEach((to: ToRouteType, _from, next) => {
       handleAliveRoute(to);
     }
   }
-  const userInfo = storageSession().getItem<DataInfo<number>>(sessionKey);
+  const userInfo = storageLocal().getItem<DataInfo<number>>(sessionKey);
+  if (userInfo) {
+    const userExpires = new Date(userInfo.expires).getTime();
+    const nowTimeStamp = new Date().getTime();
+    const isExpired = userExpires - nowTimeStamp;
+    if (isExpired <= 0) {
+      // next({ path: "/login" });
+      message("身份信息已失效，请重新登录", { type: "error" });
+      useUserStoreHook().logOut();
+    }
+  }
   NProgress.start();
   const externalLink = isUrl(to?.name as string);
   if (!externalLink) {

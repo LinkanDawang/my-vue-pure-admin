@@ -135,7 +135,7 @@ defineExpose({ onTreeReset });
                 {{ isExpand ? "折叠全部" : "展开全部" }}
               </el-button>
             </el-dropdown-item>
-            <!-- <el-dropdown-item>
+            <!--<el-dropdown-item>
               <el-button
                 :class="buttonClass"
                 link
@@ -145,7 +145,7 @@ defineExpose({ onTreeReset });
               >
                 重置状态
               </el-button>
-            </el-dropdown-item> -->
+            </el-dropdown-item>-->
           </el-dropdown-menu>
         </template>
       </el-dropdown>

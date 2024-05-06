@@ -14,7 +14,8 @@ import {
   isAllEmpty,
   isIncludeAllChildren,
   isString,
-  storageSession
+  // storageSession,
+  storageLocal
 } from "@pureadmin/utils";
 import { getConfig } from "@/config";
 import { menuType } from "@/layout/types";
@@ -25,7 +26,7 @@ import { usePermissionStoreHook } from "@/store/modules/permission";
 import { useUserStoreHook } from "@/store/modules/user";
 // 动态路由
 import { getAsyncRoutes } from "@/api/routes";
-import { message } from "@/utils/message";
+// import { message } from "@/utils/message";
 
 const IFrame = () => import("@/layout/frameView.vue");
 // https://cn.vitejs.dev/guide/features.html#glob-import
@@ -191,7 +192,7 @@ function setRouter() {
   if (getConfig()?.CachingAsyncRoutes) {
     // 开启动态路由缓存本地sessionStorage
     const key = "async-routes";
-    const asyncRouteList = storageSession().getItem(key) as any;
+    const asyncRouteList = storageLocal().getItem(key) as any;
     if (asyncRouteList && asyncRouteList?.length > 0) {
       return new Promise(resolve => {
         handleAsyncRoutes(asyncRouteList);
@@ -201,7 +202,7 @@ function setRouter() {
       return new Promise(resolve => {
         getAsyncRoutes().then(({ data }) => {
           handleAsyncRoutes(cloneDeep(data));
-          storageSession().setItem(key, data);
+          storageLocal().setItem(key, data);
           resolve(router);
         });
       });
@@ -217,12 +218,11 @@ function setRouter() {
 }
 
 async function initRouter() {
-  await useUserStoreHook()
-    .getUserInfo()
-    .then(() => {})
-    .catch(error => {
-      message(error.data.msg, { type: "error" });
-    });
+  await useUserStoreHook().getUserInfo();
+  // .then(() => {})
+  // .catch(error => {
+  //   message(error.data.msg, { type: "error" });
+  // });
   return setRouter();
 }
 

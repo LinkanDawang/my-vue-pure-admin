@@ -1,6 +1,12 @@
 import { http } from "@/utils/http";
 import { apiUrl } from "@/api/utils";
 
+export type BaseResult = {
+  success: boolean;
+  ret: number;
+  data?: any;
+};
+
 export type UserResult = {
   success: boolean;
   ret?: number;
@@ -42,8 +48,9 @@ export type OauthTokenResult = {
     /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
     expires: Date;
     expiresIn: number;
-    tokenType: number;
-    scope: number;
+    tokenType?: string;
+    scope?: string;
+    user: any;
   };
 };
 
@@ -114,7 +121,7 @@ export const oauth2RevokeTokenApi = (data: object) => {
   };
   data["client_id"] = oauthAppId;
   data["client_secret"] = oauthAppSecret;
-  return http.request<OauthTokenResult>(
+  return http.request<any>(
     "post",
     apiUrl("o/revoke_token"),
     { data },
@@ -122,6 +129,25 @@ export const oauth2RevokeTokenApi = (data: object) => {
   );
 };
 
+export const userLogout = () => {
+  return http.request<BaseResult>("get", apiUrl("users/logout"));
+};
+
 export const userInfoApi = () => {
   return http.request<UserInfoResult>("get", apiUrl("users/me"));
+};
+
+export const dingTalkLogin = data => {
+  return http.request<OauthTokenResult>(
+    "post",
+    apiUrl("/social-auth/dingtalk/"),
+    {
+      data
+    }
+  );
+};
+
+export const getUserColumns = () => {
+  // return http.request<ResultTable>("post", "/role", { data });
+  return http.request<BaseResult>("options", apiUrl("users"));
 };

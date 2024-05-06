@@ -36,8 +36,9 @@ type postArrayResult = {
 };
 
 /** 获取用户管理列表 */
-export const getUserList = (data?: object) => {
-  return http.request<ResultTable>("post", "/user", { data });
+export const getUserList = (params?: object) => {
+  // return http.request<ResultTable>("post", "/user", { data });
+  return http.request<ResultTable>("get", apiUrl("/users"), { params });
 };
 
 /** 用户管理-获取所有角色列表 */
@@ -51,9 +52,14 @@ export const getRoleIds = (data?: object) => {
 };
 
 /** 获取角色管理列表 */
-export const getRoleList = (data?: object) => {
+export const getRoleList = (params?: object) => {
   // return http.request<ResultTable>("post", "/role", { data });
-  return http.request<ResultTable>("get", apiUrl("rbac/roles/"), { data });
+  return http.request<ResultTable>("get", apiUrl("rbac/roles/"), { params });
+};
+
+export const getRoleColumns = () => {
+  // return http.request<ResultTable>("post", "/role", { data });
+  return http.request<postArrayResult>("options", apiUrl("rbac/roles/"), {});
 };
 
 /** 新增角色 */

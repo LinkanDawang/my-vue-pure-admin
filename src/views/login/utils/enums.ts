@@ -14,6 +14,10 @@ const operates = [
 
 const thirdParty = [
   {
+    title: $t("login.dingTalkLogin"),
+    icon: "dingding"
+  },
+  {
     title: $t("login.weChatLogin"),
     icon: "wechat"
   },

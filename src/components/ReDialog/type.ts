@@ -211,7 +211,8 @@ interface DialogOptions extends DialogProps {
     }: {
       options: DialogOptions;
       index: number;
-    }
+    },
+    setButtonLoading?: Function
   ) => void;
 }
 

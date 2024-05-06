@@ -20,7 +20,7 @@ import { useRouter } from "vue-router";
 import panel from "../panel/index.vue";
 import { emitter } from "@/utils/mitt";
 import { resetRouter } from "@/router";
-import { removeToken } from "@/utils/auth";
+import { type DataInfo, removeToken, sessionKey } from "@/utils/auth";
 import { routerArrays } from "@/layout/types";
 import { useNav } from "@/layout/hooks/useNav";
 import { useAppStoreHook } from "@/store/modules/app";
@@ -37,6 +37,9 @@ const router = useRouter();
 const { isDark } = useDark();
 const { device, tooltipEffect } = useNav();
 const { $storage } = useGlobal<GlobalPropertiesApi>();
+const userInfo = storageLocal().getItem<DataInfo<number>>(sessionKey);
+const showStandPages =
+  storageSession().getItem<Boolean>("showStandPages") ?? false;
 
 const mixRef = ref();
 const verticalRef = ref();
@@ -72,7 +75,8 @@ const settings = reactive({
   tabsVal: $storage.configure.hideTabs,
   showLogo: $storage.configure.showLogo,
   showModel: $storage.configure.showModel,
-  multiTagsCache: $storage.configure.multiTagsCache
+  multiTagsCache: $storage.configure.multiTagsCache,
+  showStandPages: showStandPages
 });
 
 const getThemeColorStyle = computed(() => {
@@ -100,6 +104,12 @@ function toggleClass(flag: boolean, clsName: string, target?: HTMLElement) {
   className = className.replace(clsName, "").trim();
   targetEl.className = flag ? `${className} ${clsName} ` : className;
 }
+
+/** 展示和关闭静态页面 */
+const switchStandPages = (value): void => {
+  storageSession().setItem<Boolean>("showStandPages", value);
+  location.href = "/";
+};
 
 /** 灰色模式设置 */
 const greyChange = (value): void => {
@@ -318,6 +328,17 @@ onBeforeMount(() => {
 
     <el-divider>界面显示</el-divider>
     <ul class="setting">
+      <li v-show="userInfo.user.is_superuser">
+        <span class="dark:text-white">展示静态页面</span>
+        <el-switch
+          v-model="settings.showStandPages"
+          inline-prompt
+          inactive-color="#a6a6a6"
+          active-text="开"
+          inactive-text="关"
+          @change="switchStandPages"
+        />
+      </li>
       <li>
         <span class="dark:text-white">灰色模式</span>
         <el-switch

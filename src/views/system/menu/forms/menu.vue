@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<FormProps>(), {
     redirect: "",
     order: 0,
     status: 1,
-    meta: { title: "", icon: "", rank: null, code: "" },
+    meta: { title: "", icon: "", rank: null, code: "", showLink: true },
     type: 1,
     menuTransName: ""
   })
@@ -37,6 +37,8 @@ defineExpose({ getRef });
 
 const { switchStyle } = usePublicHooks();
 const newFormInline = ref(props.formInline);
+
+const initKeepAlive = newFormInline.value.meta.keepAlive;
 
 const jsonPreview = reactive({
   val: JSON.stringify(newFormInline.value.meta),
@@ -116,6 +118,15 @@ function setMetaFrameSrc(value: string) {
 function switchMenuType(value: number) {
   menuType.value = value;
   getMenuList();
+  console.log(value, typeof value);
+  if (value === 1) {
+    delete newFormInline.value.meta["keepAlive"];
+  } else {
+    if (newFormInline.value.meta.keepAlive === undefined) {
+      newFormInline.value.meta.keepAlive =
+        initKeepAlive !== undefined ? initKeepAlive : true;
+    }
+  }
 }
 </script>
 
@@ -125,6 +136,8 @@ function switchMenuType(value: number) {
     :model="newFormInline"
     :rules="formRules"
     label-width="82px"
+    label-position="left"
+    require-asterisk-position="right"
   >
     <el-row :gutter="30">
       <re-col>
@@ -150,11 +163,11 @@ function switchMenuType(value: number) {
           </el-cascader>
         </el-form-item>
       </re-col>
-      <re-col>
+      <re-col :value="12" :xs="24" :sm="24">
         <el-form-item label="菜单类型" prop="type">
           <el-radio-group v-model="newFormInline.type" @change="switchMenuType">
-            <el-radio-button label="1">菜单</el-radio-button>
-            <el-radio-button label="2">页面</el-radio-button>
+            <el-radio-button :label="1">菜单</el-radio-button>
+            <el-radio-button :label="2">页面</el-radio-button>
             <!--<el-radio-button label="3">按钮</el-radio-button>-->
           </el-radio-group>
         </el-form-item>
@@ -178,16 +191,21 @@ function switchMenuType(value: number) {
         </el-form-item>
       </re-col>
       <re-col :value="12" :xs="24" :sm="24">
+        <el-form-item label="菜单编码" prop="code">
+          <el-input
+            v-model="newFormInline.code"
+            clearable
+            placeholder="请输入编码"
+            @input="setMetaCode"
+          />
+        </el-form-item>
+      </re-col>
+      <re-col :value="12" :xs="24" :sm="24">
         <el-form-item label="菜单图标">
           <IconSelect v-model="newFormInline.meta.icon" />
         </el-form-item>
       </re-col>
-      <re-col
-        :value="12"
-        :xs="24"
-        :sm="24"
-        v-if="newFormInline.type == 1 || newFormInline.type == 2"
-      >
+      <re-col :value="12" :xs="24" :sm="24">
         <el-form-item
           label="组件名称"
           :prop="newFormInline.type == 2 ? 'name' : ''"
@@ -199,31 +217,7 @@ function switchMenuType(value: number) {
           />
         </el-form-item>
       </re-col>
-      <re-col
-        :value="12"
-        :xs="24"
-        :sm="24"
-        v-if="newFormInline.type == 1 || newFormInline.type == 2"
-      >
-        <el-form-item label="编码" prop="code">
-          <el-input
-            v-model="newFormInline.code"
-            clearable
-            placeholder="请输入编码"
-            @input="setMetaCode"
-          />
-        </el-form-item>
-      </re-col>
-      <re-col v-else>
-        <el-form-item label="编码">
-          <el-input
-            v-model="newFormInline.code"
-            clearable
-            placeholder="请输入编码"
-          />
-        </el-form-item>
-      </re-col>
-      <re-col v-if="newFormInline.type == 1 || newFormInline.type == 2">
+      <re-col :value="12" :xs="24" :sm="24">
         <el-form-item label="组件路径" prop="component">
           <el-input
             v-model="newFormInline.component"
@@ -232,12 +226,7 @@ function switchMenuType(value: number) {
           />
         </el-form-item>
       </re-col>
-      <re-col
-        :value="12"
-        :xs="24"
-        :sm="24"
-        v-if="newFormInline.type == 1 || newFormInline.type == 2"
-      >
+      <re-col :value="12" :xs="24" :sm="24">
         <el-form-item label="路由地址" prop="path">
           <el-input
             v-model="newFormInline.path"
@@ -246,12 +235,7 @@ function switchMenuType(value: number) {
           />
         </el-form-item>
       </re-col>
-      <re-col
-        :value="12"
-        :xs="24"
-        :sm="24"
-        v-if="newFormInline.type == 1 || newFormInline.type == 2"
-      >
+      <re-col :value="12" :xs="24" :sm="24">
         <el-form-item label="重定向" prop="redirect">
           <el-input
             v-model="newFormInline.redirect"
@@ -287,14 +271,29 @@ function switchMenuType(value: number) {
           />
         </el-form-item>
       </re-col>
+      <re-col v-if="newFormInline.type == 2" :value="12" :xs="24" :sm="24">
+        <el-form-item label="页面保持">
+          <el-switch
+            v-model="newFormInline.meta.keepAlive"
+            inline-prompt
+            :active-value="true"
+            :inactive-value="false"
+            active-text="开"
+            inactive-text="关"
+            :style="switchStyle"
+          />
+        </el-form-item>
+      </re-col>
       <re-col :value="12" :xs="24" :sm="24">
-        <el-form-item label="排序">
-          <el-input-number
-            v-model="newFormInline.order"
-            :min="0"
-            :max="9999"
-            controls-position="right"
-            @change="setMetaRank"
+        <el-form-item label="是否显示">
+          <el-switch
+            v-model="newFormInline.meta.showLink"
+            inline-prompt
+            :active-value="true"
+            :inactive-value="false"
+            active-text="是"
+            inactive-text="否"
+            :style="switchStyle"
           />
         </el-form-item>
       </re-col>
@@ -308,6 +307,17 @@ function switchMenuType(value: number) {
             active-text="启用"
             inactive-text="停用"
             :style="switchStyle"
+          />
+        </el-form-item>
+      </re-col>
+      <re-col :value="12" :xs="24" :sm="24">
+        <el-form-item label="排序">
+          <el-input-number
+            v-model="newFormInline.order"
+            :min="0"
+            :max="9999"
+            controls-position="right"
+            @change="setMetaRank"
           />
         </el-form-item>
       </re-col>

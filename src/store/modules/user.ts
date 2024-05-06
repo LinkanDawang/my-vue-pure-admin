@@ -4,12 +4,19 @@ import { userType } from "./types";
 import { message } from "@/utils/message";
 import { routerArrays } from "@/layout/types";
 import { router, resetRouter } from "@/router";
-import { storageSession } from "@pureadmin/utils";
+import {
+  // storageSession,
+  storageLocal,
+  cloneDeep
+} from "@pureadmin/utils";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // import { getLogin, refreshTokenApi, UserResult, RefreshTokenResult } from "@/api/user";
 import {
   oauth2TokenApi,
+  oauth2RevokeTokenApi,
   userInfoApi,
+  dingTalkLogin,
+  userLogout,
   type OauthTokenResult,
   UserInfoResult
 } from "@/api/user";
@@ -23,19 +30,25 @@ import {
   permissionKey
 } from "@/utils/auth";
 
+const LoginType = {
+  oauth: 1,
+  sysOrThird: 2
+};
+
 export const useUserStore = defineStore({
   id: "pure-user",
   state: (): userType => ({
     // 用户名
     username:
-      storageSession().getItem<DataInfo<number>>(sessionKey)?.username ?? "",
+      storageLocal().getItem<DataInfo<number>>(sessionKey)?.user.username ?? "",
     // 页面级别权限
-    roles: storageSession().getItem<DataInfo<number>>(sessionKey)?.roles ?? [],
+    roles:
+      storageLocal().getItem<DataInfo<number>>(sessionKey)?.user.roles ?? [],
     // 前端生成的验证码（按实际需求替换）
     verifyCode: "",
     // 判断登录页面显示哪个组件（0：登录（默认）、1：手机登录、2：二维码登录、3：注册、4：忘记密码）
     currentPage: 0,
-    permissions: storageSession().getItem<Array<string>>(permissionKey) ?? []
+    permissions: storageLocal().getItem<Array<string>>(permissionKey) ?? []
   }),
   actions: {
     /** 存储用户名 */
@@ -64,7 +77,9 @@ export const useUserStore = defineStore({
         oauth2TokenApi(data, "password")
           .then(res => {
             if (res) {
-              setToken(res.data);
+              const resData = cloneDeep(res.data);
+              resData["loginType"] = LoginType.oauth;
+              setToken(resData);
               resolve(res);
             }
           })
@@ -83,11 +98,40 @@ export const useUserStore = defineStore({
           });
       });
     },
+    /** 第三方登入-钉钉 */
+    async loginByDinTalk(data) {
+      return new Promise<OauthTokenResult>((resolve, reject) => {
+        dingTalkLogin(data)
+          .then(res => {
+            if (res) {
+              const resData = cloneDeep(res.data);
+              resData["loginType"] = LoginType.sysOrThird;
+              setToken(resData);
+              resolve(res);
+            }
+          })
+          .catch(error => {
+            message(`${error.data.ret}: ${error.data.msg}`, {
+              type: "error"
+            });
+            reject(error);
+          });
+      });
+    },
     /** 前端登出（不调用接口） */
     logOut() {
+      const tokenData = storageLocal().getItem<DataInfo<any>>(sessionKey);
+      if (tokenData.loginType === LoginType.oauth) {
+        const tokenObj = { token: tokenData.accessToken };
+        oauth2RevokeTokenApi(tokenObj).then();
+      } else {
+        userLogout().then();
+      }
       this.username = "";
       this.roles = [];
       removeToken();
+      storageLocal().removeItem(permissionKey);
+      storageLocal().removeItem(sessionKey);
       useMultiTagsStoreHook().handleTags("equal", [...routerArrays]);
       resetRouter();
       router.push("/login");
@@ -99,7 +143,9 @@ export const useUserStore = defineStore({
         oauth2TokenApi(data, "refresh_token")
           .then(res => {
             if (res) {
-              setToken(res.data);
+              const resData = cloneDeep(res.data);
+              resData["loginType"] = LoginType.oauth;
+              setToken(resData);
               resolve(res);
             }
           })

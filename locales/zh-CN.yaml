@@ -132,6 +132,7 @@ login:
   register: 注册
   weChatLogin: 微信登录
   alipayLogin: 支付宝登录
+  dingTalkLogin: 钉钉登入
   qqLogin: QQ登录
   weiboLogin: 微博登录
   phone: 手机号码

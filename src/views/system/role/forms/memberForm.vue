@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import { MemberDialogProps } from "./utils/types";
+import { MemberDialogProps } from "../utils/types";
 import { getUserList, getRoleMember } from "@/api/system";
 import { message } from "@/utils/message";
 
@@ -47,6 +47,14 @@ const dataProps = {
   key: "id",
   label: "nickname"
 };
+
+function randomAvatar() {
+  const Avatars = [
+    "https://avatars.githubusercontent.com/u/44761321",
+    "https://avatars.githubusercontent.com/u/52823142"
+  ];
+  return Avatars[Math.round(Math.random())];
+}
 </script>
 
 <template>
@@ -54,7 +62,7 @@ const dataProps = {
     <div style="text-align: center">
       <el-transfer
         v-model="newFormInline.member"
-        style="text-align: left; display: inline-block"
+        style="display: inline-block; text-align: left"
         :props="dataProps"
         filterable
         :titles="['未选', '已选']"
@@ -68,12 +76,12 @@ const dataProps = {
           <el-image
             fit="cover"
             preview-teleported
-            :src="option.avatar"
-            :preview-src-list="Array.of(option.avatar)"
+            :src="option.avatar || randomAvatar()"
+            :preview-src-list="Array.of(option.avatar || randomAvatar())"
             class="w-[24px] h-[24px] rounded-full align-middle"
           />
           {{ " " }}
-          <span>{{ option.nickname }}</span>
+          <span>{{ option.username }}</span>
         </template>
       </el-transfer>
     </div>

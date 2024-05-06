@@ -7,7 +7,9 @@ const warpperEnv = (envConf: Recordable): ViteEnv => {
     VITE_ROUTER_HISTORY: "",
     VITE_CDN: false,
     VITE_HIDE_HOME: "false",
-    VITE_COMPRESSION: "none"
+    VITE_COMPRESSION: "none",
+    VITE_DING_TALK_APPID: "",
+    VITE_BACKEND_SERVER: "/"
   };
 
   for (const envName of Object.keys(envConf)) {

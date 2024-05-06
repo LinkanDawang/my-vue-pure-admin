@@ -30,6 +30,7 @@ interface ButtonItemProps {
   }[];
 }
 interface ButtonProps {
+  loading: boolean;
   formInline: ButtonItemProps;
 }
 

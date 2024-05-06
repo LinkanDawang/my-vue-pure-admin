@@ -1,144 +1,60 @@
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
+
+import { getRoleList, updateRole } from "@/api/system";
+import { useUserStoreHook } from "@/store/modules/user";
+import { onStatusChange, usePublicHooks } from "@/utils/common";
+import { useTableBase } from "@/utils/tableHook";
 
 export function useTable() {
-  const searchParams = ref({});
-  const dataList = ref([]);
-  const loading = ref(false);
-  const headerFilter = ref(false);
+  const switchLoadMap = ref({});
+  const { switchStyle } = usePublicHooks();
 
   const columns: TableColumnList = [
     {
-      label: "日期",
-      prop: "date",
-      meta: { filterType: "date" }
-    },
-    {
-      label: "日期2",
-      prop: "date2",
-      meta: { filterType: "dateRange" }
-    },
-    {
-      label: "姓名",
-      prop: "name",
-      meta: { filterType: "input" }
-    },
-    {
-      label: "性别",
-      prop: "sex",
-      meta: {
-        filterType: "selectMultiple",
-        selectOptions: [
-          { value: 1, label: "男" },
-          { value: 2, label: "女" }
-        ]
-      },
-      cellRenderer: ({ row, props }) => (
-        <el-tag size={props.size} type={row.sex === 1 ? "" : "danger"}>
-          {row.sex === 1 ? "男" : "女"}
-        </el-tag>
+      label: "状态",
+      prop: "status",
+      cellRenderer: scope => (
+        <el-switch
+          size={scope.props.size === "small" ? "small" : "default"}
+          loading={switchLoadMap.value[scope.index]?.loading}
+          v-model={scope.row.status}
+          disabled={
+            scope.row.is_super_role ||
+            !useUserStoreHook().hasPermission("sys:role:edit")
+          }
+          active-value={50}
+          inactive-value={100}
+          active-text="已启用"
+          inactive-text="已停用"
+          inline-prompt
+          style={switchStyle.value}
+          onChange={() =>
+            onStatusChange(scope as any, updateRole, switchLoadMap)
+          }
+        />
       )
     },
     {
-      label: "地址",
-      prop: "address",
-      meta: { filterType: "input" }
+      label: "成员",
+      prop: "member",
+      slot: "member"
     },
     {
-      label: "创建时间",
-      prop: "created_at",
-      meta: { filterType: "dateTimeRange" }
-    },
-    {
-      label: "更新时间",
-      prop: "updated_at",
-      meta: { filterType: "dateTimeRange" }
+      label: "操作",
+      fixed: "right",
+      slot: "operation"
     }
   ];
 
-  function pad(num) {
-    return num.toString().padStart(2, "0");
-  }
-
-  function formatDateTime(date) {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const hour = date.getHours();
-    const minute = date.getMinutes();
-    const second = date.getSeconds();
-    return `${year}-${pad(month)}-${pad(day)} ${pad(hour)}:${pad(minute)}:${pad(
-      second
-    )}`;
-  }
-
-  async function onSearch() {
-    loading.value = true;
-    const now = new Date();
-    const nowStr = formatDateTime(now);
-    dataList.value = [
-      {
-        date: "2023-10-13",
-        date2: "2023-10-13",
-        name: `Tom`,
-        address: "No. 211, Grove St, Los Angeles",
-        sex: 1,
-        created_at: nowStr,
-        updated_at: nowStr
-      },
-      {
-        date: "2023-10-12",
-        date2: "2023-10-13",
-        name: `Jenny`,
-        address: "No. 189, Grove St, Los Angeles",
-        sex: 2,
-        created_at: nowStr,
-        updated_at: nowStr
-      },
-      {
-        date: "2023-10-11",
-        date2: "2023-10-13",
-        name: `Penny`,
-        address: "No. 432, Grove St, Los Angeles",
-        sex: 2,
-        created_at: nowStr,
-        updated_at: nowStr
-      },
-      {
-        date: "2023-10-09",
-        date2: "2023-10-13",
-        name: `Jack`,
-        address: "No. 888, Grove St, Los Angeles",
-        sex: 1,
-        created_at: nowStr,
-        updated_at: nowStr
-      }
-    ];
-    setTimeout(() => {
-      loading.value = false;
-    }, 1000);
-  }
-
-  function onReFresh() {
-    searchParams.value = {};
-    onSearch();
-  }
-
-  function displayHeaderFilter() {
-    headerFilter.value = !headerFilter.value;
-  }
-
-  onMounted(() => {
-    onSearch();
-  });
+  const { tableLoading, tableColumns, dataList, onSearch } = useTableBase(
+    getRoleList,
+    columns
+  );
 
   return {
-    searchParams,
-    loading,
-    columns,
+    tableLoading,
+    tableColumns,
     dataList,
-    headerFilter,
-    onSearch,
-    onReFresh,
-    displayHeaderFilter
+    onSearch
   };
 }
