@@ -86,21 +86,22 @@ export const oauth2TokenApi = (
   data: object,
   grantType: "refresh_token" | "password"
 ) => {
-  const { OAUTH2_APP_ID, OAUTH2_APP_SECRET } = import.meta.env;
+  const { VITE_OAUTH2_APP_ID, VITE_OAUTH2_APP_SECRET } = import.meta.env;
   const axiosConfig = {
     headers: { "Content-Type": "application/x-www-form-urlencoded" }
   };
   if (grantType == "refresh_token") {
     data["refresh_token"] = data["refreshToken"];
-    data["client_id"] = OAUTH2_APP_ID;
-    data["client_secret"] = OAUTH2_APP_SECRET;
+    data["client_id"] = VITE_OAUTH2_APP_ID;
+    data["client_secret"] = VITE_OAUTH2_APP_SECRET;
   } else {
     axiosConfig["auth"] = {
-      username: OAUTH2_APP_ID,
-      password: OAUTH2_APP_SECRET
+      username: VITE_OAUTH2_APP_ID,
+      password: VITE_OAUTH2_APP_SECRET
     };
   }
   data["grant_type"] = grantType;
+
   return http.request<OauthTokenResult>(
     "post",
     apiUrl("users/oauth"),
@@ -111,12 +112,12 @@ export const oauth2TokenApi = (
 
 /** 注销oauth2 token */
 export const oauth2RevokeTokenApi = (data: object) => {
-  const { OAUTH2_APP_ID, OAUTH2_APP_SECRET } = import.meta.env;
+  const { VITE_OAUTH2_APP_ID, VITE_OAUTH2_APP_SECRET } = import.meta.env;
   const axiosConfig = {
     headers: { "Content-Type": "application/x-www-form-urlencoded" }
   };
-  data["client_id"] = OAUTH2_APP_ID;
-  data["client_secret"] = OAUTH2_APP_SECRET;
+  data["client_id"] = VITE_OAUTH2_APP_ID;
+  data["client_secret"] = VITE_OAUTH2_APP_SECRET;
   return http.request<any>(
     "post",
     apiUrl("o/revoke_token"),
