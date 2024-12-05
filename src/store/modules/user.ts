@@ -173,7 +173,11 @@ export const useUserStore = defineStore({
     },
     /** 登入账号权限判断 */
     hasPermission(code: string) {
-      return !code || this.permissions.includes(code);
+      return (
+        !code ||
+        this.permissions.includes(code) ||
+        this.permissions.includes("*:*:*")
+      );
     }
   }
 });
