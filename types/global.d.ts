@@ -66,6 +66,8 @@ declare global {
     VITE_COMPRESSION: ViteCompression;
     VITE_DING_TALK_APPID: string;
     VITE_BACKEND_SERVER: string;
+    VITE_OAUTH2_APP_ID: string;
+    VITE_OAUTH2_APP_SECRET: string;
   }
 
   /**

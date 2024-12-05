@@ -86,20 +86,18 @@ export const oauth2TokenApi = (
   data: object,
   grantType: "refresh_token" | "password"
 ) => {
-  const oauthAppId = "oiSWYqCK7JWSb1FQ0mhxrcTMwLQy5hHwkU7gziqG";
-  const oauthAppSecret =
-    "fYlBvv5h4nHfuep6KOI1QnkegLZYw8GKTgKdHXYOM7XVyLDSDBWmXy1NpoThs6amRHsKDWYRovrv4WDmKqmCWCUC4FOq0hLquVjkitO8QKdOfpES8oWnIISD7bhuZhxC";
+  const { OAUTH2_APP_ID, OAUTH2_APP_SECRET } = import.meta.env;
   const axiosConfig = {
     headers: { "Content-Type": "application/x-www-form-urlencoded" }
   };
   if (grantType == "refresh_token") {
     data["refresh_token"] = data["refreshToken"];
-    data["client_id"] = oauthAppId;
-    data["client_secret"] = oauthAppSecret;
+    data["client_id"] = OAUTH2_APP_ID;
+    data["client_secret"] = OAUTH2_APP_SECRET;
   } else {
     axiosConfig["auth"] = {
-      username: oauthAppId,
-      password: oauthAppSecret
+      username: OAUTH2_APP_ID,
+      password: OAUTH2_APP_SECRET
     };
   }
   data["grant_type"] = grantType;
@@ -113,14 +111,12 @@ export const oauth2TokenApi = (
 
 /** 注销oauth2 token */
 export const oauth2RevokeTokenApi = (data: object) => {
-  const oauthAppId = "oiSWYqCK7JWSb1FQ0mhxrcTMwLQy5hHwkU7gziqG";
-  const oauthAppSecret =
-    "fYlBvv5h4nHfuep6KOI1QnkegLZYw8GKTgKdHXYOM7XVyLDSDBWmXy1NpoThs6amRHsKDWYRovrv4WDmKqmCWCUC4FOq0hLquVjkitO8QKdOfpES8oWnIISD7bhuZhxC";
+  const { OAUTH2_APP_ID, OAUTH2_APP_SECRET } = import.meta.env;
   const axiosConfig = {
     headers: { "Content-Type": "application/x-www-form-urlencoded" }
   };
-  data["client_id"] = oauthAppId;
-  data["client_secret"] = oauthAppSecret;
+  data["client_id"] = OAUTH2_APP_ID;
+  data["client_secret"] = OAUTH2_APP_SECRET;
   return http.request<any>(
     "post",
     apiUrl("o/revoke_token"),

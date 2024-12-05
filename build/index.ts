@@ -9,7 +9,9 @@ const warpperEnv = (envConf: Recordable): ViteEnv => {
     VITE_HIDE_HOME: "false",
     VITE_COMPRESSION: "none",
     VITE_DING_TALK_APPID: "",
-    VITE_BACKEND_SERVER: "/"
+    VITE_BACKEND_SERVER: "/",
+    VITE_OAUTH2_APP_ID: "",
+    VITE_OAUTH2_APP_SECRET: ""
   };
 
   for (const envName of Object.keys(envConf)) {
