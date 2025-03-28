@@ -144,7 +144,13 @@ class PureHttp {
             useUserStoreHook().logOut();
           }
           NProgress.done();
-          message(`${respData.ret}: ${respData.msg}`, { type: "error" });
+          let errorMsg = "";
+          if (respData.msg === "invalid_grant") {
+            errorMsg = "账号或者密码错误！";
+          } else {
+            errorMsg = respData.msg;
+          }
+          message(`${respData.ret}: ${errorMsg}`, { type: "error" });
           return Promise.reject(response);
         }
         // 关闭进度条动画
