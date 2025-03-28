@@ -44,6 +44,7 @@ defineOptions({
 });
 
 const imgCode = ref("");
+const imgVerifyCodeComp = ref(null);
 const router = useRouter();
 const loading = ref(false);
 const oauthLoading = ref(false);
@@ -90,6 +91,7 @@ const onLogin = async (formEl: FormInstance | undefined) => {
         })
         .catch(() => {
           loading.value = false;
+          clearVerifyCode();
         });
     } else {
       loading.value = false;
@@ -97,6 +99,12 @@ const onLogin = async (formEl: FormInstance | undefined) => {
     }
   });
 };
+
+/** 重置图片验证码 */
+function clearVerifyCode() {
+  ruleForm.verifyCode = "";
+  imgVerifyCodeComp.value.getImgCode();
+}
 
 /** 使用公共函数，避免`removeEventListener`失效 */
 function onkeypress({ code }: KeyboardEvent) {
@@ -300,7 +308,10 @@ watch(imgCode, value => {
                     :prefix-icon="useRenderIcon('ri:shield-keyhole-line')"
                   >
                     <template v-slot:append>
-                      <ReImageVerify v-model:code="imgCode" />
+                      <ReImageVerify
+                        ref="imgVerifyCodeComp"
+                        v-model:code="imgCode"
+                      />
                     </template>
                   </el-input>
                 </el-form-item>
