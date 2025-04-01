@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { store } from "@/store";
 import { userType } from "./types";
-import { message } from "@/utils/message";
+// import { message } from "@/utils/message";
 import { routerArrays } from "@/layout/types";
 import { router, resetRouter } from "@/router";
 import {
@@ -101,9 +101,10 @@ export const useUserStore = defineStore({
             }
           })
           .catch(error => {
-            message(`${error.data.ret}: ${error.data.msg}`, {
-              type: "error"
-            });
+            console.error(error);
+            // message(`${error.data.ret}: ${error.data.msg}`, {
+            //   type: "error"
+            // });
             reject(error);
           });
       });

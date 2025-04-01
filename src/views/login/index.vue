@@ -156,7 +156,7 @@ function dingTalkOauth(postData) {
       }
     })
     .catch(() => {
-      oauthLoading.value = true;
+      oauthLoading.value = false;
     });
 }
 
