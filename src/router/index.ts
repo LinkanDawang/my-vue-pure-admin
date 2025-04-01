@@ -220,7 +220,7 @@ router.beforeEach((to: ToRouteType, _from, next) => {
       if (whiteList.indexOf(to.path) !== -1) {
         next();
       } else {
-        next({ path: "/login" });
+        next({ path: "/login", query: to?.query });
       }
     } else {
       next();
