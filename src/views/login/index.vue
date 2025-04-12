@@ -38,6 +38,7 @@ import Lock from "@iconify-icons/ri/lock-fill";
 import Check from "@iconify-icons/ep/check";
 import User from "@iconify-icons/ri/user-3-fill";
 import { subBefore } from "@pureadmin/utils";
+import { dingTalkLogin, githubLogin } from "@/api/user";
 
 defineOptions({
   name: "Login"
@@ -130,23 +131,36 @@ function dingTalkOauthRedirect() {
     "&prompt=consent";
 }
 
+function githubOauthRedirect() {
+  const redirectUrl = encodeURIComponent(
+    `${location.origin}/backend/accounts/github/login/callback/?platform=github`
+  );
+  window.location.href =
+    "https://github.com/login/oauth/authorize" +
+    "?client_id=Ov23liay7YwZjTfl83ye" +
+    `&redirect_uri=${redirectUrl}` +
+    "&scope=read%3Aorg+user+repo&response_type=code&state=fIzUJqAMnj8ViN6I";
+}
+
 function unLinkage(platForm: string) {
   if (platForm == "dingding") {
     dingTalkOauthRedirect();
   } else if (platForm == "github") {
-    window.location.href =
-      "https://github.com/login/oauth/authorize" +
-      "?client_id=Ov23liay7YwZjTfl83ye" +
-      "&redirect_uri=http%3A%2F%2Flocalhost%3A8848%2Fbackend%2Faccounts%2Fgithub%2Flogin%2Fcallback%2F" +
-      "&scope=read%3Aorg+user+repo&response_type=code&state=fIzUJqAMnj8ViN6I";
+    githubOauthRedirect();
   } else {
     message("抱歉，暂未接入该平台", { type: "warning" });
   }
 }
 
-function dingTalkOauth(postData) {
+function thirdPlatformOauth(platform: string, postData: object) {
+  let logApi = null;
+  if (platform == "dingTalk") {
+    logApi = dingTalkLogin;
+  } else if (platform == "github") {
+    logApi = githubLogin;
+  }
   useUserStoreHook()
-    .loginByDinTalk(postData)
+    .loginByThird(logApi, postData)
     .then(res => {
       if (res.ret == 200) {
         // 获取后端路由
@@ -187,9 +201,7 @@ function checkOauth2Login() {
   delete params["platform"];
   if (!platform) return;
   oauthLoading.value = true;
-  if (platform === "dingTalk") {
-    dingTalkOauth(params);
-  }
+  thirdPlatformOauth(platform, params);
 }
 
 onMounted(() => {

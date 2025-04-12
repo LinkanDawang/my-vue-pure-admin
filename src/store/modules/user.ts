@@ -15,7 +15,6 @@ import {
   oauth2TokenApi,
   oauth2RevokeTokenApi,
   userInfoApi,
-  dingTalkLogin,
   userLogout,
   type OauthTokenResult,
   UserInfoResult
@@ -89,9 +88,10 @@ export const useUserStore = defineStore({
       });
     },
     /** 第三方登入-钉钉 */
-    async loginByDinTalk(data) {
+    /** 第三方登入-Github */
+    async loginByThird(loginApi, data: object) {
       return new Promise<OauthTokenResult>((resolve, reject) => {
-        dingTalkLogin(data)
+        loginApi(data)
           .then(res => {
             if (res) {
               const resData = cloneDeep(res.data);
