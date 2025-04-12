@@ -133,6 +133,12 @@ function dingTalkOauthRedirect() {
 function unLinkage(platForm: string) {
   if (platForm == "dingding") {
     dingTalkOauthRedirect();
+  } else if (platForm == "github") {
+    window.location.href =
+      "https://github.com/login/oauth/authorize" +
+      "?client_id=Ov23liay7YwZjTfl83ye" +
+      "&redirect_uri=http%3A%2F%2Flocalhost%3A8848%2Fbackend%2Faccounts%2Fgithub%2Flogin%2Fcallback%2F" +
+      "&scope=read%3Aorg+user+repo&response_type=code&state=fIzUJqAMnj8ViN6I";
   } else {
     message("抱歉，暂未接入该平台", { type: "warning" });
   }

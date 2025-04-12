@@ -18,6 +18,10 @@ const thirdParty = [
     icon: "dingding"
   },
   {
+    title: $t("login.githubLogin"),
+    icon: "github"
+  },
+  {
     title: $t("login.weChatLogin"),
     icon: "wechat"
   },
@@ -28,10 +32,6 @@ const thirdParty = [
   {
     title: $t("login.qqLogin"),
     icon: "qq"
-  },
-  {
-    title: $t("login.weiboLogin"),
-    icon: "weibo"
   }
 ];
 

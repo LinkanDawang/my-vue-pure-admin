@@ -135,6 +135,7 @@ login:
   dingTalkLogin: 钉钉登入
   qqLogin: QQ登录
   weiboLogin: 微博登录
+  githubLogin: Github登入
   phone: 手机号码
   smsVerifyCode: 短信验证码
   back: 返回

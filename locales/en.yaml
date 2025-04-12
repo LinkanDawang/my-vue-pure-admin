@@ -135,6 +135,7 @@ login:
   dingTalkLogin: DingTalk Login
   qqLogin: QQ Login
   weiboLogin: Weibo Login
+  githubLogin: Github Login
   phone: Phone
   smsVerifyCode: SMS VerifyCode
   back: Back
