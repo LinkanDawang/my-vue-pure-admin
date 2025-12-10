@@ -162,14 +162,13 @@
       "w3c-hr-time": "*",
       "stable": "*"
     },
-    "ignoredBuiltDependencies": [
-      "es5-ext",
+    "ignoredBuiltDependencies": [],
+    "onlyBuiltDependencies": [
+      "core-js",
       "esbuild",
+      "es5-ext",
       "typeit",
       "vue-demi"
-    ],
-    "onlyBuiltDependencies": [
-      "core-js"
     ]
   },
   "repository": "git@github.com:pure-admin/vue-pure-admin.git",
