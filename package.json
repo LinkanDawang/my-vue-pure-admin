@@ -161,7 +161,16 @@
       "sourcemap-codec": "*",
       "w3c-hr-time": "*",
       "stable": "*"
-    }
+    },
+    "ignoredBuiltDependencies": [
+      "es5-ext",
+      "esbuild",
+      "typeit",
+      "vue-demi"
+    ],
+    "onlyBuiltDependencies": [
+      "core-js"
+    ]
   },
   "repository": "git@github.com:pure-admin/vue-pure-admin.git",
   "author": "xiaoxian521",
